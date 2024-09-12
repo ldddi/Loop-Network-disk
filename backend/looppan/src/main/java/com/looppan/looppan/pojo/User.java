@@ -1,0 +1,30 @@
+package com.looppan.looppan.pojo;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("user_info")
+public class User {
+    @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
+    private String userId;
+    private String nickName;
+    private String email;
+    private String qqOpenId;
+    private String qqAvatar;
+    private String password;
+    private LocalDateTime joinTime;
+    private LocalDateTime lastLoginTime;
+    private String status;
+    private BigInteger totalSpace;
+    private BigInteger useSpace;
+}
