@@ -6,12 +6,16 @@ import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +38,7 @@ public class Register {
                                @RequestParam String picCheckCode,
                                @RequestParam String emailCheckCode,
                                HttpSession session
-    ) {
+    ) throws IOException {
 
         Map<String, String> mp = new HashMap<String, String>();
 
@@ -56,8 +60,14 @@ public class Register {
         User user = new User();
         user.setNickName(nickName);
         user.setEmail(email);
+
         String encodePassword = passwordEncoder.encode(password);
         user.setPassword(encodePassword);
+        ClassPathResource classPathResource = new ClassPathResource("static/images/user/avatar.jpg");
+        File file = classPathResource.getFile();
+        String absolutePath = file.getAbsolutePath();
+        user.setQqAvatar(absolutePath);
+
         user.setJoinTime(LocalDateTime.now());
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.insert(user);

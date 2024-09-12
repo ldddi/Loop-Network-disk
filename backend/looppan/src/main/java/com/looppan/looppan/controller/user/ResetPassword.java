@@ -34,7 +34,7 @@ public class ResetPassword {
     {
         Map<String, String> mp = new HashMap<String, String>();
         User user = userMapper.selectByEmail(email);
-        if (emailMapper.getCodeByEmail(email) == null) {
+        if (userMapper.selectByEmail(email) == null) {
             mp.put("message", "邮箱不存在");
             return mp;
         }
@@ -56,7 +56,9 @@ public class ResetPassword {
 
         String encode = bCryptPasswordEncoder.encode(newPassword);
         user.setPassword(encode);
+        System.out.println("hhh");
         userMapper.updateById(user);
+        System.out.println("hihihi");
         mp.put("message", "success");
         return mp;
     }

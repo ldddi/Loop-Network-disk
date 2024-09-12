@@ -4,6 +4,8 @@ import com.looppan.looppan.mapper.EmailMapper;
 import com.looppan.looppan.pojo.Email;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class JudgeCheckCode {
@@ -18,7 +20,10 @@ public class JudgeCheckCode {
 
     public static boolean isOkEmailCheckCode(EmailMapper emailMapper, String email, String emailCode) {
         Email searchedEmail = emailMapper.getCodeByEmail(email);
-        if (emailCode == null || Objects.equals(searchedEmail.getStatus(), StaticKey.EMAIL_CODE_FAIL) || !emailCode.trim().equalsIgnoreCase(searchedEmail.getCode())) {
+        if (emailCode == null ||
+                Objects.equals(searchedEmail.getStatus(), StaticKey.EMAIL_CODE_FAIL) ||
+                !emailCode.trim().equalsIgnoreCase(searchedEmail.getCode()) ||
+                Duration.between(LocalDateTime.now(),searchedEmail.getCreateTime()).toMinutes() > 15) {
             return false;
         }
         return true;

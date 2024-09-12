@@ -1,6 +1,7 @@
 package com.looppan.looppan.controller.user;
 
 import com.looppan.looppan.controller.user.utils.JudgeCheckCode;
+import com.looppan.looppan.controller.user.utils.StaticKey;
 import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.User;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +39,8 @@ public class Login {
             mp.put("message", "图片验证码错误");
             return mp;
         }
+
+        session.setAttribute(StaticKey.USER_ID_KEY, user.getUserId());
 
         mp.put("message", "ok");
         return mp;

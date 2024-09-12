@@ -17,9 +17,12 @@ public class SendEmailCode {
     EmailService emailService;
 
     @RequestMapping(value = "/sendEmailCode", method = RequestMethod.POST)
-    public String sendEmailCode(HttpSession session, @RequestParam(required = true) String email, @RequestParam(required = true) Integer type) throws MessagingException {
+    public String sendEmailCode(HttpSession session,
+                                @RequestParam(required = true) String email,
+                                @RequestParam(required = true) Integer type
+    ) throws MessagingException {
         try {
-            emailService.sendEmailCode(email, 0);   // 0 注册 1 忘记密码
+            emailService.sendEmailCode(email, type);   // 0 注册 1 忘记密码
             return StaticKey.MESSAGE_SUCCESS;
         } finally {
             session.removeAttribute(StaticKey.EMAIL_CHECK_CODE_KEY);

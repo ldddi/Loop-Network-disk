@@ -1,6 +1,12 @@
 package com.looppan.looppan.controller.user.utils;
 
+import java.util.List;
+
 public class StaticKey {
+    public static List<String> AVATAR_RANDOM;
+
+    public final static int AVATAR_RANDOM_LENGTH = 10;
+
     public final static String MESSAGE_SUCCESS = "message : success";
 
     public final static String PIC_CHECK_CODE_KEY = "pic_check_code_key";
@@ -8,6 +14,8 @@ public class StaticKey {
     public final static String EMAIL_CHECK_CODE_KEY = "email_check_code_key";
 
     public final static Integer CHECK_CODE_LENGTH = 6;
+
+    public final static String USER_ID_KEY = "user_id_key";
 
     // 邮箱验证码是否可用
     public final static Integer EMAIL_CODE_OK = 1;
