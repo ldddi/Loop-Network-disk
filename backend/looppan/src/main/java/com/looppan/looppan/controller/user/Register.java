@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +29,14 @@ public class Register {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public Map<String, String> userRegister(@RequestParam String email,
-                               @RequestParam String nickName,
-                               @RequestParam String password,
-                               @RequestParam String picCheckCode,
-                               @RequestParam String emailCheckCode,
+    public Map<String, String> userRegister(@RequestBody Map<String, String> requestMp,
                                HttpSession session
     ) throws IOException {
+        String email = requestMp.get("email");
+        String password = requestMp.get("password");
+        String nickName = requestMp.get("nickName");
+        String picCheckCode = requestMp.get("picCheckCode");
+        String emailCheckCode = requestMp.get("emailCheckCode");
 
         Map<String, String> mp = new HashMap<String, String>();
 
@@ -71,6 +69,7 @@ public class Register {
         user.setJoinTime(LocalDateTime.now());
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.insert(user);
+        mp.put("message", "success");
         return mp;
     }
 }

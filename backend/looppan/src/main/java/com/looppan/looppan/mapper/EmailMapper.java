@@ -13,6 +13,6 @@ public interface EmailMapper extends BaseMapper<Email> {
     @Update("update email_info set status = #{fail} where email = #{email} and status = #{ok}")
     public void disableEmailCode(@Param("fail") int fail, String email, @Param("ok") int ok);
 
-    @Select("select * from email_info where email = #{email}")
+    @Select("select * from email_info where email = #{email} and status = 1")
     public Email getCodeByEmail(@Param("email") String email);
 }

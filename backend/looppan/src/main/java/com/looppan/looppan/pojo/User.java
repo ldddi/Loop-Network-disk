@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("user_info")
 public class User {
-    @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
+    @TableId(value = "user_id", type = IdType.AUTO)
     private String userId;
     private String nickName;
     private String email;

@@ -13,7 +13,7 @@ public class StaticKey {
 
     public final static String EMAIL_CHECK_CODE_KEY = "email_check_code_key";
 
-    public final static Integer CHECK_CODE_LENGTH = 6;
+    public final static Integer CHECK_CODE_LENGTH = 5;
 
     public final static String USER_ID_KEY = "user_id_key";
 

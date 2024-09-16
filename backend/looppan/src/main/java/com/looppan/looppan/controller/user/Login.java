@@ -7,10 +7,7 @@ import com.looppan.looppan.pojo.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +21,17 @@ public class Login {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public Map<String, String> userLogin(@RequestParam String email,
-                                         @RequestParam String password,
-                                         @RequestParam String picCheckCode, HttpSession session)
+    public Map<String, String> userLogin(@RequestBody Map<String, String> requestMp, HttpSession session)
     {
+        String email = requestMp.get("email");
+        String password = requestMp.get("password");
+        String picCheckCode = requestMp.get("picCheckCode");
+
         User user = userMapper.selectByEmail(email);
         Map<String, String> mp = new HashMap<>();
-        if (email == null || user == null || !encoder.matches(user.getPassword(), password)) {
+        if (email == null || user == null || !encoder.matches(password, user.getPassword())) {
+            System.out.println(user.getPassword());
+            System.out.println(encoder.encode(password));
             mp.put("message", "密码错误");
             return mp;
         }

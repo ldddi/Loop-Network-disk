@@ -21,7 +21,7 @@ public class Captcha {
 
     // 创建丰富多彩的验证码图片
     public static BufferedImage createCaptchaImage(String captcha) {
-        int width = 160;  // 图片宽度
+        int width = 130;  // 图片宽度
         int height = 50;  // 图片高度
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
