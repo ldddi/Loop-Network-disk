@@ -91,7 +91,7 @@ const SubmitLoginForm = () => {
     },
   }).then((resp) => {
     console.log(resp.data);
-    //router.push({name : "MainHome"});
+    router.push({ name: "MainHome" });
   });
 };
 </script>

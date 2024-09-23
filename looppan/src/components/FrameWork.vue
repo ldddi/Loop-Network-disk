@@ -1,156 +1,265 @@
 <template>
-  <div class="framework">
+  <div class="my-container">
+    <!-- nav 导航栏 -->
     <div class="header">
-      <div class="logo">
-        <div class="iconfont icon-pan"></div>
-        <div class="name">Loop网盘</div>
+      <div class="left-logo">
+        <i class="bi bi-cloud-arrow-up logo-icon"></i>
+        <span class="logo-text">Loop网盘</span>
       </div>
-      <div class="right-panel"></div>
+      <div class="right-info">
+        <div @click="onChangeDropdownVisible" ref="arrow" class="right-arrow">
+          <i class="bi bi-arrow-down-up arrow-icon"></i>
+        </div>
+        <!-- 弹出框 -->
+        <div v-if="isDropdownVisible" ref="dropdown" class="upload-box">
+          <div class="triangle-1"></div>
+          <div class="triangle-2"></div>
+          <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
+          <div class="upload-content">暂无上传任务</div>
+        </div>
+        <div class="right-uesr-info">
+          <div class="user-avatar">
+            <img src="../assets/images/vscode.jpg" alt="" />
+          </div>
+          <div class="user-nickname">hhh</div>
+        </div>
+      </div>
     </div>
-    <div class="body"></div>
+    <div class="body">
+      <div class="left-nav">
+        <div @click="onChangeToHome" :class="['left-nav-item', 'left-nav-item1', route.name === 'HomeAll' || route.name === 'HomeVideo' || route.name === 'HomeAudio' || route.name === 'HomeImage' || route.name === 'HomeDocument' || route.name === 'HomeMore' ? 'active' : '']">
+          <i class="bi bi-house left-nav-icon"></i>
+          <span>首页</span>
+        </div>
+        <div @click="onChangeToShare" :class="['left-nav-item', route.name === 'ShareRecord' ? 'active' : '']">
+          <i class="bi bi-share left-nav-icon"></i>
+          <span>分享</span>
+        </div>
+        <div @click="onChangeToRecycle" :class="['left-nav-item', route.name === 'MyRecycle' ? 'active' : '']">
+          <i class="bi bi-recycle left-nav-icon"></i>
+          <span>回收站</span>
+        </div>
+      </div>
+      <div class="right-panel">
+        <slot></slot>
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import router from "@/router";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+
+let route = useRoute();
+let isDropdownVisible = ref(false);
+const dropdown = ref(null);
+const arrow = ref(null);
+
+const onChangeToHome = () => {
+  router.push({ name: "HomeAll" });
+};
+
+const onChangeToShare = () => {
+  router.push({ name: "ShareRecord" });
+};
+
+const onChangeToRecycle = () => {
+  router.push({ name: "MyRecycle" });
+};
+
+const onChangeDropdownVisible = () => {
+  isDropdownVisible.value = !isDropdownVisible.value;
+};
+
+const onCloseDropdown = (event) => {
+  if (dropdown.value && !dropdown.value.contains(event.target) && !arrow.value.contains(event.target)) {
+    isDropdownVisible.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", onCloseDropdown);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onCloseDropdown);
+});
+</script>
 
 <style lang="scss" scoped>
+.active {
+  color: #09a6ff;
+  background-color: #f1faff !important;
+}
+
+.my-container {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 .header {
-  box-shadow: 0 3px 10px 0 rab(0 0 0 / 6%);
+  width: 100vw;
   height: 56px;
-  padding-left: 24px;
-  padding-right: 24px;
-  position: relative;
-  z-index: 200;
+  box-sizing: border-box;
+  padding: 0 24px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  .logo {
-    display: flex;
-    align-items: center;
-    .icon-pan {
+  .left-logo {
+    .logo-icon {
+      color: #09a6ff;
       font-size: 40px;
-      color: #1296db;
     }
-    .name {
-      font-weight: bold;
-      margin-left: 5px;
+    .logo-text {
       font-size: 25px;
-      color: #05a1f5;
+      color: #09a6ff;
+      margin-left: 5px;
+      font-weight: 700;
     }
   }
-  .right-panel {
+  .right-info {
     display: flex;
     align-items: center;
-    .icon-transfer {
-      cursor: pointer;
-    }
-    .user-info {
-      margin-right: 10px;
+    justify-content: center;
+    .right-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
+      justify-content: center;
       cursor: pointer;
-      .avatar {
-        margin: 0px 5px 0px 15px;
+      .arrow-icon {
+        font-size: 18px;
+        font-weight: bold !important;
       }
-      .nick-name {
-        color: #05a1f5;
+    }
+    .right-arrow:hover {
+      background-color: #f0f3f7;
+      transition: all 0.2s ease-in-out;
+    }
+    .right-uesr-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 16px;
+      cursor: pointer;
+      .user-avatar {
+        position: relative;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background-color: lightblue;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .user-nickname {
+        margin-left: 5px;
       }
     }
   }
 }
 
 .body {
-  display: flex;
-  .left-sider {
-    border-right: 1px solid #f1f2f4;
+  position: relative;
+  .left-nav {
+    width: 80px;
+    height: calc(100vh - 56px);
+    // background-color: lightblue;
+    position: fixed;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.08);
     display: flex;
-    .menu-list {
-      height: calc(100vh - 56px);
-      width: 80px;
-      box-shadow: 0 3px 10px 0 rgb(0 0 0 / 6%);
-      border-right: 1px solid #f1f2f4;
-      .menu-item {
-        text-align: center;
-        font-size: 14px;
-        font-weight: bold;
-        padding: 20px 0px;
-        cursor: pointer;
-        &:hover {
-          background: #f3f3f3;
-        }
-        .iconfont {
-          font-weight: normal;
-          font-size: 28px;
-        }
-      }
-      .active {
-        .iconfont {
-          color: #06a7ff;
-        }
-        .text {
-          columns: #06a7ff;
-        }
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    .left-nav-item {
+      box-sizing: content-box;
+      width: 66px;
+      height: 54px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      .left-nav-icon {
+        font-size: 28px;
       }
     }
-    .menu-sub-list {
-      width: 200px;
-      padding: 20px 10px 0;
-      position: relative;
-      .menu-item-sub {
-        text-align: center;
-        line-height: 40px;
-        border-radius: 5px;
-        cursor: pointer;
-        &:hover {
-          background: #f3f3f3;
-        }
-        .iconfont {
-          font-size: 14px;
-          margin-right: 20px;
-        }
-        .text {
-          font-size: 13px;
-        }
-      }
-      .active {
-        background: #eef9fe;
-        .iconfont {
-          color: #05a1f5;
-        }
-        .text {
-          color: #05a1f5;
-        }
-      }
-      .tips {
-        margin-top: 10px;
-        color: #888888;
-        font-size: 13px;
-      }
-      .space-info {
-        position: absolute;
-        bottom: 10px;
-        width: 100%;
-        padding: 0px 5px;
-        .percent {
-          padding-right: 10px;
-        }
-        .space-use {
-          margin-top: 5px;
-          color: #7e7e7e;
-          display: flex;
-          justify-content: space-around;
-          .use {
-            flex: 1;
-          }
-          .iconfont {
-            cursor: pointer;
-            margin-right: 20px;
-            color: #05a1f5;
-          }
-        }
-      }
+    .left-nav-item:hover {
+      background-color: #f4f5f9;
+    }
+    .left-nav-item1 {
+      margin-top: 24px;
     }
   }
+
+  .right-panel {
+    width: calc(100vw - 80px);
+    height: calc(100vh - 56px);
+    // background-color: #09a6ff;
+    position: absolute;
+    left: 80px;
+    display: flex;
+  }
+}
+
+.upload-box {
+  position: absolute;
+  top: 58px; /* 调整显示框的位置 */
+  right: 10px;
+  width: 800px;
+  height: 500px;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  z-index: 11;
+}
+
+.upload-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  height: 30px;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+}
+
+.upload-content {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+}
+
+/* 带有三条边的三角形样式 */
+.triangle-1 {
+  position: absolute;
+  top: -10px;
+  right: 115px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent; /* 左边框，斜边 */
+  border-right: 10px solid transparent; /* 右边框，斜边 */
+  border-bottom: 10px solid #000; /* 底部边框 */
+}
+.triangle-2 {
+  position: absolute;
+  top: -10px;
+  right: 115px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent; /* 左边框，斜边 */
+  border-right: 10px solid transparent; /* 右边框，斜边 */
+  border-bottom: 10px solid white; /* 底部边框 */
 }
 </style>

@@ -65,7 +65,6 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { defineProps } from "vue";
 import Components from "@/components/Components.vue";
 import router from "@/router";
 import axios from "axios";

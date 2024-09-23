@@ -14,6 +14,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "@/assets/icon/iconfont.css";
 import "@/assets/base.scss";
 
+import "@/assets/css/HomeButton.css";
+
 const app = createApp(App);
 app.use(ElementPlus);
 app.use(router);

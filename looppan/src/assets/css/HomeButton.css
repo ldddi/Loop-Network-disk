@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+
+.btn {
+  color: #fff !important;
+  border-radius: 12px !important;
+}
+
+.btn.btn-pull {
+  background-color: #5faeff;
+}
+.btn.btn-pull:hover {
+  color: #fff;
+  background-color: #79bbff;
+}
+.btn.btn-pull:active {
+  color: #fff !important;
+  background-color: #347ecc !important;
+}
+.btn.btn-new {
+  background-color: #67c23a;
+}
+.btn.btn-new:hover {
+  color: #fff;
+  background-color: #96d475;
+}
+.btn.btn-new:active {
+  color: #fff !important;
+  background-color: #529b2e !important;
+}
+.btn.btn-delete {
+  background-color: #f56c6c;
+}
+.btn.btn-delete:hover {
+  color: #fff;
+  background-color: #fab6b5;
+}
+.btn.btn-delete:active {
+  color: #fff !important;
+  background-color: #c35755 !important;
+}
+.btn.btn-move {
+  background-color: #e6a23c;
+}
+.btn.btn-move:hover {
+  color: #fff;
+  background-color: #f2d19e;
+}
+.btn.btn-move:active {
+  color: #fff !important;
+  background-color: #b88230 !important;
+}
+.search-container {
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  max-width: 400px;
+}
+
+.search-input {
+  height: 100%;
+  border: none;
+  outline: none;
+  flex: 1; /* 填满剩余空间 */
+  padding: 10px;
+  font-size: 16px;
+}
+
+.search-button:hover {
+  background-color: #79bbff;
+}
+
+.search-icon {
+  cursor: pointer;
+}
