@@ -1,6 +1,6 @@
 <template>
   <Components>
-    <form @submit.prevent="SubmitLoginForm">
+    <form @submit.prevent>
       <div class="login-register">
         <div class="mb-5 login-title">Loop网盘</div>
         <div class="mb-4">
@@ -40,7 +40,7 @@
           <a href="#" class="a-link ms-auto" @click="GoToRegisterView">没有账号</a>
         </div>
         <div class="mb-3 text-center">
-          <button type="submit" class="btn btn-primary w-100">登陆</button>
+          <button @click="SubmitLoginForm" type="submit" class="btn btn-primary w-100">登陆</button>
         </div>
       </div>
     </form>
@@ -49,13 +49,16 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import Components from "@/components/Components.vue";
+import Components from "@/components/LoginPanel.vue";
 import router from "@/router";
 import axios from "axios";
+import { useUserStore } from "@/store/useUserStore";
 const api = {
   checkCode: "/api/getPicCheckCode",
-  login: "/api/login",
+  login: "/api/login/",
 };
+
+const userStore = useUserStore();
 
 let email = ref("");
 let password = ref("");
@@ -91,7 +94,8 @@ const SubmitLoginForm = () => {
     },
   }).then((resp) => {
     console.log(resp.data);
-    router.push({ name: "MainHome" });
+    userStore.user.is_login = true;
+    router.push({ name: "HomeAll" });
   });
 };
 </script>

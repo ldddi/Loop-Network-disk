@@ -13,14 +13,16 @@ import java.io.IOException;
 @RestController
 public class GetPicCheckCode {
 
-    @RequestMapping(value = "/getPicCheckCode", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPicCheckCode")
     public void sendCheckCode(HttpServletResponse response, HttpSession session, @RequestParam Integer type) throws IOException {
+
         response.setContentType("image/png");
 
         String captcha = Captcha.generateRandomCaptcha(StaticKey.CHECK_CODE_LENGTH);
         BufferedImage image = Captcha.createCaptchaImage(captcha);
 
         session.setAttribute(StaticKey.PIC_CHECK_CODE_KEY, captcha);
+
 
         ImageIO.write(image, "png", response.getOutputStream());
     }

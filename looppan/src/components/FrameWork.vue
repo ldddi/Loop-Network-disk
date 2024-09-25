@@ -17,11 +17,18 @@
           <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
           <div class="upload-content">暂无上传任务</div>
         </div>
-        <div class="right-uesr-info">
+        <div class="right-user-info">
           <div class="user-avatar">
             <img src="../assets/images/vscode.jpg" alt="" />
           </div>
           <div class="user-nickname">hhh</div>
+          <div class="dropdown">
+            <ul>
+              <li>修改头像</li>
+              <li>修改密码</li>
+              <li>退出</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -88,6 +95,37 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.dropdown {
+  display: none; /* 默认隐藏下拉菜单 */
+  position: absolute; /* 绝对定位，放置在父元素下方 */
+  top: 50px;
+  right: 25px;
+  background-color: white; /* 背景色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  z-index: 100; /* 确保下拉菜单在最上层 */
+  padding-top: 10px;
+}
+
+.right-user-info:hover .dropdown {
+  display: block !important; /* 悬浮时显示下拉菜单 */
+}
+
+.dropdown ul {
+  list-style: none; /* 去掉列表样式 */
+  padding: 0; /* 去掉内边距 */
+  margin: 0; /* 去掉外边距 */
+}
+
+.dropdown li {
+  padding: 10px 15px; /* 内边距 */
+  cursor: pointer; /* 鼠标悬浮时显示为手指 */
+}
+
+.dropdown li:hover {
+  background-color: #ecf5ff; /* 悬浮时背景色 */
+  color: #3f9eff;
+}
+
 .active {
   color: #09a6ff;
   background-color: #f1faff !important;
@@ -141,7 +179,7 @@ onBeforeUnmount(() => {
       background-color: #f0f3f7;
       transition: all 0.2s ease-in-out;
     }
-    .right-uesr-info {
+    .right-user-info {
       display: flex;
       align-items: center;
       justify-content: center;

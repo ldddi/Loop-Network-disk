@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
@@ -26,7 +27,8 @@ public class Register {
     @Autowired
     EmailMapper emailMapper;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    PasswordEncoder bCryptPasswordEncoder;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public Map<String, String> userRegister(@RequestBody Map<String, String> requestMp,
@@ -59,7 +61,7 @@ public class Register {
         user.setNickName(nickName);
         user.setEmail(email);
 
-        String encodePassword = passwordEncoder.encode(password);
+        String encodePassword = bCryptPasswordEncoder.encode(password);
         user.setPassword(encodePassword);
         ClassPathResource classPathResource = new ClassPathResource("static/images/user/avatar.jpg");
         File file = classPathResource.getFile();

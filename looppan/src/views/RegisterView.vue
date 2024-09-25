@@ -16,7 +16,7 @@
         <div class="mb-4">
           <div class="input-group">
             <input v-model="emailCheckCode" type="text" class="form-control" id="emailCode" placeholder="输入邮箱验证码" required />
-            <button class="btn btn-outline-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
+            <button class="btn btn-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
           </div>
         </div>
 
@@ -65,7 +65,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import Components from "@/components/Components.vue";
+import Components from "@/components/LoginPanel.vue";
 import router from "@/router";
 import axios from "axios";
 
@@ -148,6 +148,15 @@ const submitRegistration = () => {
 </script>
 
 <style lang="scss" scoped>
+.input-group {
+  input {
+    margin-right: 8px;
+  }
+  button {
+    max-width: 108px;
+  }
+}
+
 .register-panel {
   max-width: 400px;
   margin: 0 auto;

@@ -11,7 +11,7 @@
 
 <script setup>
 import { ref } from "vue";
-import Components from "@/components/Components.vue";
+import Components from "@/components/LoginPanel.vue";
 import Login from "@/views/LoginView.vue";
 import Register from "@/views/RegisterView.vue";
 
