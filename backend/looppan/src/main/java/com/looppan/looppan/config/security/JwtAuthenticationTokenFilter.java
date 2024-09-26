@@ -1,4 +1,4 @@
-package com.looppan.looppan.controller.config.security;
+package com.looppan.looppan.config.security;
 
 import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.User;

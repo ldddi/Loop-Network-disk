@@ -14,18 +14,11 @@ import java.util.Map;
 @RestController
 public class GetUserAvatar {
 
-    @Autowired
-    UserMapper userMapper;
-
     @RequestMapping(value = "/getAvatar/{userId}", method = RequestMethod.GET)
     public Map<String, String> getUserAvatar(@PathVariable int userId) {
 
         Map<String, String> mp = new HashMap<String, String>();
-        User user = userMapper.selectById(userId);
-        String url = user.getQqAvatar();
 
-        mp.put("message" , "success");
-        mp.put("data", url);
         return mp;
     }
 }

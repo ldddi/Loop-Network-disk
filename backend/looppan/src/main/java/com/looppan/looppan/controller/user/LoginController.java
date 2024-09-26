@@ -1,11 +1,11 @@
 package com.looppan.looppan.controller.user;
 
+import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.controller.user.utils.JudgeCheckCode;
-import com.looppan.looppan.controller.user.utils.StaticKey;
-import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.service.user.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,16 +18,14 @@ public class LoginController {
     private LoginService loginService;
 
     @RequestMapping(value = "/login/", method = RequestMethod.POST)
-    public Map<String, String> userLogin(@RequestBody Map<String, String> requestMp, HttpSession session)
+    public ResponseEntity<Map<String, String>> userLogin(@RequestBody Map<String, String> requestMp, HttpSession session)
     {
         String email = requestMp.get("email");
         String password = requestMp.get("password");
         String picCheckCode = requestMp.get("picCheckCode");
-        Map<String, String> mp = new HashMap<>();
 
         if (!JudgeCheckCode.isOkPicCheckCode(picCheckCode, session)) {
-            mp.put("message", "图片验证码错误");
-            return mp;
+            throw new MyException("图片验证码错误");
         }
 
         return loginService.login(email, password);

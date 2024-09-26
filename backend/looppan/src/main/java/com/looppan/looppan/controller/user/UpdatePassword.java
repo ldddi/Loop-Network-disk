@@ -27,17 +27,7 @@ public class UpdatePassword {
     ) {
         Map<String, String> mp = new HashMap<>();
 
-        if (!confirmNewPassword.equals(newPassword)) {
-            mp.put("message", "两次密码不一致");
-            return mp;
-        }
-        int userId = (int) session.getAttribute(StaticKey.USER_ID_KEY);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        User user = userMapper.selectById(userId);
-        String code = encoder.encode(newPassword);
-        user.setPassword(code);
-        userMapper.updateById(user);
-        mp.put("message", "success");
+
         return mp;
     }
 }

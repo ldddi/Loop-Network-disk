@@ -18,10 +18,10 @@ public class GetPicCheckCode {
 
         response.setContentType("image/png");
 
-        String captcha = Captcha.generateRandomCaptcha(StaticKey.CHECK_CODE_LENGTH);
+        String captcha = Captcha.generateRandomCaptcha(StaticKey.CHECK_CODE_LENGTH.toIntegerValue());
         BufferedImage image = Captcha.createCaptchaImage(captcha);
 
-        session.setAttribute(StaticKey.PIC_CHECK_CODE_KEY, captcha);
+        session.setAttribute(StaticKey.PIC_CHECK_CODE_KEY.toStringValue(), captcha);
 
 
         ImageIO.write(image, "png", response.getOutputStream());

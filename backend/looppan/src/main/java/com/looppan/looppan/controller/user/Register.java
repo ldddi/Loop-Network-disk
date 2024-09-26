@@ -34,44 +34,7 @@ public class Register {
     public Map<String, String> userRegister(@RequestBody Map<String, String> requestMp,
                                HttpSession session
     ) throws IOException {
-        String email = requestMp.get("email");
-        String password = requestMp.get("password");
-        String nickName = requestMp.get("nickName");
-        String picCheckCode = requestMp.get("picCheckCode");
-        String emailCheckCode = requestMp.get("emailCheckCode");
-
-        Map<String, String> mp = new HashMap<String, String>();
-
-        if (userMapper.selectByNickName(nickName) != null) {
-            mp.put("message" , "昵称重复");
-            return mp;
-        }
-
-        if (!JudgeCheckCode.isOkPicCheckCode(picCheckCode, session)) {
-            mp.put("message", "图片验证码错误");
-            return mp;
-        }
-
-        if (!JudgeCheckCode.isOkEmailCheckCode(emailMapper, email, emailCheckCode)) {
-            mp.put("message", "邮箱验证码错误");
-            return mp;
-        }
-
-        User user = new User();
-        user.setNickName(nickName);
-        user.setEmail(email);
-
-        String encodePassword = bCryptPasswordEncoder.encode(password);
-        user.setPassword(encodePassword);
-        ClassPathResource classPathResource = new ClassPathResource("static/images/user/avatar.jpg");
-        File file = classPathResource.getFile();
-        String absolutePath = file.getAbsolutePath();
-        user.setQqAvatar(absolutePath);
-
-        user.setJoinTime(LocalDateTime.now());
-        user.setLastLoginTime(LocalDateTime.now());
-        userMapper.insert(user);
-        mp.put("message", "success");
+       Map<String, String> mp = new HashMap<>();
         return mp;
     }
 }

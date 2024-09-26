@@ -83,20 +83,23 @@ const GoToRegisterView = () => {
   router.push({ name: "RegisterView" });
 };
 
-const SubmitLoginForm = () => {
-  axios({
-    method: "POST",
-    url: api.login,
-    data: {
-      email: email.value,
-      password: password.value,
-      picCheckCode: picCheckCode.value,
-    },
-  }).then((resp) => {
-    console.log(resp.data);
+const SubmitLoginForm = async () => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: api.login,
+      data: {
+        email: email.value,
+        password: password.value,
+        picCheckCode: picCheckCode.value,
+      },
+    });
+    console.log(response.data);
     userStore.user.is_login = true;
     router.push({ name: "HomeAll" });
-  });
+  } catch (error) {
+    console.log("错误信息 ： ", error.response.data);
+  }
 };
 </script>
 

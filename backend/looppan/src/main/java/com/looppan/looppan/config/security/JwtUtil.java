@@ -1,4 +1,4 @@
-package com.looppan.looppan.controller.config.security;
+package com.looppan.looppan.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;

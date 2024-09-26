@@ -25,37 +25,7 @@ public class UpdateUserAvatar {
     ) throws IOException {
         Map<String, String> mp = new HashMap<>();
 
-        if (file.isEmpty()) {
-            mp.put("message", "文件不能为空");
-            return mp;
-        }
 
-        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".jpg")) {
-            mp.put("message", "仅支持 .jpg 文件");
-            return mp;
-        }
-
-        ClassPathResource resource = new ClassPathResource("static/images/user");
-
-        File dir = resource.getFile();
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        String random = null;
-        for (int i = 0; i < 10; i ++ ) {
-            random = RandomUtils.generateRandomString(StaticKey.AVATAR_RANDOM_LENGTH);
-            if (!StaticKey.AVATAR_RANDOM.contains(random)) {
-                StaticKey.AVATAR_RANDOM.add(random);
-                break;
-            }
-        }
-
-        String filePath = dir.getAbsolutePath() + random + ".jpg";
-        File file1 = new File(filePath);
-
-        file.transferTo(file1);
-
-        mp.put("message", "success");
         return mp;
     }
 

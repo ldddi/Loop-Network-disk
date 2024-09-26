@@ -11,7 +11,7 @@ import java.util.Objects;
 public class JudgeCheckCode {
 
     public static boolean isOkPicCheckCode(String picCode, HttpSession session) {
-        String code = (String) session.getAttribute(StaticKey.PIC_CHECK_CODE_KEY);
+        String code = (String) session.getAttribute(StaticKey.PIC_CHECK_CODE_KEY.toStringValue());
         if (picCode == null || !picCode.equalsIgnoreCase(code)) {
             return false;
         }
@@ -21,7 +21,7 @@ public class JudgeCheckCode {
     public static boolean isOkEmailCheckCode(EmailMapper emailMapper, String email, String emailCode) {
         Email searchedEmail = emailMapper.getCodeByEmail(email);
         if (emailCode == null ||
-                Objects.equals(searchedEmail.getStatus(), StaticKey.EMAIL_CODE_FAIL) ||
+                Objects.equals(searchedEmail.getStatus(), StaticKey.EMAIL_CODE_FAIL.toStringValue()) ||
                 !emailCode.trim().equalsIgnoreCase(searchedEmail.getCode()) ||
                 Duration.between(LocalDateTime.now(),searchedEmail.getCreateTime()).toMinutes() > 15) {
             return false;
