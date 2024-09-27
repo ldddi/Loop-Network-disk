@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public interface LoginService {
-
-    public ResponseEntity<Map<String, String>> login(String username, String password, String picCheckCode, HttpSession session);
+public interface RegisterService {
+    public ResponseEntity<Map> register(String email, String password, String confirmPassword, String emailCheckCode, String picCheckCode, HttpSession session);
 }

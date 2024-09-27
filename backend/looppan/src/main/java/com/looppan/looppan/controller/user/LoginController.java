@@ -1,14 +1,11 @@
 package com.looppan.looppan.controller.user;
 
-import com.looppan.looppan.config.globalException.MyException;
-import com.looppan.looppan.controller.user.utils.JudgeCheckCode;
 import com.looppan.looppan.service.user.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -24,11 +21,7 @@ public class LoginController {
         String password = requestMp.get("password");
         String picCheckCode = requestMp.get("picCheckCode");
 
-        if (!JudgeCheckCode.isOkPicCheckCode(picCheckCode, session)) {
-            throw new MyException("图片验证码错误");
-        }
-
-        return loginService.login(email, password);
+        return loginService.login(email, password, picCheckCode, session);
     }
 
 }

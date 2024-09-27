@@ -38,7 +38,12 @@ public class SecurityConfig {
         http.csrf(CsrfConfigurer::disable) // 基于token，不需要csrf
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 基于token，不需要session
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/login/",  "/getPicCheckCode").permitAll() // 放行api
+                        .requestMatchers(
+                                "/login/",
+                                "/getPicCheckCode",
+                                "/sendEmailCode",
+                                "/register")
+                        .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )

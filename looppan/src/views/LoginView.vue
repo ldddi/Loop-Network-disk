@@ -44,6 +44,12 @@
         </div>
       </div>
     </form>
+    <div v-if="isVisible" class="my-alert alert alert-danger alert-dismissible fade show" role="alert">
+      <div class="message">{{ message }}</div>
+      <div @click="closeAlert" class="close-icon">
+        <i class="bi bi-x"></i>
+      </div>
+    </div>
   </Components>
 </template>
 
@@ -65,8 +71,11 @@ let password = ref("");
 let picCheckCode = ref("");
 let checkCodeUrl = ref(api.checkCode);
 
+const isVisible = ref(false);
+const message = ref("这是一个提示信息！");
+
 onMounted(() => {
-  changeCheckCode(0);
+  changeCheckCode();
 });
 
 let passwordVisible = ref(false);
@@ -74,13 +83,26 @@ const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
 };
 
-const changeCheckCode = (type) => {
-  checkCodeUrl.value = api.checkCode + "?type=" + type + "&time=" + new Date().getTime();
+const changeCheckCode = () => {
+  checkCodeUrl.value = api.checkCode + "?time=" + new Date().getTime();
   console.log(checkCodeUrl.value);
 };
 
 const GoToRegisterView = () => {
   router.push({ name: "RegisterView" });
+};
+
+const showAlert = () => {
+  isVisible.value = true;
+
+  // 设置定时器，在一定时间后自动关闭弹窗
+  setTimeout(() => {
+    closeAlert();
+  }, 5000); // 3000毫秒后自动关闭（3秒）
+};
+
+const closeAlert = () => {
+  isVisible.value = false;
 };
 
 const SubmitLoginForm = async () => {
@@ -95,15 +117,44 @@ const SubmitLoginForm = async () => {
       },
     });
     console.log(response.data);
-    userStore.user.is_login = true;
+    userStore.updateUser({
+      nickName: response.data.nickName,
+      avatar: response.data.avatar,
+      token: response.data.token,
+      is_login: true,
+    });
     router.push({ name: "HomeAll" });
   } catch (error) {
-    console.log("错误信息 ： ", error.response.data);
+    console.log("错误信息 : ", error.response.data);
+    message.value = error.response.data.message;
+    showAlert();
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.my-alert {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 10vh;
+  left: 40vw;
+  .close-icon {
+    position: absolute;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    i {
+      font-size: 20px;
+    }
+  }
+}
+
 .check-code {
   margin-right: 5px;
 }

@@ -19,12 +19,10 @@ public class User {
     private String userId;
     private String nickName;
     private String email;
-    private String qqOpenId;
-    private String qqAvatar;
+    private String avatar;
     private String password;
     private LocalDateTime joinTime;
     private LocalDateTime lastLoginTime;
-    private String status;
     private BigInteger totalSpace;
     private BigInteger useSpace;
 }

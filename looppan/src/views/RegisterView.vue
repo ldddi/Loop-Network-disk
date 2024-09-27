@@ -1,6 +1,6 @@
 <template>
   <Components>
-    <form>
+    <form @submit.prevent>
       <div class="register-panel login-register">
         <h2 class="mb-5" style="text-align: center">注册</h2>
 
@@ -35,7 +35,7 @@
         <div class="mb-4">
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-            <input :type="passwordVisible ? 'text' : 'password'" v-model="comfirmPassword" class="form-control" id="comfirmPassword" placeholder="密码" required />
+            <input :type="passwordVisible ? 'text' : 'password'" v-model="confirmPassword" class="form-control" id="confirmPassword" placeholder="请再次输入密码" required />
             <span class="input-group-text cursor-pointer" @click="togglePasswordVisibility">
               <i :class="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
             </span>
@@ -55,11 +55,18 @@
         </div>
 
         <!-- 提交按钮 -->
-        <div class="mb-3 text-center">
-          <button type="submit" class="btn btn-primary w-100" @click="clickRegisterButton">注册</button>
+        <div class="mb-3 text-center d-flex justify-content-center gap-3">
+          <button @click="goToLogin" class="btn btn-secondary w-50">取消</button>
+          <button class="btn btn-primary w-50" @click="clickRegisterButton">注册</button>
         </div>
       </div>
     </form>
+    <div v-if="isVisible" class="my-alert alert alert-danger alert-dismissible fade show" role="alert">
+      <div class="message">{{ message }}</div>
+      <div @click="closeAlert" class="close-icon">
+        <i class="bi bi-x"></i>
+      </div>
+    </div>
   </Components>
 </template>
 
@@ -78,18 +85,37 @@ const api = {
 let email = ref("");
 let emailCheckCode = ref("");
 let password = ref("");
-let checkCodeUrl = ref("");
-let comfirmPassword = ref("");
-let nickName = ref("");
+let confirmPassword = ref("");
 let picCheckCode = ref("");
-let error_message = ref("");
+
+let checkCodeUrl = ref("");
+
+const isVisible = ref(false);
+const message = ref("这是一个提示信息！");
 
 onMounted(() => {
   changeCheckCode(0);
 });
 
+const showAlert = () => {
+  isVisible.value = true;
+
+  // 设置定时器，在一定时间后自动关闭弹窗
+  setTimeout(() => {
+    closeAlert();
+  }, 5000); // 3000毫秒后自动关闭（3秒）
+};
+
+const closeAlert = () => {
+  isVisible.value = false;
+};
+
 const changeCheckCode = (type) => {
-  checkCodeUrl.value = api.picCheckCode + "?type=" + type + "&time=" + new Date().getTime();
+  checkCodeUrl.value = api.picCheckCode + "?time=" + new Date().getTime();
+};
+
+const goToLogin = () => {
+  router.push({ name: "LoginView" });
 };
 
 // 密码可见性切换
@@ -104,19 +130,21 @@ const clickRegisterButton = () => {
 
 // 发送邮箱验证码
 let isSending = ref(false);
-const sendEmailCheckCode = () => {
-  axios({
-    method: "POST",
-    url: api.emailCheckCode,
-    data: {
-      email: email.value,
-    },
-    params: {
-      type: "1",
-    },
-  }).then((resp) => {
-    console.log(resp.data);
-  });
+const sendEmailCheckCode = async () => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: api.emailCheckCode,
+      data: {
+        email: email.value,
+      },
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.log(error.response.data);
+    message.value = error.response.data.message;
+    showAlert();
+  }
 
   isSending.value = true;
   // 模拟发送验证码的API请求
@@ -126,28 +154,55 @@ const sendEmailCheckCode = () => {
 };
 
 // 提交注册表单
-const submitRegistration = () => {
-  nickName.value = email.value;
-  axios({
-    method: "POST",
-    url: api.register,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: {
-      email: email.value,
-      nickName: nickName.value,
-      password: password.value,
-      picCheckCode: picCheckCode.value,
-      emailCheckCode: emailCheckCode.value,
-    },
-  }).then((resp) => {
+const submitRegistration = async () => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: api.register,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        email: email.value,
+        password: password.value,
+        confirmPassword: confirmPassword.value,
+        picCheckCode: picCheckCode.value,
+        emailCheckCode: emailCheckCode.value,
+      },
+    });
+    console.log(response.data);
     router.push({ name: "LoginView" });
-  });
+  } catch (error) {
+    console.log(error.response.data);
+    message.value = error.response.data.message;
+    showAlert();
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+.my-alert {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 10vh;
+  left: 40vw;
+  .close-icon {
+    position: absolute;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    i {
+      font-size: 20px;
+    }
+  }
+}
+
 .input-group {
   input {
     margin-right: 8px;

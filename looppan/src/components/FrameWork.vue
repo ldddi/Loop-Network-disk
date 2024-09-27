@@ -1,5 +1,7 @@
 <template>
   <div class="my-container">
+    <ChangeInfoBox ref="ChildChangeInfoBox"></ChangeInfoBox>
+    <ChangePasswordBox ref="ChildChangePasswordBox" />
     <!-- nav 导航栏 -->
     <div class="header">
       <div class="left-logo">
@@ -9,26 +11,27 @@
       <div class="right-info">
         <div @click="onChangeDropdownVisible" ref="arrow" class="right-arrow">
           <i class="bi bi-arrow-down-up arrow-icon"></i>
+          <div v-if="isDropdownVisible" ref="dropdown" class="upload-box" @click.stop>
+            <div class="triangle-1"></div>
+            <div class="triangle-2"></div>
+            <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
+            <div class="upload-content">暂无上传任务</div>
+          </div>
         </div>
         <!-- 弹出框 -->
-        <div v-if="isDropdownVisible" ref="dropdown" class="upload-box">
-          <div class="triangle-1"></div>
-          <div class="triangle-2"></div>
-          <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
-          <div class="upload-content">暂无上传任务</div>
-        </div>
+
         <div class="right-user-info">
           <div class="user-avatar">
-            <img src="../assets/images/vscode.jpg" alt="" />
+            <img :src="userStore.user.avatar" alt="" />
+            <div class="dropdown">
+              <ul>
+                <li @click="changePersonInfo">修改个人信息</li>
+                <li @click="changePassword">修改密码</li>
+                <li>退出</li>
+              </ul>
+            </div>
           </div>
-          <div class="user-nickname">hhh</div>
-          <div class="dropdown">
-            <ul>
-              <li>修改头像</li>
-              <li>修改密码</li>
-              <li>退出</li>
-            </ul>
-          </div>
+          <div class="user-nickname">{{ userStore.user.nickName }}</div>
         </div>
       </div>
     </div>
@@ -56,13 +59,19 @@
 
 <script setup>
 import router from "@/router";
+import { useUserStore } from "@/store/useUserStore";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import ChangeInfoBox from "./ChangeInfoBox.vue";
+import ChangePasswordBox from "./ChangePasswordBox.vue";
 
 let route = useRoute();
 let isDropdownVisible = ref(false);
 const dropdown = ref(null);
 const arrow = ref(null);
+const userStore = useUserStore();
+const ChildChangeInfoBox = ref(null);
+const ChildChangePasswordBox = ref(null);
 
 const onChangeToHome = () => {
   router.push({ name: "HomeAll" });
@@ -81,9 +90,18 @@ const onChangeDropdownVisible = () => {
 };
 
 const onCloseDropdown = (event) => {
-  if (dropdown.value && !dropdown.value.contains(event.target) && !arrow.value.contains(event.target)) {
+  if (arrow.value && !arrow.value.contains(event.target) && dropdown.value && !dropdown.value.contains(event.target)) {
+    console.log("在外边");
     isDropdownVisible.value = false;
   }
+};
+
+const changePersonInfo = () => {
+  ChildChangeInfoBox.value.showModal();
+};
+
+const changePassword = () => {
+  ChildChangePasswordBox.value.showModal();
 };
 
 onMounted(() => {
@@ -96,18 +114,27 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .dropdown {
+  width: 150px;
   display: none; /* 默认隐藏下拉菜单 */
   position: absolute; /* 绝对定位，放置在父元素下方 */
-  top: 50px;
-  right: 25px;
+  top: 40px;
   background-color: white; /* 背景色 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
   z-index: 100; /* 确保下拉菜单在最上层 */
   padding-top: 10px;
+  ul {
+    text-align: center;
+  }
 }
 
-.right-user-info:hover .dropdown {
-  display: block !important; /* 悬浮时显示下拉菜单 */
+.user-avatar:hover .dropdown {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown ul {
@@ -119,6 +146,7 @@ onBeforeUnmount(() => {
 .dropdown li {
   padding: 10px 15px; /* 内边距 */
   cursor: pointer; /* 鼠标悬浮时显示为手指 */
+  border-radius: 8px;
 }
 
 .dropdown li:hover {
@@ -169,6 +197,7 @@ onBeforeUnmount(() => {
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
       cursor: pointer;
       .arrow-icon {
         font-size: 18px;
@@ -190,7 +219,7 @@ onBeforeUnmount(() => {
         width: 46px;
         height: 46px;
         border-radius: 50%;
-        background-color: lightblue;
+        // background-color: lightblue;
         img {
           width: 100%;
           height: 100%;
@@ -248,13 +277,14 @@ onBeforeUnmount(() => {
     position: absolute;
     left: 80px;
     display: flex;
+    min-width: 800px;
   }
 }
 
 .upload-box {
   position: absolute;
-  top: 58px; /* 调整显示框的位置 */
-  right: 10px;
+  top: 50px; /* 调整显示框的位置 */
+  right: -105px;
   width: 800px;
   height: 500px;
   background-color: white;
@@ -263,6 +293,7 @@ onBeforeUnmount(() => {
   padding: 10px;
   border-radius: 4px;
   z-index: 11;
+  cursor: auto;
 }
 
 .upload-title {
