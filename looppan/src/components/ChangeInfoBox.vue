@@ -9,7 +9,7 @@
             <button type="button" class="btn-close" @click="closeModal"></button>
           </div>
           <div class="modal-body">
-            <form @submit.prevent="handleSubmit">
+            <div>
               <div class="mb-3">
                 <label for="nickname" class="form-label">昵称</label>
                 <input type="text" class="form-control" v-model="nickName" required />
@@ -21,7 +21,7 @@
                   <img :src="imageUrl" alt="头像预览" class="img-thumbnail" style="max-width: 200px; max-height: 200px" />
                 </div>
               </div>
-            </form>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">取消</button>
@@ -38,13 +38,18 @@
 
 <script setup>
 import { useUserStore } from "@/store/useUserStore";
+import axios from "axios";
 import { ref } from "vue";
+
+const api = {
+  changeInfo: "/api/updateUserInfo",
+};
 
 const userStore = useUserStore();
 const isVisible = ref(false);
-const avatar = ref("");
-const nickName = ref(userStore.user.nickName);
-const password = ref(userStore.user.password);
+
+let nickName = ref(userStore.user.nickName);
+const formData = new FormData();
 const imageUrl = ref(null); // 用于存储头像预览的URL
 
 const showModal = () => {
@@ -62,12 +67,26 @@ const handleFileChange = (event) => {
   if (file) {
     // 使用 URL.createObjectURL 创建一个临时的图片URL用于预览
     imageUrl.value = URL.createObjectURL(file);
-    // 可以在这里进一步处理文件，如上传到服务器等
-    // 例如：avatar.value = file; // 如果你需要保存文件对象
+    formData.append("nickName", nickName.value);
+    formData.append("avatar", file); // 添加文件到 FormData
   }
 };
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: api.changeInfo,
+      headers: {
+        Authorization: "Bearer " + userStore.user.token,
+      },
+      data: formData,
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.log(error.response.data);
+  }
+
   isVisible.value = false;
 };
 

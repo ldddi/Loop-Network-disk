@@ -118,6 +118,7 @@ onBeforeUnmount(() => {
   display: none; /* 默认隐藏下拉菜单 */
   position: absolute; /* 绝对定位，放置在父元素下方 */
   top: 40px;
+  right: -1px;
   background-color: white; /* 背景色 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
   z-index: 100; /* 确保下拉菜单在最上层 */

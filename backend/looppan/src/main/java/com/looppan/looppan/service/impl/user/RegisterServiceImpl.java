@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -24,6 +25,9 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseEntity<Map> register(
@@ -57,10 +61,12 @@ public class RegisterServiceImpl implements RegisterService {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        String encode = passwordEncoder.encode(password);
+        user.setPassword(encode);
         user.setJoinTime(LocalDateTime.now());
         user.setLastLoginTime(LocalDateTime.now());
         user.setTotalSpace(BigInteger.valueOf(StaticKey.ALL_SPACE.toIntegerValue()));
+        user.setUseSpace(BigInteger.valueOf(0));
         user.setAvatar(StaticKey.AVATAR_URL.toStringValue());
         user.setNickName(email);
         userMapper.insert(user);

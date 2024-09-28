@@ -42,7 +42,9 @@ public class SecurityConfig {
                                 "/login/",
                                 "/getPicCheckCode",
                                 "/sendEmailCode",
-                                "/register")
+                                "/register",
+                                "/images/**"
+                                )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()

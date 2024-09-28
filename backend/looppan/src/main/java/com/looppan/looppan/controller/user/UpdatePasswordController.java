@@ -1,20 +1,14 @@
 package com.looppan.looppan.controller.user;
 
-import com.looppan.looppan.controller.user.utils.StaticKey;
-import com.looppan.looppan.mapper.UserMapper;
-import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.user.UpdatePasswordService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class UpdatePassword {
+public class UpdatePasswordController {
     @Autowired
     private UpdatePasswordService updatePasswordService;
 

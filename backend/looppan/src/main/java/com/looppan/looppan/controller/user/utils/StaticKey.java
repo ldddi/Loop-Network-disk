@@ -17,8 +17,6 @@ public enum StaticKey {
     // Avatar
     AVATAR_URL("https://images.squarespace-cdn.com/content/v1/58ed33aeb8a79b05bed202aa/1496332556337-3976XQLXIFXJ3SBGPRAA/Loop-Logo-black.png");
 
-
-
     private final String stringValue;
     private final Integer integerValue;
 

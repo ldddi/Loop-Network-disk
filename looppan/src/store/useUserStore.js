@@ -46,9 +46,11 @@ export const useUserStore = defineStore("User", () => {
       console.log(response.data);
       updateUser({
         ...response.data,
+        token: jwtToken,
         is_login: true,
       });
       router.push({ name: "HomeAll" });
+      console.log("tryjwt", user);
     } catch (error) {
       console.log("faild getuesrinfo");
       localStorage.removeItem("jwtToken");
