@@ -9,7 +9,7 @@
             <button type="button" class="btn-close" @click="closeModal"></button>
           </div>
           <div class="modal-body">
-            <form @submit.prevent="handleSubmit">
+            <div class="my-form">
               <div class="my-username">
                 <label for="password" class="form-label">新密码</label>
                 <input type="password" class="form-control" v-model="password" required />
@@ -17,11 +17,11 @@
                 <input type="password" class="form-control" v-model="confirmPassword" required />
                 <label for="checkCode" class="form-label">验证码</label>
                 <div class="checkcode-css">
-                  <input class="form-control" v-model="checkCode" required />
-                  <button class="btn btn-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
+                  <input class="form-control" id="checkCode" v-model="emailCheckCode" />
+                  <button class="btn btn-primary" @click="sendEmailCheckCode2">{{ isSending ? "发送中..." : "发送验证码" }}</button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">取消</button>
@@ -38,16 +38,30 @@
 
 <script setup>
 import { useUserStore } from "@/store/useUserStore";
-import { ref } from "vue";
+import axios from "axios";
+import { onMounted, ref } from "vue";
 
 const userStore = useUserStore();
 const isVisible = ref(false);
-
+const api = {
+  sendEmailCheckCode: "/api/sendEmailCode",
+  updatePassword: "/api/updatePassword",
+};
 const password = ref(userStore.user.password);
-
 const confirmPassword = ref("");
+const emailCheckCode = ref("");
+const isSending = ref(false);
+
+onMounted(() => {
+  password.value = "";
+  confirmPassword.value = "";
+  emailCheckCode.value = "";
+});
 
 const showModal = () => {
+  password.value = "";
+  confirmPassword.value = "";
+  emailCheckCode.value = "";
   isVisible.value = true;
 };
 
@@ -55,8 +69,46 @@ const closeModal = () => {
   isVisible.value = false;
 };
 
-const handleSubmit = () => {
-  isVisible.value = false;
+const handleSubmit = async () => {
+  console.log(userStore.user.email);
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: api.updatePassword,
+      headers: {
+        Authorization: "Bearer " + userStore.user.token,
+      },
+      data: {
+        email: userStore.user.email,
+        password: password.value,
+        confirmPassword: confirmPassword.value,
+        emailCheckCode: emailCheckCode.value,
+      },
+    });
+    console.log(response.data);
+    isVisible.value = false;
+    userStore.user.token = "";
+  } catch (error) {
+    console.log(error.response.data);
+  }
+};
+
+const sendEmailCheckCode2 = async () => {
+  try {
+    isSending.value = true;
+    const response = await axios({
+      method: "POST",
+      url: api.sendEmailCheckCode,
+      data: {
+        email: userStore.user.email,
+      },
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.log(error.response.data);
+  }
+  isSending.value = false;
 };
 
 defineExpose({

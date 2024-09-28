@@ -34,22 +34,7 @@ const router = createRouter({
         requestAuth: false,
       },
     },
-    {
-      path: "/share/myrecord",
-      name: "ShareRecord",
-      component: ShareRecord,
-      meta: {
-        requestAuth: true,
-      },
-    },
-    {
-      path: "/recycle",
-      name: "MyRecycle",
-      component: MyRecycle,
-      meta: {
-        requestAuth: true,
-      },
-    },
+
     {
       path: "/home/all",
       name: "HomeAll",
@@ -94,6 +79,22 @@ const router = createRouter({
       path: "/home/more",
       name: "HomeMore",
       component: HomeMore,
+      meta: {
+        requestAuth: true,
+      },
+    },
+    {
+      path: "/share/myrecord",
+      name: "ShareRecord",
+      component: ShareRecord,
+      meta: {
+        requestAuth: true,
+      },
+    },
+    {
+      path: "/recycle",
+      name: "MyRecycle",
+      component: MyRecycle,
       meta: {
         requestAuth: true,
       },

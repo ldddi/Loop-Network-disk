@@ -49,6 +49,9 @@ public class LoginServiceImpl implements LoginService {
 
 
         mp.put("nickName", user.getNickName());
+        mp.put("email", user.getEmail());
+        mp.put("totalSpace", String.valueOf(user.getTotalSpace()));
+        mp.put("useSpace", String.valueOf(user.getUseSpace()));
         mp.put("avatar", user.getAvatar());
         mp.put("token", jwt);
         mp.put("message", "success");

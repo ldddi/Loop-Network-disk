@@ -27,7 +27,7 @@
               <ul>
                 <li @click="changePersonInfo">修改个人信息</li>
                 <li @click="changePassword">修改密码</li>
-                <li>退出</li>
+                <li @click="userStore.logOut">退出</li>
               </ul>
             </div>
           </div>

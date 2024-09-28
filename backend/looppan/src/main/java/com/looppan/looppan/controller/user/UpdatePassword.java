@@ -3,13 +3,12 @@ package com.looppan.looppan.controller.user;
 import com.looppan.looppan.controller.user.utils.StaticKey;
 import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.User;
+import com.looppan.looppan.service.user.UpdatePasswordService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,17 +16,16 @@ import java.util.Map;
 @RestController
 public class UpdatePassword {
     @Autowired
-    UserMapper userMapper;
+    private UpdatePasswordService updatePasswordService;
 
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
-    public Map<String, String> updatePassword(
-            @RequestParam String newPassword,
-            @RequestParam String confirmNewPassword,
-            HttpSession session
-    ) {
-        Map<String, String> mp = new HashMap<>();
+    public ResponseEntity<Map> updatePassword(@RequestBody Map<String,String> requestBody) {
+        String email = requestBody.get("email");
+        String password = requestBody.get("password");
+        String confirmPassword = requestBody.get("confirmPassword");
+        String emailCheckCode = requestBody.get("emailCheckCode");
 
 
-        return mp;
+        return updatePasswordService.updatePassword(email, password, confirmPassword, emailCheckCode);
     }
 }

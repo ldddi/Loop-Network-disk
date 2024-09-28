@@ -76,11 +76,20 @@ const message = ref("这是一个提示信息！");
 
 onMounted(() => {
   changeCheckCode();
+  tryGetLocalStorage();
 });
 
 let passwordVisible = ref(false);
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
+};
+
+const tryGetLocalStorage = () => {
+  const jwtToken = localStorage.getItem("jwtToken");
+  if (jwtToken != null) {
+    userStore.getUserInfoByLocalJwt(jwtToken);
+  }
+  console.log(jwtToken, "no");
 };
 
 const changeCheckCode = () => {
@@ -118,15 +127,16 @@ const SubmitLoginForm = async () => {
     });
     console.log(response.data);
     userStore.updateUser({
-      nickName: response.data.nickName,
-      avatar: response.data.avatar,
-      token: response.data.token,
+      ...response.data,
       is_login: true,
     });
+    console.log(response.data);
     router.push({ name: "HomeAll" });
+    localStorage.setItem("jwtToken", response.data.token);
   } catch (error) {
     console.log("错误信息 : ", error.response.data);
     message.value = error.response.data.message;
+    changeCheckCode();
     showAlert();
   }
 };
