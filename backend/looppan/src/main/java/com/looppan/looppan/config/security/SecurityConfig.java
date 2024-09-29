@@ -39,11 +39,12 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 基于token，不需要session
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers(
-                                "/login/",
+                                "/login",
                                 "/getPicCheckCode",
                                 "/sendEmailCode",
                                 "/register",
-                                "/images/**"
+                                "/images/**",
+                                "/test"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

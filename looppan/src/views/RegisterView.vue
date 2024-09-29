@@ -15,7 +15,7 @@
         <!-- 邮箱验证码 -->
         <div class="mb-4">
           <div class="input-group">
-            <input v-model="emailCheckCode" type="text" class="form-control" id="emailCode" placeholder="输入邮箱验证码" required />
+            <input v-model="emailCheckCode" type="text" class="form-control" id="emailCode" placeholder="输入邮箱验证码" />
             <button class="btn btn-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
           </div>
         </div>
@@ -46,7 +46,7 @@
           <!-- <label for="captcha" class="form-label">请输入验证码</label> -->
           <div class="send-email-panel">
             <input v-model="picCheckCode" type="text" style="margin-right: 5px" class="form-control check-code" id="captcha" placeholder="输入验证码" />
-            <img :src="checkCodeUrl" alt="验证码" class="me-2 check-code" @click="changeCheckCode(0)" />
+            <img :src="picCheckCodeUrl" alt="验证码" class="me-2 check-code" @click="changeCheckCode(0)" />
           </div>
         </div>
 
@@ -74,13 +74,11 @@
 import { onMounted, ref } from "vue";
 import Components from "@/components/LoginPanel.vue";
 import router from "@/router";
-import axios from "axios";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
 
-const api = {
-  picCheckCode: "/api/getPicCheckCode",
-  emailCheckCode: "/api/sendEmailCode",
-  register: "/api/register",
-};
+const apiStore = useApiStore();
+
 // 表单字段
 let email = ref("");
 let emailCheckCode = ref("");
@@ -88,7 +86,7 @@ let password = ref("");
 let confirmPassword = ref("");
 let picCheckCode = ref("");
 
-let checkCodeUrl = ref("");
+let picCheckCodeUrl = ref("");
 
 const isVisible = ref(false);
 const message = ref("这是一个提示信息！");
@@ -100,18 +98,17 @@ onMounted(() => {
 const showAlert = () => {
   isVisible.value = true;
 
-  // 设置定时器，在一定时间后自动关闭弹窗
   setTimeout(() => {
     closeAlert();
-  }, 5000); // 3000毫秒后自动关闭（3秒）
+  }, 5000);
 };
 
 const closeAlert = () => {
   isVisible.value = false;
 };
 
-const changeCheckCode = (type) => {
-  checkCodeUrl.value = api.picCheckCode + "?time=" + new Date().getTime();
+const changeCheckCode = () => {
+  picCheckCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
 };
 
 const goToLogin = () => {
@@ -132,22 +129,19 @@ const clickRegisterButton = () => {
 let isSending = ref(false);
 const sendEmailCheckCode = async () => {
   try {
-    const response = await axios({
-      method: "POST",
-      url: api.emailCheckCode,
-      data: {
-        email: email.value,
-      },
+    const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
+      email: email.value,
     });
-    console.log(response.data);
+    console.log(resp);
+    message.value = resp.message;
+    showAlert();
   } catch (error) {
-    console.log(error.response.data);
-    message.value = error.response.data.message;
+    console.log(error.message);
+    message.value = error.message;
     showAlert();
   }
 
   isSending.value = true;
-  // 模拟发送验证码的API请求
   setTimeout(() => {
     isSending.value = false;
   }, 2000);
@@ -156,25 +150,21 @@ const sendEmailCheckCode = async () => {
 // 提交注册表单
 const submitRegistration = async () => {
   try {
-    const response = await axios({
-      method: "POST",
-      url: api.register,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        email: email.value,
-        password: password.value,
-        confirmPassword: confirmPassword.value,
-        picCheckCode: picCheckCode.value,
-        emailCheckCode: emailCheckCode.value,
-      },
+    const resp = await axios.post(apiStore.user.register, {
+      email: email.value,
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+      picCheckCode: picCheckCode.value,
+      emailCheckCode: emailCheckCode.value,
     });
-    console.log(response.data);
+
+    console.log(resp);
+    message.value = resp.message;
+    showAlert();
     router.push({ name: "LoginView" });
   } catch (error) {
-    console.log(error.response.data);
-    message.value = error.response.data.message;
+    console.log(error.message);
+    message.value = error.message;
     showAlert();
   }
 };
@@ -213,7 +203,7 @@ const submitRegistration = async () => {
 }
 
 .register-panel {
-  max-width: 400px;
+  max-width: 600px;
   margin: 0 auto;
 }
 

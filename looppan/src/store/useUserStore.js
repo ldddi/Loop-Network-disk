@@ -1,7 +1,8 @@
 import router from "@/router";
-import axios from "axios";
+import axios from "@/utils/axiosInstance";
 import { defineStore } from "pinia";
 import { reactive } from "vue";
+import { useApiStore } from "./useApiStore";
 
 export const useUserStore = defineStore("User", () => {
   let user = reactive({
@@ -14,9 +15,7 @@ export const useUserStore = defineStore("User", () => {
     is_login: false,
   });
 
-  const api = {
-    GetUserInfo: "/api/getUserInfo",
-  };
+  const apiStore = useApiStore();
 
   const updateUser = (data) => {
     user.nickName = data.nickName;
@@ -36,25 +35,18 @@ export const useUserStore = defineStore("User", () => {
 
   const getUserInfoByLocalJwt = async (jwtToken) => {
     try {
-      const response = await axios({
-        method: "POST",
-        url: api.GetUserInfo,
-        headers: {
-          Authorization: "Bearer " + jwtToken,
-        },
-      });
-      console.log(response.data);
+      const resp = await axios.post(apiStore.user.getUserInfo, {});
+      console.log(resp);
+
       updateUser({
-        ...response.data,
+        ...resp,
         token: jwtToken,
         is_login: true,
       });
       router.push({ name: "HomeAll" });
-      console.log("tryjwt", user);
     } catch (error) {
-      console.log("faild getuesrinfo");
       localStorage.removeItem("jwtToken");
-      console.log(error);
+      console.log(error.message);
     }
   };
 

@@ -37,15 +37,14 @@
 </template>
 
 <script setup>
+import { useApiStore } from "@/store/useApiStore";
 import { useUserStore } from "@/store/useUserStore";
-import axios from "axios";
+import axios from "@/utils/axiosInstance";
 import { ref } from "vue";
 
-const api = {
-  changeInfo: "/api/updateUserInfo",
-};
-
 const userStore = useUserStore();
+const apiStore = useApiStore();
+
 const isVisible = ref(false);
 
 let nickName = ref(userStore.user.nickName);
@@ -67,26 +66,18 @@ const handleFileChange = (event) => {
   if (file) {
     // 使用 URL.createObjectURL 创建一个临时的图片URL用于预览
     imageUrl.value = URL.createObjectURL(file);
-    formData.append("nickName", nickName.value);
     formData.append("avatar", file); // 添加文件到 FormData
   }
 };
 
 const handleSubmit = async () => {
   try {
-    const response = await axios({
-      method: "POST",
-      url: api.changeInfo,
-      headers: {
-        Authorization: "Bearer " + userStore.user.token,
-      },
-      data: formData,
-    });
-    console.log(response.data);
+    formData.append("nickName", nickName.value);
+    const resp = await axios.post(apiStore.user.updateUserInfo, formData);
+    console.log(resp);
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error.message);
   }
-
   isVisible.value = false;
 };
 

@@ -1,17 +1,17 @@
 <template>
-  <Components>
+  <LoginPanel>
     <div v-if="type == 0" class="login-panel">
       <Login :changeType="changeType" />
     </div>
     <div v-else class="login-panel">
       <Register :changeType="changeType" />
     </div>
-  </Components>
+  </LoginPanel>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import Components from "@/components/LoginPanel.vue";
+import LoginPanel from "@/components/LoginPanel.vue";
 import Login from "@/views/LoginView.vue";
 import Register from "@/views/RegisterView.vue";
 

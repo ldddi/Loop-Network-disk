@@ -14,7 +14,7 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @RequestMapping(value = "/login/", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<Map<String, String>> userLogin(@RequestBody Map<String, String> requestMp, HttpSession session)
     {
         String email = requestMp.get("email");

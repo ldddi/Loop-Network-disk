@@ -37,16 +37,16 @@
 </template>
 
 <script setup>
+import { useApiStore } from "@/store/useApiStore";
 import { useUserStore } from "@/store/useUserStore";
-import axios from "axios";
+import axios from "@/utils/axiosInstance";
 import { onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const apiStore = useApiStore();
+
 const isVisible = ref(false);
-const api = {
-  sendEmailCheckCode: "/api/sendEmailCode",
-  updatePassword: "/api/updatePassword",
-};
+
 const password = ref(userStore.user.password);
 const confirmPassword = ref("");
 const emailCheckCode = ref("");
@@ -70,43 +70,30 @@ const closeModal = () => {
 };
 
 const handleSubmit = async () => {
-  console.log(userStore.user.email);
-
   try {
-    const response = await axios({
-      method: "POST",
-      url: api.updatePassword,
-      headers: {
-        Authorization: "Bearer " + userStore.user.token,
-      },
-      data: {
-        email: userStore.user.email,
-        password: password.value,
-        confirmPassword: confirmPassword.value,
-        emailCheckCode: emailCheckCode.value,
-      },
+    const resp = await axios.post(apiStore.user.updatePassword, {
+      email: userStore.user.email,
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+      emailCheckCode: emailCheckCode.value,
     });
-    console.log(response.data);
+    console.log(resp);
     isVisible.value = false;
     userStore.user.token = "";
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error.message);
   }
 };
 
 const sendEmailCheckCode2 = async () => {
   try {
     isSending.value = true;
-    const response = await axios({
-      method: "POST",
-      url: api.sendEmailCheckCode,
-      data: {
-        email: userStore.user.email,
-      },
+    const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
+      email: userStore.user.email,
     });
-    console.log(response.data);
+    console.log(resp);
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error.message);
   }
   isSending.value = false;
 };

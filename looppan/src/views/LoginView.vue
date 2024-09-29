@@ -57,19 +57,17 @@
 import { onMounted, ref } from "vue";
 import Components from "@/components/LoginPanel.vue";
 import router from "@/router";
-import axios from "axios";
+import axios from "@/utils/axiosInstance";
 import { useUserStore } from "@/store/useUserStore";
-const api = {
-  checkCode: "/api/getPicCheckCode",
-  login: "/api/login/",
-};
+import { useApiStore } from "@/store/useApiStore";
 
 const userStore = useUserStore();
+const apiStore = useApiStore();
 
 let email = ref("");
 let password = ref("");
 let picCheckCode = ref("");
-let checkCodeUrl = ref(api.checkCode);
+let checkCodeUrl = ref();
 
 const isVisible = ref(false);
 const message = ref("这是一个提示信息！");
@@ -89,11 +87,10 @@ const tryGetLocalStorage = () => {
   if (jwtToken != null) {
     userStore.getUserInfoByLocalJwt(jwtToken);
   }
-  console.log(jwtToken, "no");
 };
 
 const changeCheckCode = () => {
-  checkCodeUrl.value = api.checkCode + "?time=" + new Date().getTime();
+  checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
   console.log(checkCodeUrl.value);
 };
 
@@ -116,26 +113,20 @@ const closeAlert = () => {
 
 const SubmitLoginForm = async () => {
   try {
-    const response = await axios({
-      method: "POST",
-      url: api.login,
-      data: {
-        email: email.value,
-        password: password.value,
-        picCheckCode: picCheckCode.value,
-      },
+    const resp = await axios.post(apiStore.user.login, {
+      email: email.value,
+      password: password.value,
+      picCheckCode: picCheckCode.value,
     });
-    console.log(response.data);
+
     userStore.updateUser({
-      ...response.data,
+      ...resp,
       is_login: true,
     });
-    console.log(response.data);
     router.push({ name: "HomeAll" });
-    localStorage.setItem("jwtToken", response.data.token);
+    localStorage.setItem("jwtToken", resp.token);
   } catch (error) {
-    console.log("错误信息 : ", error.response.data);
-    message.value = error.response.data.message;
+    message.value = error.message;
     changeCheckCode();
     showAlert();
   }

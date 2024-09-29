@@ -17,8 +17,9 @@
 .login-body {
   height: 100vh;
   width: 100vw;
-  background: url("/src/assets/login-bg.jpg");
-  background-size: cover;
+  background: url("/src/assets/images/cloud4.jpg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat;
   display: flex;
   .login-panel {
     width: 430px;
@@ -31,7 +32,7 @@
     background-position: center;
     background-size: 800px;
     background-repeat: no-repeat;
-    background-image: url("../assets/cloud.svg");
+    // background-image: url("../assets/cloud.svg");
   }
 }
 </style>
