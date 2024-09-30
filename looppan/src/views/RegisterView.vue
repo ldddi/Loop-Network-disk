@@ -61,12 +61,8 @@
         </div>
       </div>
     </form>
-    <div v-if="isVisible" class="my-alert alert alert-danger alert-dismissible fade show" role="alert">
-      <div class="message">{{ message }}</div>
-      <div @click="closeAlert" class="close-icon">
-        <i class="bi bi-x"></i>
-      </div>
-    </div>
+    <ErrorAlertBox></ErrorAlertBox>
+    <SuccessAlertBox></SuccessAlertBox>
   </Components>
 </template>
 
@@ -76,6 +72,8 @@ import Components from "@/components/LoginPanel.vue";
 import router from "@/router";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
+import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
+import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 
 const apiStore = useApiStore();
 
@@ -88,24 +86,9 @@ let picCheckCode = ref("");
 
 let picCheckCodeUrl = ref("");
 
-const isVisible = ref(false);
-const message = ref("这是一个提示信息！");
-
 onMounted(() => {
   changeCheckCode(0);
 });
-
-const showAlert = () => {
-  isVisible.value = true;
-
-  setTimeout(() => {
-    closeAlert();
-  }, 5000);
-};
-
-const closeAlert = () => {
-  isVisible.value = false;
-};
 
 const changeCheckCode = () => {
   picCheckCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
@@ -133,14 +116,9 @@ const sendEmailCheckCode = async () => {
       email: email.value,
     });
     console.log(resp);
-    message.value = resp.message;
-    showAlert();
   } catch (error) {
     console.log(error.message);
-    message.value = error.message;
-    showAlert();
   }
-
   isSending.value = true;
   setTimeout(() => {
     isSending.value = false;
@@ -157,15 +135,13 @@ const submitRegistration = async () => {
       picCheckCode: picCheckCode.value,
       emailCheckCode: emailCheckCode.value,
     });
-
     console.log(resp);
-    message.value = resp.message;
-    showAlert();
     router.push({ name: "LoginView" });
   } catch (error) {
     console.log(error.message);
-    message.value = error.message;
-    showAlert();
+    if (error.message == "图片验证码错误") {
+      changeCheckCode();
+    }
   }
 };
 </script>

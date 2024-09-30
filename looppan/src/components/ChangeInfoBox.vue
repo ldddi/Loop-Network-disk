@@ -2,7 +2,7 @@
   <div>
     <!-- 模态框 -->
     <div class="modal fade" :class="{ show: isVisible }" :style="{ display: isVisible ? 'block' : 'none' }" tabindex="-1" aria-hidden="!isVisible">
-      <div class="modal-dialog">
+      <div class="modal-dialog my-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">填写信息</h5>
@@ -87,6 +87,10 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+.modal-dialog {
+  margin-top: 15vh; /* 将模态框向下移动到垂直高度的三分之一处 */
+}
+
 .modal {
   display: none; /* 确保模态框在未显示时不占用空间 */
 }

@@ -33,6 +33,7 @@ public class GetUserInfoServiceImpl implements GetUserInfoService {
         mp.put("totalSpace", String.valueOf(user.getTotalSpace()));
         mp.put("useSpace", String.valueOf(user.getUseSpace()));
         mp.put("email", user.getEmail());
+
         return ResponseEntity.ok().body(mp);
     }
 }

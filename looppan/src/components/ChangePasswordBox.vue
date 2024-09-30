@@ -104,6 +104,10 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+.modal-dialog {
+  margin-top: 15vh; /* 将模态框向下移动到垂直高度的三分之一处 */
+}
+
 .modal {
   display: none; /* 确保模态框在未显示时不占用空间 */
 }

@@ -20,12 +20,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MyException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(MyException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(),
                 LocalDateTime.now().toString(),
                 request.getDescription(false)
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(MailException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "邮箱验证码发送失败, 请稍后尝试!~",
+                "邮箱验证码发送失败, 请检查邮箱是否正确",
                 LocalDateTime.now().toString(),
                 request.getDescription(false)
         );

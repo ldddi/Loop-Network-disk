@@ -55,6 +55,8 @@
       </div>
     </div>
   </div>
+  <ErrorAlertBox></ErrorAlertBox>
+  <SuccessAlertBox></SuccessAlertBox>
 </template>
 
 <script setup>
@@ -64,6 +66,8 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import ChangeInfoBox from "./ChangeInfoBox.vue";
 import ChangePasswordBox from "./ChangePasswordBox.vue";
+import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
+import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 
 let route = useRoute();
 let isDropdownVisible = ref(false);

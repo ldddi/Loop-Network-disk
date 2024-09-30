@@ -3,6 +3,7 @@ import axios from "@/utils/axiosInstance";
 import { defineStore } from "pinia";
 import { reactive } from "vue";
 import { useApiStore } from "./useApiStore";
+import statickey from "@/utils/statickey";
 
 export const useUserStore = defineStore("User", () => {
   let user = reactive({
@@ -29,7 +30,7 @@ export const useUserStore = defineStore("User", () => {
 
   const logOut = () => {
     user.is_login = false;
-    localStorage.removeItem("jwtToken");
+    localStorage.removeItem(statickey.jwtToken);
     router.push({ name: "LoginView" });
   };
 
@@ -45,7 +46,7 @@ export const useUserStore = defineStore("User", () => {
       });
       router.push({ name: "HomeAll" });
     } catch (error) {
-      localStorage.removeItem("jwtToken");
+      localStorage.removeItem(statickey.jwtToken);
       console.log(error.message);
     }
   };

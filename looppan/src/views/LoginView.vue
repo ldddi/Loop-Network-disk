@@ -44,12 +44,8 @@
         </div>
       </div>
     </form>
-    <div v-if="isVisible" class="my-alert alert alert-danger alert-dismissible fade show" role="alert">
-      <div class="message">{{ message }}</div>
-      <div @click="closeAlert" class="close-icon">
-        <i class="bi bi-x"></i>
-      </div>
-    </div>
+    <ErrorAlertBox></ErrorAlertBox>
+    <SuccessAlertBox></SuccessAlertBox>
   </Components>
 </template>
 
@@ -60,6 +56,9 @@ import router from "@/router";
 import axios from "@/utils/axiosInstance";
 import { useUserStore } from "@/store/useUserStore";
 import { useApiStore } from "@/store/useApiStore";
+import statickey from "@/utils/statickey";
+import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
+import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 
 const userStore = useUserStore();
 const apiStore = useApiStore();
@@ -68,9 +67,6 @@ let email = ref("");
 let password = ref("");
 let picCheckCode = ref("");
 let checkCodeUrl = ref();
-
-const isVisible = ref(false);
-const message = ref("这是一个提示信息！");
 
 onMounted(() => {
   changeCheckCode();
@@ -83,7 +79,7 @@ const togglePasswordVisibility = () => {
 };
 
 const tryGetLocalStorage = () => {
-  const jwtToken = localStorage.getItem("jwtToken");
+  const jwtToken = localStorage.getItem(statickey.jwtToken);
   if (jwtToken != null) {
     userStore.getUserInfoByLocalJwt(jwtToken);
   }
@@ -96,19 +92,6 @@ const changeCheckCode = () => {
 
 const GoToRegisterView = () => {
   router.push({ name: "RegisterView" });
-};
-
-const showAlert = () => {
-  isVisible.value = true;
-
-  // 设置定时器，在一定时间后自动关闭弹窗
-  setTimeout(() => {
-    closeAlert();
-  }, 5000); // 3000毫秒后自动关闭（3秒）
-};
-
-const closeAlert = () => {
-  isVisible.value = false;
 };
 
 const SubmitLoginForm = async () => {
@@ -124,11 +107,9 @@ const SubmitLoginForm = async () => {
       is_login: true,
     });
     router.push({ name: "HomeAll" });
-    localStorage.setItem("jwtToken", resp.token);
+    localStorage.setItem(statickey.jwtToken, resp.token);
   } catch (error) {
-    message.value = error.message;
     changeCheckCode();
-    showAlert();
   }
 };
 </script>

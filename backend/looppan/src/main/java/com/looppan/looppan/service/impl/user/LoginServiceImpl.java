@@ -54,7 +54,7 @@ public class LoginServiceImpl implements LoginService {
         mp.put("useSpace", String.valueOf(user.getUseSpace()));
         mp.put("avatar", user.getAvatar());
         mp.put("token", jwt);
-        mp.put("message", "success");
+        mp.put("message", "登陆成功");
         return ResponseEntity.ok().body(mp);
     }
 }

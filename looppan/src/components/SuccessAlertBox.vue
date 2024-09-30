@@ -1,0 +1,40 @@
+<template>
+  <div v-if="alertStore.success.isVisible" class="my-alert position-fixed alert alert-success alert-dismissible fade show" role="alert">
+    <div class="message">{{ alertStore.success.message }}</div>
+    <div @click="closeAlert" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useAlertStore } from "@/store/useAlertStore";
+
+const alertStore = useAlertStore();
+
+const closeAlert = () => {
+  alertStore.success.isVisible = false;
+};
+</script>
+
+<style lang="scss" scoped>
+.my-alert {
+  display: flex;
+  align-items: center;
+  top: 10px !important;
+  left: 45%;
+  .close-icon {
+    position: absolute;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    i {
+      font-size: 20px;
+    }
+  }
+}
+</style>

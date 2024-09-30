@@ -41,7 +41,7 @@ public class UpdatePasswordServiceImpl implements UpdatePasswordService {
         user.setPassword(encode);
         userMapper.updateById(user);
         Map<String, String> mp = new HashMap<>();
-        mp.put("message", "success");
+        mp.put("message", "成功修改密码");
         return ResponseEntity.ok().body(mp);
     }
 }
