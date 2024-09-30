@@ -37,7 +37,17 @@
         </div>
         <div class="mb-3 no-account d-flex">
           <a href="#" class="a-link">忘记密码?</a>
-          <a href="#" class="a-link ms-auto" @click="GoToRegisterView">没有账号</a>
+          <a
+            href="#"
+            class="a-link ms-auto"
+            @click="
+              () => {
+                router.push({ name: 'RegisterView' });
+              }
+            "
+          >
+            没有账号
+          </a>
         </div>
         <div class="mb-3 text-center">
           <button @click="SubmitLoginForm" type="submit" class="btn btn-primary w-100">登陆</button>
@@ -88,10 +98,6 @@ const tryGetLocalStorage = () => {
 const changeCheckCode = () => {
   checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
   console.log(checkCodeUrl.value);
-};
-
-const GoToRegisterView = () => {
-  router.push({ name: "RegisterView" });
 };
 
 const SubmitLoginForm = async () => {

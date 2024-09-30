@@ -47,6 +47,7 @@ axiosInstance.interceptors.response.use(
         const userStore = useUserStore();
         userStore.user.is_login = false;
         userStore.user.token = "";
+        router.push({ name: "LoginView" });
         console.log("token失效", error.response);
       }
       console.log("response:" + error);

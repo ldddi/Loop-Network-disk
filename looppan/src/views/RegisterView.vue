@@ -56,7 +56,16 @@
 
         <!-- 提交按钮 -->
         <div class="mb-3 text-center d-flex justify-content-center gap-3">
-          <button @click="goToLogin" class="btn btn-secondary w-50">取消</button>
+          <button
+            @click="
+              () => {
+                router.push({ name: 'LoginView' });
+              }
+            "
+            class="btn btn-secondary w-50"
+          >
+            取消
+          </button>
           <button class="btn btn-primary w-50" @click="clickRegisterButton">注册</button>
         </div>
       </div>
@@ -94,18 +103,29 @@ const changeCheckCode = () => {
   picCheckCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
 };
 
-const goToLogin = () => {
-  router.push({ name: "LoginView" });
-};
-
 // 密码可见性切换
 let passwordVisible = ref(false);
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
 };
 
-const clickRegisterButton = () => {
-  submitRegistration();
+const clickRegisterButton = async () => {
+  try {
+    const resp = await axios.post(apiStore.user.register, {
+      email: email.value,
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+      picCheckCode: picCheckCode.value,
+      emailCheckCode: emailCheckCode.value,
+    });
+    console.log(resp);
+    router.push({ name: "LoginView" });
+  } catch (error) {
+    console.log(error.message);
+    if (error.message == "图片验证码错误") {
+      changeCheckCode();
+    }
+  }
 };
 
 // 发送邮箱验证码
@@ -123,26 +143,6 @@ const sendEmailCheckCode = async () => {
   setTimeout(() => {
     isSending.value = false;
   }, 2000);
-};
-
-// 提交注册表单
-const submitRegistration = async () => {
-  try {
-    const resp = await axios.post(apiStore.user.register, {
-      email: email.value,
-      password: password.value,
-      confirmPassword: confirmPassword.value,
-      picCheckCode: picCheckCode.value,
-      emailCheckCode: emailCheckCode.value,
-    });
-    console.log(resp);
-    router.push({ name: "LoginView" });
-  } catch (error) {
-    console.log(error.message);
-    if (error.message == "图片验证码错误") {
-      changeCheckCode();
-    }
-  }
 };
 </script>
 

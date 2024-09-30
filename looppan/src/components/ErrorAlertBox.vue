@@ -22,6 +22,7 @@ const closeAlert = () => {
   display: flex;
   align-items: center;
   top: 10px !important;
+  left: 45%;
 
   .close-icon {
     position: absolute;
