@@ -15,9 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("file_info")
 public class FileInfo {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     Integer fileId;
-
     Integer userId;
     String fileMd5;
     String filePid;
@@ -31,6 +30,4 @@ public class FileInfo {
     Integer status;
     LocalDateTime recoveryTime;
     Integer delFlag;
-
-
 }

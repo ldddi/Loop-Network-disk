@@ -11,161 +11,16 @@
       </div>
     </div>
     <div class="title">全部文件</div>
-    <div class="content">
-      <div class="container">
-        <div class="row myrow my-title">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6 container-title">文件名</div>
-          <div class="col-3 container-title">修改时间</div>
-          <div class="col-2 container-title">大小</div>
-        </div>
-
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">hhh</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-      </div>
+    <div class="file-table-container">
+      <!-- 新增的滚动容器 -->
+      <FileTable />
     </div>
   </HomeNav>
 </template>
 
 <script setup>
 import HomeNav from "@/components/HomeNav.vue";
+import FileTable from "@/components/FileTable.vue";
 </script>
 
 <style lang="scss" scoped>
@@ -187,32 +42,13 @@ import HomeNav from "@/components/HomeNav.vue";
   font-weight: 700;
 }
 
-.content {
-  height: calc(100% - 76px);
-  width: 100%;
-  position: relative;
-  overflow-y: auto;
-  .container {
-    position: absolute;
-    left: 0px;
-    .myrow {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      border-bottom: solid 1px rgba(0, 0, 0, 0.08);
-    }
-    .container-title {
-      font-size: 14px;
-      font-weight: 700;
-    }
-  }
-}
+.file-table-container {
+  width: calc(100vw - 320px);
+  height: calc(100vh - 180px); /* 调整为适合的高度 */
 
-.my-title {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 10;
+  overflow-y: auto; /* 纵向滚动 */
+
+  white-space: nowrap; /* 确保子元素不换行 */
+  position: relative; /* 使其成为滚动区域 */
 }
 </style>
