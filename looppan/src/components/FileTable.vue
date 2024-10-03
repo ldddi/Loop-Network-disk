@@ -52,8 +52,11 @@
 }
 
 .content {
-  height: 100%;
-  width: 100%;
+  width: calc(100vw - 320px);
+  height: calc(100vh - 180px); /* 调整为适合的高度 */
+  overflow-y: auto; /* 纵向滚动 */
+  white-space: nowrap; /* 确保子元素不换行 */
+  position: relative; /* 使其成为滚动区域 */
 
   .container {
     position: absolute;
@@ -63,6 +66,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      min-width: 600px;
       border-bottom: solid 1px rgba(0, 0, 0, 0.08);
       .my-button {
         display: flex;

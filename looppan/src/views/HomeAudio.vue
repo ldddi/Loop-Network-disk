@@ -11,170 +11,25 @@
       </div>
     </div>
     <div class="title">音频文件</div>
-    <div class="content">
-      <div class="container">
-        <div class="row myrow my-title">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6 container-title">文件名</div>
-          <div class="col-3 container-title">修改时间</div>
-          <div class="col-2 container-title">大小</div>
-        </div>
 
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">hhh</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
-        </div>
-      </div>
-    </div>
+    <FileTable />
   </HomeNav>
 </template>
 
 <script setup>
 import HomeNav from "@/components/HomeNav.vue";
 import "@/assets/css/HomeButton.css";
+import FileTable from "@/components/FileTable.vue";
 </script>
 
 <style lang="scss" scoped>
 .header {
-  height: 36px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  white-space: nowrap;
+  overflow: hidden;
   button {
     margin-right: 8px;
   }
@@ -186,33 +41,5 @@ import "@/assets/css/HomeButton.css";
   align-items: center;
   font-size: 14px;
   font-weight: 700;
-}
-
-.content {
-  height: calc(100% - 76px);
-  width: 100%;
-  position: relative;
-  overflow-y: auto;
-  .container {
-    position: absolute;
-    left: 0px;
-    .myrow {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      border-bottom: solid 1px rgba(0, 0, 0, 0.08);
-    }
-    .container-title {
-      font-size: 14px;
-      font-weight: 700;
-    }
-  }
-}
-.my-title {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 10;
 }
 </style>

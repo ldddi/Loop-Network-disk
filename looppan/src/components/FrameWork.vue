@@ -165,6 +165,8 @@ onBeforeUnmount(() => {
 }
 
 .my-container {
+  width: 100vw;
+  height: 100vh;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -238,12 +240,15 @@ onBeforeUnmount(() => {
 }
 
 .body {
+  display: flex;
   position: relative;
+  white-space: nowrap;
+  overflow-y: hidden;
   .left-nav {
     width: 80px;
     height: calc(100vh - 56px);
     // background-color: lightblue;
-    position: fixed;
+    position: relative;
     box-shadow: 3px 0 10px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
@@ -282,7 +287,6 @@ onBeforeUnmount(() => {
     position: absolute;
     left: 80px;
     display: flex;
-    min-width: 800px;
   }
 }
 
