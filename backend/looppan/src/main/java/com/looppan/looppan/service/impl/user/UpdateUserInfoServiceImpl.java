@@ -2,22 +2,19 @@ package com.looppan.looppan.service.impl.user;
 
 import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
-import com.looppan.looppan.controller.user.utils.RandomUtils;
+import com.looppan.looppan.utils.RandomUtils;
 import com.looppan.looppan.controller.user.utils.StaticKey;
 import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.user.UpdateUserInfoService;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;

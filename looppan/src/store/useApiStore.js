@@ -12,7 +12,12 @@ export const useApiStore = defineStore("api", () => {
     register: "/api/register",
   };
 
+  const file = {
+    createFile: "/api/createFile",
+  };
+
   return {
     user,
+    file,
   };
 });

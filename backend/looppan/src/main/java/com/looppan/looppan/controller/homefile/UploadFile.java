@@ -1,9 +1,6 @@
 package com.looppan.looppan.controller.homefile;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +9,7 @@ import java.util.Map;
 public class UploadFile {
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
-    public Map<String, String> uploadFile(@RequestParam("file") String file) {
+    public Map<String, String> uploadFile(@RequestBody Map<String, String> createfile) {
 
 
         Map<String, String> mp = new HashMap<String, String>();

@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // redis插入失败
+    // redis插入失败 或 mybatis plus 插入失败
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(DataAccessException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(

@@ -3,7 +3,7 @@
     <div class="header">
       <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
       <button type="button" class="btn btn-pull">上传</button>
-      <button type="button" class="btn btn-new">新建文件</button>
+      <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件</button>
       <button type="button" class="btn btn-delete">批量删除</button>
       <button type="button" class="btn btn-move">批量移动</button>
       <div class="search-container mysearch">
@@ -13,13 +13,62 @@
     </div>
     <div class="title">全部文件</div>
 
-    <FileTable />
+    <FileTable ref="fileTable" :files="files" />
   </HomeNav>
 </template>
 
 <script setup>
 import HomeNav from "@/components/HomeNav.vue";
 import FileTable from "@/components/FileTable.vue";
+import { ref } from "vue";
+
+const fileTable = ref(null);
+const files = ref([]);
+
+files.value = [
+  {
+    fileName: "hhh",
+    fileId: "1",
+    category: "0",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+  {
+    fileName: "hhh",
+    fileId: "2",
+    category: "1",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+  {
+    fileName: "hhh",
+    fileId: "3",
+    category: "2",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+  {
+    fileName: "hhh",
+    fileId: "4",
+    category: "3",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+  {
+    fileName: "hhh",
+    fileId: "4",
+    category: "4",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+  {
+    fileName: "hhh",
+    fileId: "4",
+    category: "5",
+    createTime: "123.2354.123.2121",
+    fileSize: "20kb",
+  },
+];
 </script>
 
 <style lang="scss" scoped>

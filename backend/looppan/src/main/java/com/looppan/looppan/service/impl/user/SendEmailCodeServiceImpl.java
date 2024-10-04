@@ -1,6 +1,6 @@
 package com.looppan.looppan.service.impl.user;
 
-import com.looppan.looppan.controller.user.utils.RandomUtils;
+import com.looppan.looppan.utils.RandomUtils;
 import com.looppan.looppan.controller.user.utils.StaticKey;
 import com.looppan.looppan.service.user.SendEmailCodeService;
 import org.springframework.beans.factory.annotation.Autowired;

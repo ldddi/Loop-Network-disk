@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 
 
@@ -15,19 +16,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("file_info")
 public class FileInfo {
-    @TableId(type = IdType.ASSIGN_ID)
-    Integer fileId;
+    @TableId
     Integer userId;
+
+    String fileId;
     String fileMd5;
     String filePid;
     String fileSize;
     String fileName;
     String fileCover;
+    String filePath;
     LocalDateTime createTime;
     LocalDateTime lastUpdateTime;
     Integer folderType;
     Integer fileCategory;
-    Integer status;
+    Integer fileType;
     LocalDateTime recoveryTime;
     Integer delFlag;
 }

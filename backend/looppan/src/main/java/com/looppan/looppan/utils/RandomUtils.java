@@ -1,4 +1,4 @@
-package com.looppan.looppan.controller.user.utils;
+package com.looppan.looppan.utils;
 
 import java.security.SecureRandom;
 import java.util.Random;

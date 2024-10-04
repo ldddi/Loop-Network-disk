@@ -10,13 +10,30 @@
         <div class="col-3 container-title">修改时间</div>
         <div class="col-1 container-title">大小</div>
       </div>
-
-      <div v-for="n in 20" class="row myrow" :key="n" tabindex="0">
+      <div v-if="fileIsVisible" class="create-file row create-file-row">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+        </div>
+        <div class="col-5">
+          <div class="input-group mb-3">
+            <input v-model="createFileName" type="text" class="form-control" aria-label="Text input with checkbox" />
+          </div>
+        </div>
+        <div @click="createFileConfirm" class="col-auto create-file-button-col"><button type="button" class="btn btn-info create-file-button">√</button></div>
+        <div @click="createFileCancel" class="col-auto create-file-button-col"><button type="button" class="btn btn-info create-file-button">×</button></div>
+      </div>
+      <div v-for="file in FatherFiles.files" class="row myrow" :key="file.fileId" tabindex="0">
         <div class="col-auto">
           <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-3">
-          <span class="file-name">hhh</span>
+          <i v-if="file.category == 0" class="bi bi-folder2 my-floder my-floder-folder"></i>
+          <i v-else-if="file.category == 1" class="bi bi-file-earmark-play my-floder"></i>
+          <i v-else-if="file.category == 2" class="bi bi-file-music my-floder"></i>
+          <i v-else-if="file.category == 3" class="bi bi-images my-floder"></i>
+          <i v-else-if="file.category == 4" class="bi bi-file-word my-floder"></i>
+          <i v-else-if="file.category == 5" class="bi bi-file-earmark-medical my-floder"></i>
+          <span class="file-name">{{ file.fileName }}</span>
         </div>
         <div class="col-4 my-button">
           <div class="share-button item-button">
@@ -36,16 +53,98 @@
             <span>移动</span>
           </div>
         </div>
-        <div class="col-3">修改时间</div>
-        <div class="col-1">大小</div>
+        <div class="col-3">{{ file.createTime }}</div>
+        <div class="col-1">{{ file.fileSize }}</div>
       </div>
     </div>
   </div>
+  <ErrorAlertBox />
+  <SuccessAlertBox />
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted, ref } from "vue";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
+import { useRoute } from "vue-router";
+import ErrorAlertBox from "./ErrorAlertBox.vue";
+import SuccessAlertBox from "./SuccessAlertBox.vue";
+
+let fileIsVisible = ref(false);
+let createFileName = ref("");
+
+const FatherFiles = defineProps(["files"]);
+const apiStore = useApiStore();
+const route = useRoute();
+
+const createFile = () => {
+  fileIsVisible.value = true;
+};
+
+const createFileConfirm = async () => {
+  let filePid = "0";
+  if (route.params.path != null) {
+    filePid = route.params.path;
+  }
+
+  try {
+    const resp = await axios.post(apiStore.file.createFile, {
+      filePId: filePid,
+      fileName: createFileName.value,
+    });
+    console.log(resp);
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+    fileIsVisible.value = false;
+  }
+};
+
+const createFileCancel = () => {
+  createFileName.value = "";
+  fileIsVisible.value = false;
+};
+
+defineExpose({ createFile });
+</script>
 
 <style lang="scss" scoped>
+.my-floder-folder {
+  color: #ffcf40;
+}
+
+.my-floder {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.create-file-row {
+  height: 50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+  .create-file-button {
+    padding: 0 !important;
+    height: 30px;
+    width: 30px;
+    border-radius: 8px !important;
+  }
+  .create-file-button-col {
+    padding: 0 5px;
+  }
+}
+.create-file-row:hover {
+  background-color: #f4f7fa;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+}
+
 .file-name:hover {
   cursor: pointer;
   color: #5faeff;
