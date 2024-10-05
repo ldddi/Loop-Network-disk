@@ -1,22 +1,19 @@
 <template>
-  <HomeNav>
-    <div class="header">
-      <button type="button" class="btn btn-pull">上传</button>
+  <div class="header">
+    <button type="button" class="btn btn-pull">上传</button>
 
-      <button type="button" class="btn btn-delete">批量删除</button>
-      <button type="button" class="btn btn-move">批量移动</button>
-      <div class="search-container">
-        <input type="text" placeholder="输入文件名搜索..." class="search-input" />
-        <i class="bi bi-search-heart search-icon"></i>
-      </div>
+    <button type="button" class="btn btn-delete">批量删除</button>
+    <button type="button" class="btn btn-move">批量移动</button>
+    <div class="search-container">
+      <input type="text" placeholder="输入文件名搜索..." class="search-input" />
+      <i class="bi bi-search-heart search-icon"></i>
     </div>
-    <div class="title">文档文件</div>
-    <FileTable />
-  </HomeNav>
+  </div>
+  <div class="title">文档文件</div>
+  <FileTable />
 </template>
 
 <script setup>
-import HomeNav from "@/components/HomeNav.vue";
 import "@/assets/css/HomeButton.css";
 import FileTable from "@/components/FileTable.vue";
 </script>

@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="content">
-      <slot></slot>
+      <RouterView />
     </div>
   </FrameWork>
 </template>
@@ -44,6 +44,7 @@ import MySpace from "./MySpace.vue";
       border-radius: 8px;
       color: #04a1f5;
       background-color: #eef9fe;
+      user-select: none;
     }
   }
   .share-nav-bottom {

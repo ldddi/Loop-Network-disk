@@ -1,176 +1,174 @@
 <template>
-  <RecycleNav>
-    <div class="title">
-      <button type="button" class="btn btn-new">
-        <i class="bi bi-arrow-clockwise"></i>
-        还原
-      </button>
-      <button type="button" class="btn btn-delete">
-        <i class="bi bi-trash"></i>
-        批量删除
-      </button>
-    </div>
+  <div class="title">
+    <button type="button" class="btn btn-new">
+      <i class="bi bi-arrow-clockwise"></i>
+      还原
+    </button>
+    <button type="button" class="btn btn-delete">
+      <i class="bi bi-trash"></i>
+      批量删除
+    </button>
+  </div>
 
-    <div class="content">
-      <div class="container">
-        <div class="row myrow my-title">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6 container-title">文件名</div>
-          <div class="col-3 container-title">修改时间</div>
-          <div class="col-2 container-title">大小</div>
+  <div class="content">
+    <div class="container">
+      <div class="row myrow my-title">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
+        <div class="col-6 container-title">文件名</div>
+        <div class="col-3 container-title">修改时间</div>
+        <div class="col-2 container-title">大小</div>
+      </div>
 
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">hhh</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
+        <div class="col-6">hhh</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
 
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
 
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="row myrow">
-          <div class="col-auto">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-          </div>
-          <div class="col-6">www</div>
-          <div class="col-3">修改时间</div>
-          <div class="col-2">大小</div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
+      </div>
+      <div class="row myrow">
+        <div class="col-auto">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
+        <div class="col-6">www</div>
+        <div class="col-3">修改时间</div>
+        <div class="col-2">大小</div>
       </div>
     </div>
-  </RecycleNav>
+  </div>
 </template>
 
 <script setup>

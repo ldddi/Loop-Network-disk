@@ -115,6 +115,7 @@ const SubmitLoginForm = async () => {
     router.push({ name: "HomeAll" });
     localStorage.setItem(statickey.jwtToken, resp.token);
   } catch (error) {
+    picCheckCode.value = "";
     changeCheckCode();
   }
 };

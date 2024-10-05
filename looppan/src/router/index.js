@@ -10,6 +10,9 @@ import HomeVideo from "@/views/HomeVideo.vue";
 import ShareRecord from "@/views/ShareRecord.vue";
 import MyRecycle from "@/views/MyRecycle.vue";
 import { useUserStore } from "@/store/useUserStore";
+import HomeNav from "@/components/HomeNav.vue";
+import ShareNav from "@/components/ShareNav.vue";
+import RecycleNav from "@/components/RecycleNav.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,70 +37,114 @@ const router = createRouter({
         requestAuth: false,
       },
     },
-
+    // ------- home --------------------------------
     {
-      path: "/home/all",
-      name: "HomeAll",
-      component: HomeAll,
+      path: "/home",
+      name: "HomeNav",
+      component: HomeNav,
       meta: {
         requestAuth: true,
       },
+      children: [
+        {
+          path: "",
+          redirect: "/home/all", // 默认重定向到 /home/all
+        },
+        {
+          path: "all",
+          name: "HomeAll",
+          component: HomeAll,
+          meta: {
+            requestAuth: true,
+          },
+        },
+        {
+          path: "video",
+          name: "HomeVideo",
+          component: HomeVideo,
+          meta: {
+            requestAuth: true,
+          },
+        },
+        {
+          path: "audio",
+          name: "HomeAudio",
+          component: HomeAudio,
+          meta: {
+            requestAuth: true,
+          },
+        },
+        {
+          path: "image",
+          name: "HomeImage",
+          component: HomeImage,
+          meta: {
+            requestAuth: true,
+          },
+        },
+        {
+          path: "document",
+          name: "HomeDocument",
+          component: HomeDocument,
+          meta: {
+            requestAuth: true,
+          },
+        },
+        {
+          path: "more",
+          name: "HomeMore",
+          component: HomeMore,
+          meta: {
+            requestAuth: true,
+          },
+        },
+      ],
     },
+    // ------- share --------------------------------
     {
-      path: "/home/video",
-      name: "HomeVideo",
-      component: HomeVideo,
+      path: "/share",
+      name: "ShareNav",
+      component: ShareNav,
       meta: {
         requestAuth: true,
       },
+      children: [
+        {
+          path: "",
+          redirect: "/share/myrecord",
+        },
+        {
+          path: "myrecord",
+          name: "ShareRecord",
+          component: ShareRecord,
+          meta: {
+            requestAuth: true,
+          },
+        },
+      ],
     },
-    {
-      path: "/home/audio",
-      name: "HomeAudio",
-      component: HomeAudio,
-      meta: {
-        requestAuth: true,
-      },
-    },
-    {
-      path: "/home/image",
-      name: "HomeImage",
-      component: HomeImage,
-      meta: {
-        requestAuth: true,
-      },
-    },
-    {
-      path: "/home/document",
-      name: "HomeDocument",
-      component: HomeDocument,
-      meta: {
-        requestAuth: true,
-      },
-    },
-    {
-      path: "/home/more",
-      name: "HomeMore",
-      component: HomeMore,
-      meta: {
-        requestAuth: true,
-      },
-    },
-    {
-      path: "/share/myrecord",
-      name: "ShareRecord",
-      component: ShareRecord,
-      meta: {
-        requestAuth: true,
-      },
-    },
+    // ------- recycle --------------------------------
     {
       path: "/recycle",
-      name: "MyRecycle",
-      component: MyRecycle,
+      name: "RecycleNav",
+      component: RecycleNav,
       meta: {
         requestAuth: true,
       },
+      children: [
+        {
+          path: "",
+          redirect: "/recycle/myrecycle",
+        },
+        {
+          path: "myrecycle",
+          name: "MyRecycle",
+          component: MyRecycle,
+          meta: {
+            requestAuth: true,
+          },
+        },
+      ],
     },
   ],
 });

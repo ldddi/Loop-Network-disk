@@ -3,14 +3,14 @@
     <div class="recycle-nav">
       <div class="recycle-nav-top">
         <div class="nav-top-item">删除文件</div>
-        <div class="tip">回收站为你保存10天内删除的文件</div>
+        <span class="tip">保存10天内删除的文件</span>
       </div>
       <div class="recycle-nav-bottom">
         <MySpace></MySpace>
       </div>
     </div>
     <div class="recycle-right">
-      <slot></slot>
+      <RouterView />
     </div>
   </FrameWork>
 </template>
@@ -42,10 +42,11 @@ import MySpace from "./MySpace.vue";
       border-radius: 8px;
       text-align: center;
       line-height: 40px;
-      cursor: pointer;
+      user-select: none;
     }
     .tip {
-      margin-top: 10px;
+      margin: 10px 0 0 0;
+      color: #f56c6c;
       font-size: 13px;
     }
   }

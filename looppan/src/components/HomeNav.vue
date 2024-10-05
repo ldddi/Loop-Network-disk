@@ -3,72 +3,53 @@
     <div class="content">
       <div class="home-nav">
         <div class="home-nav-top">
-          <div @click="onChangeToAll" :class="['home-nav-top-item', route.name === 'HomeAll' ? 'active' : '']">
+          <RouterLink :to="{ name: 'HomeAll' }" :class="['home-nav-top-item', route.name === 'HomeAll' ? 'active' : '']">
             <i class="bi bi-grid home-icon"></i>
             <span>全部</span>
-          </div>
-          <div @click="onChangeToVideo" :class="['home-nav-top-item', route.name === 'HomeVideo' ? 'active' : '']">
+          </RouterLink>
+          <RouterLink :to="{ name: 'HomeVideo' }" :class="['home-nav-top-item', route.name === 'HomeVideo' ? 'active' : '']">
             <i class="bi bi-play-fill home-icon"></i>
             <span>视频</span>
-          </div>
-          <div @click="onChangeToAudio" :class="['home-nav-top-item', route.name === 'HomeAudio' ? 'active' : '']">
+          </RouterLink>
+          <RouterLink :to="{ name: 'HomeAudio' }" :class="['home-nav-top-item', route.name === 'HomeAudio' ? 'active' : '']">
             <i class="bi bi-soundwave home-icon"></i>
             <span>音频</span>
-          </div>
-          <div @click="onChangeToImage" :class="['home-nav-top-item', route.name === 'HomeImage' ? 'active' : '']">
+          </RouterLink>
+          <RouterLink :to="{ name: 'HomeImage' }" :class="['home-nav-top-item', route.name === 'HomeImage' ? 'active' : '']">
             <i class="bi bi-file-earmark-image home-icon"></i>
             <span>图片</span>
-          </div>
-          <div @click="onChangeToDocument" :class="['home-nav-top-item', route.name === 'HomeDocument' ? 'active' : '']">
+          </RouterLink>
+          <RouterLink :to="{ name: 'HomeDocument' }" :class="['home-nav-top-item', route.name === 'HomeDocument' ? 'active' : '']">
             <i class="bi bi-file-earmark-word home-icon"></i>
             <span>文档</span>
-          </div>
-          <div @click="onChangeToMore" :class="['home-nav-top-item', route.name === 'HomeMore' ? 'active' : '']">
+          </RouterLink>
+          <RouterLink :to="{ name: 'HomeMore' }" :class="['home-nav-top-item', route.name === 'HomeMore' ? 'active' : '']">
             <i class="bi bi-three-dots home-icon"></i>
             <span>更多</span>
-          </div>
+          </RouterLink>
         </div>
         <div class="home-nav-bottom">
           <MySpace></MySpace>
         </div>
       </div>
       <div class="right-content">
-        <slot></slot>
+        <RouterView />
       </div>
     </div>
   </FrameWork>
 </template>
 
 <script setup>
-import router from "@/router";
 import FrameWork from "./FrameWork.vue";
 import MySpace from "./MySpace.vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const onChangeToAll = () => {
-  router.push({ name: "HomeAll" });
-};
-const onChangeToVideo = () => {
-  router.push({ name: "HomeVideo" });
-};
-const onChangeToAudio = () => {
-  router.push({ name: "HomeAudio" });
-};
-const onChangeToImage = () => {
-  router.push({ name: "HomeImage" });
-};
-const onChangeToDocument = () => {
-  router.push({ name: "HomeDocument" });
-};
-const onChangeToMore = () => {
-  router.push({ name: "HomeMore" });
-};
 </script>
 
 <style lang="scss" scoped>
 .active {
-  color: #04a1f5;
+  color: #04a1f5 !important;
   background-color: #eef9fe !important;
 }
 .content {
@@ -100,6 +81,8 @@ const onChangeToMore = () => {
       height: 40px;
       font-size: 14px;
       font-weight: 600;
+      text-decoration: none;
+      color: #636d7d;
       border-radius: 8px;
       box-sizing: content-box;
       cursor: pointer;

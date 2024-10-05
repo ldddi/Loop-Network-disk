@@ -4,8 +4,8 @@
     <ChangePasswordBox ref="ChildChangePasswordBox" />
     <!-- nav 导航栏 -->
     <div class="header">
-      <div class="left-logo">
-        <i class="bi bi-cloud-arrow-up logo-icon"></i>
+      <div class="left-logo" @click="toLogin">
+        <i class="bi bi-cloud-check my-title-icon"></i>
         <span class="logo-text">Loop网盘</span>
       </div>
       <div class="right-info">
@@ -37,18 +37,18 @@
     </div>
     <div class="body">
       <div class="left-nav">
-        <div @click="onChangeToHome" :class="['left-nav-item', 'left-nav-item1', route.name === 'HomeAll' || route.name === 'HomeVideo' || route.name === 'HomeAudio' || route.name === 'HomeImage' || route.name === 'HomeDocument' || route.name === 'HomeMore' ? 'active' : '']">
+        <RouterLink :to="{ path: '/home' }" :class="['left-nav-item', 'left-nav-item1', route.path.includes('/home') ? 'active' : '']">
           <i class="bi bi-house left-nav-icon"></i>
           <span>首页</span>
-        </div>
-        <div @click="onChangeToShare" :class="['left-nav-item', route.name === 'ShareRecord' ? 'active' : '']">
+        </RouterLink>
+        <RouterLink :to="{ path: '/share' }" :class="['left-nav-item', route.path.includes('/share') ? 'active' : '']">
           <i class="bi bi-share left-nav-icon"></i>
           <span>分享</span>
-        </div>
-        <div @click="onChangeToRecycle" :class="['left-nav-item', route.name === 'MyRecycle' ? 'active' : '']">
+        </RouterLink>
+        <RouterLink :to="{ path: '/recycle' }" :class="['left-nav-item', route.path.includes('/recycle') ? 'active' : '']">
           <i class="bi bi-recycle left-nav-icon"></i>
           <span>回收站</span>
-        </div>
+        </RouterLink>
       </div>
       <div class="right-panel">
         <slot></slot>
@@ -60,7 +60,6 @@
 </template>
 
 <script setup>
-import router from "@/router";
 import { useUserStore } from "@/store/useUserStore";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -68,6 +67,7 @@ import ChangeInfoBox from "./ChangeInfoBox.vue";
 import ChangePasswordBox from "./ChangePasswordBox.vue";
 import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
+import router from "@/router";
 
 let route = useRoute();
 let isDropdownVisible = ref(false);
@@ -77,16 +77,9 @@ const userStore = useUserStore();
 const ChildChangeInfoBox = ref(null);
 const ChildChangePasswordBox = ref(null);
 
-const onChangeToHome = () => {
-  router.push({ name: "HomeAll" });
-};
-
-const onChangeToShare = () => {
-  router.push({ name: "ShareRecord" });
-};
-
-const onChangeToRecycle = () => {
-  router.push({ name: "MyRecycle" });
+const toLogin = () => {
+  console.log("hhh");
+  router.push({ path: "/home" });
 };
 
 const onChangeDropdownVisible = () => {
@@ -117,6 +110,13 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.my-title-icon {
+  color: #09a6ff;
+  font-size: 40px;
+  font-weight: 900;
+  margin-right: 10px;
+}
+
 .dropdown {
   width: 150px;
   display: none; /* 默认隐藏下拉菜单 */
@@ -160,7 +160,7 @@ onBeforeUnmount(() => {
 }
 
 .active {
-  color: #09a6ff;
+  color: #09a6ff !important;
   background-color: #f1faff !important;
 }
 
@@ -182,6 +182,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   .left-logo {
+    cursor: pointer;
     .logo-icon {
       color: #09a6ff;
       font-size: 40px;
@@ -191,6 +192,7 @@ onBeforeUnmount(() => {
       color: #09a6ff;
       margin-left: 5px;
       font-weight: 700;
+      user-select: none;
     }
   }
   .right-info {
@@ -261,6 +263,8 @@ onBeforeUnmount(() => {
       padding-bottom: 12px;
       margin-bottom: 12px;
       border-radius: 8px;
+      text-decoration: none;
+      color: #636d7d;
       display: flex;
       flex-direction: column;
       align-items: center;

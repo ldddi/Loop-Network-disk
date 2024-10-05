@@ -1,24 +1,21 @@
 <template>
-  <HomeNav>
-    <div class="header">
-      <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
-      <button type="button" class="btn btn-pull">上传</button>
-      <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件</button>
-      <button type="button" class="btn btn-delete">批量删除</button>
-      <button type="button" class="btn btn-move">批量移动</button>
-      <div class="search-container mysearch">
-        <input type="text" placeholder="输入文件名搜索..." class="search-input" />
-        <i class="bi bi-search-heart search-icon"></i>
-      </div>
+  <div class="header">
+    <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
+    <button type="button" class="btn btn-pull">上传</button>
+    <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件</button>
+    <button type="button" class="btn btn-delete">批量删除</button>
+    <button type="button" class="btn btn-move">批量移动</button>
+    <div class="search-container mysearch">
+      <input type="text" placeholder="输入文件名搜索..." class="search-input" />
+      <i class="bi bi-search-heart search-icon"></i>
     </div>
-    <div class="title">全部文件</div>
+  </div>
+  <div class="title">全部文件</div>
 
-    <FileTable ref="fileTable" :files="files" />
-  </HomeNav>
+  <FileTable ref="fileTable" :files="files" />
 </template>
 
 <script setup>
-import HomeNav from "@/components/HomeNav.vue";
 import FileTable from "@/components/FileTable.vue";
 import { ref } from "vue";
 
