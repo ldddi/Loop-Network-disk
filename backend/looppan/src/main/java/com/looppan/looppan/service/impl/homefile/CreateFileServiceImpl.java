@@ -21,7 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class CreateFileServiceImpl implements CreateFileService {
@@ -37,15 +39,29 @@ public class CreateFileServiceImpl implements CreateFileService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetail = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetail.getUser();
-        Map<String, String> mp = new HashMap<>();
+        Integer userId = Integer.valueOf(user.getUserId());
+        Map<String, Object> mp = new HashMap<>();
         String random = RandomUtils.generateRandomString(FileStaticKey.FILE_ID_LENGTH.toIntegerValue());
 
-        if (filePId.equals("0")) {
+        List<FileInfo> curFolder = fileInfoMapper.selectByFilePidAndUserIdAndLimitType(filePId,userId, FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue());
+        for (FileInfo fileInfo : curFolder) {
+            if (Objects.equals(fileInfo.getFileName(), fileName)) {
+                throw new MyException("当前文件夹已存在");
+            }
+        }
+
+        if (filePId == null || filePId.equals("0") ) {
             uploadDir += user.getUserId();
         } else {
-            uploadDir = fileInfoMapper.selectById(filePId).getFilePath();
+            try {
+                filePId = filePId.substring(filePId.lastIndexOf("/") + 1);
+                uploadDir = fileInfoMapper.selectByFileIdAndUserId(filePId, Integer.valueOf(user.getUserId())).getFilePath();
+            } catch (Exception e) {
+                throw new MyException("文件夹创建失败, 请稍后尝试");
+            }
         }
         Path path = Paths.get(uploadDir + "/" + random);
+        System.out.println(path);
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
@@ -58,19 +74,20 @@ public class CreateFileServiceImpl implements CreateFileService {
         fileInfo.setFilePid(filePId);
         fileInfo.setFileSize(String.valueOf(0));
         fileInfo.setFileName(fileName);
-        fileInfo.setFilePath(uploadDir);
+        fileInfo.setFilePath(uploadDir + "/" + random);
         fileInfo.setCreateTime(now);
         fileInfo.setLastUpdateTime(now);
-        fileInfo.setFolderType(FileStaticKey.FILE_TYPE_FOLDER.toIntegerValue());
+        fileInfo.setFolderType(FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue());
         fileInfo.setFileCategory(FileStaticKey.FILE_CATEGORY_FOLDER.toIntegerValue());
-        fileInfo.setFileType(FileStaticKey.FILE_TYPE_FOLDER.toIntegerValue());
         fileInfo.setDelFlag(FileStaticKey.DEL_FLAG_NORMAL.toIntegerValue());
+
         try {
             fileInfoMapper.insert(fileInfo);
         } catch (Exception e) {
             e.printStackTrace();
         }
         mp.put("message", "文件夹创建成功");
+        mp.put("data", fileInfo);
         System.out.println(fileInfoMapper.selectByFileIdAndUserId(random, Integer.valueOf(user.getUserId())));
         return ResponseEntity.ok().body(mp);
     }

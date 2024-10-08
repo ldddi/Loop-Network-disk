@@ -17,7 +17,7 @@ public class CreateFileController {
     @Autowired
     CreateFileService createFileService;
 
-    @RequestMapping(value = "/createFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/createFile", method = RequestMethod.POST)
     public ResponseEntity<Map> createNewFolder(@RequestBody Map<String, String> createfile) {
         String filePId = createfile.get("filePId");
         String fileName = createfile.get("fileName");

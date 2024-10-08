@@ -2,8 +2,8 @@ package com.looppan.looppan.controller.homefile.utils;
 
 public enum FileStaticKey {
     FILE_ID_LENGTH(12),
-    FILE_TYPE_FOLDER("0"),
-    FILE_TYPE_FILE("1"),
+    FOLDER_TYPE_FOLDER(1),
+    FOLDER_TYPE_FILE(0),
     FILE_CATEGORY_FOLDER(0),
     FILE_CATEGORY_VIDEO(1),
     FILE_CATEGORY_AUDIO(2),
@@ -27,7 +27,7 @@ public enum FileStaticKey {
         this.integerValue = null;
     }
 
-    public String toIntegerString() {
+    public String toStringValue() {
         return stringValue;
     }
 

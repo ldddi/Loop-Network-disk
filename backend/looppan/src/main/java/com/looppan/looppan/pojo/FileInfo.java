@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @TableName("file_info")
 public class FileInfo {
     @TableId
-    Integer userId;
-
     String fileId;
+
+    Integer userId;
     String fileMd5;
     String filePid;
     String fileSize;
@@ -30,7 +30,6 @@ public class FileInfo {
     LocalDateTime lastUpdateTime;
     Integer folderType;
     Integer fileCategory;
-    Integer fileType;
     LocalDateTime recoveryTime;
     Integer delFlag;
 }

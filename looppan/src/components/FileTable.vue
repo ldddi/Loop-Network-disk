@@ -22,18 +22,18 @@
         <div @click="createFileConfirm" class="col-auto create-file-button-col"><button type="button" class="btn btn-info create-file-button">√</button></div>
         <div @click="createFileCancel" class="col-auto create-file-button-col"><button type="button" class="btn btn-info create-file-button">×</button></div>
       </div>
-      <div v-for="file in FatherFiles.files" class="row myrow" :key="file.fileId" tabindex="0">
+      <div v-for="file in props.files" class="row myrow" :key="file.fileId" tabindex="0">
         <div class="col-auto">
           <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-3">
-          <i v-if="file.category == 0" class="bi bi-folder2 my-floder my-floder-folder"></i>
-          <i v-else-if="file.category == 1" class="bi bi-file-earmark-play my-floder"></i>
-          <i v-else-if="file.category == 2" class="bi bi-file-music my-floder"></i>
-          <i v-else-if="file.category == 3" class="bi bi-images my-floder"></i>
-          <i v-else-if="file.category == 4" class="bi bi-file-word my-floder"></i>
-          <i v-else-if="file.category == 5" class="bi bi-file-earmark-medical my-floder"></i>
-          <span class="file-name">{{ file.fileName }}</span>
+          <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
+          <RouterLink :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
         </div>
         <div class="col-4 my-button">
           <div class="share-button item-button">
@@ -54,7 +54,16 @@
           </div>
         </div>
         <div class="col-3">{{ file.createTime }}</div>
-        <div class="col-1">{{ file.fileSize }}</div>
+        <div v-if="file.folderType != statickey.folderType.folder" class="col-1">{{ file.fileSize }}</div>
+      </div>
+    </div>
+    <div v-if="props.files.length == 0" class="test">
+      <div>
+        <span>当前文件为空</span>
+      </div>
+      <div class="upload-file" @click="handleClick">
+        <i class="bi bi-file-earmark-diff-fill"></i>
+        <span>上传文件</span>
       </div>
     </div>
   </div>
@@ -63,19 +72,49 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
 import { useRoute } from "vue-router";
 import ErrorAlertBox from "./ErrorAlertBox.vue";
 import SuccessAlertBox from "./SuccessAlertBox.vue";
+import statickey from "@/utils/statickey";
 
 let fileIsVisible = ref(false);
 let createFileName = ref("");
 
-const FatherFiles = defineProps(["files"]);
+const props = defineProps(["files", "myInput"]);
+const emit = defineEmits(["update-files"]);
 const apiStore = useApiStore();
 const route = useRoute();
+
+const handleClick = () => {
+  props.myInput.click();
+};
+
+const getLink = (file) => {
+  const prepath = route.query.path;
+  if (file.folderType == statickey.folderType.folder) {
+    console.log("hhh");
+    if (prepath == null) {
+      return { name: "HomeAll", query: { path: file.fileId } };
+    } else {
+      return { name: "HomeAll", query: { path: prepath + "/" + file.fileId } };
+    }
+  }
+
+  return { name: "HomeAll" };
+};
+
+watch(
+  () => route.query,
+  async (newPath, oldPath) => {
+    await nextTick();
+    emit("get-file-list", newPath);
+    console.log("new : " + JSON.stringify(newPath));
+    console.log("old : " + JSON.stringify(oldPath));
+  }
+);
 
 const createFile = () => {
   fileIsVisible.value = true;
@@ -83,8 +122,8 @@ const createFile = () => {
 
 const createFileConfirm = async () => {
   let filePid = "0";
-  if (route.params.path != null) {
-    filePid = route.params.path;
+  if (route.query.path != null) {
+    filePid = route.query.path;
   }
 
   try {
@@ -93,6 +132,7 @@ const createFileConfirm = async () => {
       fileName: createFileName.value,
     });
     console.log(resp);
+    emit("update-files", resp.data);
   } catch (error) {
     console.log(error.message);
   } finally {
@@ -109,6 +149,45 @@ defineExpose({ createFile });
 </script>
 
 <style lang="scss" scoped>
+.test {
+  width: 25%;
+  height: 35%;
+  position: relative;
+  top: 35%;
+  left: 30%;
+
+  padding: 3% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  .upload-file {
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    width: 25%;
+    height: 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    i {
+      font-size: 45px;
+      color: #5faeff;
+    }
+  }
+}
+
+.container {
+  :deep(a) {
+    color: #636d7d;
+    text-decoration: none;
+    &:hover {
+      color: #5faeff !important; // 可选：改变文字颜色
+    }
+  }
+}
+
 .my-floder-folder {
   color: #ffcf40;
 }
@@ -124,6 +203,7 @@ defineExpose({ createFile });
   justify-content: flex-start;
   align-items: center;
   border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+  user-select: none;
   .create-file-button {
     padding: 0 !important;
     height: 30px;
@@ -167,6 +247,7 @@ defineExpose({ createFile });
       justify-content: flex-start;
       min-width: 600px;
       border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+      user-select: none;
       .my-button {
         display: flex;
         align-items: center;

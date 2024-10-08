@@ -1,68 +1,81 @@
 <template>
   <div class="header">
-    <button type="button" class="btn btn-pull">上传</button>
+    <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
+    <input type="file" id="fileInput" style="display: none" accept="video/*" multiple @change="uploadFile($event.target.files)" />
+    <button type="button" class="btn btn-pull" onclick="document.getElementById('fileInput').click();">上传</button>
+
+    <!-- <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件夹</button> -->
     <button type="button" class="btn btn-delete">批量删除</button>
     <button type="button" class="btn btn-move">批量移动</button>
-    <div class="search-container">
+    <div class="search-container mysearch">
       <input type="text" placeholder="输入文件名搜索..." class="search-input" />
       <i class="bi bi-search-heart search-icon"></i>
     </div>
   </div>
-  <div class="title">视频文件</div>
-  <FileTable :files="files" />
+  <div class="title">全部文件</div>
+
+  <FileTable ref="fileTable" :files="files" @upload-file="uploadFile" @update-files="updateFiles" @get-file-list="getFileList" />
 </template>
 
 <script setup>
-import "@/assets/css/HomeButton.css";
 import FileTable from "@/components/FileTable.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
+import statickey from "@/utils/statickey";
+import { useRoute } from "vue-router";
 
+const fileTable = ref(null);
 const files = ref([]);
 
-files.value = [
-  {
-    fileName: "hhh",
-    fileId: "1",
-    category: "0",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-  {
-    fileName: "hhh",
-    fileId: "2",
-    category: "1",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-  {
-    fileName: "hhh",
-    fileId: "3",
-    category: "2",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-  {
-    fileName: "hhh",
-    fileId: "4",
-    category: "3",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-  {
-    fileName: "hhh",
-    fileId: "4",
-    category: "4",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-  {
-    fileName: "hhh",
-    fileId: "4",
-    category: "5",
-    createTime: "123.2354.123.2121",
-    fileSize: "20kb",
-  },
-];
+const apiStore = useApiStore();
+const route = useRoute();
+
+onMounted(() => {
+  getFileList();
+});
+
+const getFileList = async () => {
+  try {
+    const resp = await axios.get(apiStore.file.getFileList, {
+      category: statickey.category.video,
+      path: route.query.path,
+    });
+    files.value = resp;
+    console.log(resp);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const uploadFile = (fileList) => {
+  const formData = new FormData();
+  let filePid = "0";
+  if (route.query.path != null) {
+    filePid = route.query.path;
+  }
+
+  for (let i = 0; i < fileList.length; i++) {
+    formData.append("file[]", fileList[i]);
+  }
+  formData.append("filePId", filePid);
+  console.log(formData, fileList.length);
+  axios
+    .post(apiStore.file.uploadFile, formData)
+    .then((resp) => {
+      console.log(resp);
+      for (let i = 0; i < resp.data.length; i++) {
+        updateFiles(resp.data[i]);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+const updateFiles = (newFile) => {
+  files.value.unshift(newFile);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -71,10 +84,13 @@ files.value = [
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  white-space: nowrap;
-  overflow: hidden;
+  overflow-x: hidden;
+  white-space: nowrap; /* 不换行 */
   button {
     margin-right: 8px;
+  }
+  .mysearch {
+    flex-shrink: 1; /* 允许按钮收缩 */
   }
 }
 
@@ -84,27 +100,5 @@ files.value = [
   align-items: center;
   font-size: 14px;
   font-weight: 700;
-}
-
-.content {
-  height: calc(100% - 76px);
-  width: 100%;
-  position: relative;
-  overflow-y: auto;
-  .container {
-    position: absolute;
-    left: 0px;
-    .myrow {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      border-bottom: solid 1px rgba(0, 0, 0, 0.08);
-    }
-    .container-title {
-      font-size: 14px;
-      font-weight: 700;
-    }
-  }
 }
 </style>

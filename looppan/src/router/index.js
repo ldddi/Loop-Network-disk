@@ -53,7 +53,7 @@ const router = createRouter({
         {
           path: "all",
           name: "HomeAll",
-          component: HomeAll,
+          component: HomeAll, // 处理访问 /all 的组件
           meta: {
             requestAuth: true,
           },

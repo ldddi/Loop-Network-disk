@@ -1,7 +1,7 @@
 <template>
   <div class="header">
-    <button type="button" class="btn btn-pull">上传</button>
-
+    <input type="file" id="fileInput" style="display: none" multiple accept=".pdf,.doc,.docx,.txt,.xls,.xlsx" />
+    <button type="button" class="btn btn-pull" onclick="document.getElementById('fileInput').click();">上传</button>
     <button type="button" class="btn btn-delete">批量删除</button>
     <button type="button" class="btn btn-move">批量移动</button>
     <div class="search-container">
