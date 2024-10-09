@@ -18,7 +18,7 @@ public class GetFileListController {
     GetFileListService getFileListService;
 
     @RequestMapping(value = "/file/getFileList", method = RequestMethod.GET)
-    public ResponseEntity<List<FileInfo>> getFileList(
+    public ResponseEntity<Map> getFileList(
             @RequestParam("category") String category,
             @RequestParam(value = "path", required = false) String path)
     {

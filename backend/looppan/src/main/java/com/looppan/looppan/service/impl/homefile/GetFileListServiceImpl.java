@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class GetFileListServiceImpl implements GetFileListService {
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<List<FileInfo>> getFileList(Integer category, String path) {
+    public ResponseEntity<Map> getFileList(Integer category, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
@@ -38,6 +39,18 @@ public class GetFileListServiceImpl implements GetFileListService {
             fileInfos = fileInfoMapper.selectByUserIdAndCategory(userId, category);
         }
 
-        return ResponseEntity.ok().body(fileInfos);
+        Map<String, Object> mp = new HashMap<>();
+        mp.put("data", fileInfos);
+        System.out.println(path);
+        FileInfo clickedFile = null;
+        if (path != null) {
+            path = path.substring(path.lastIndexOf("/") + 1);
+            System.out.println(path);
+            clickedFile = fileInfoMapper.selectByFileIdAndUserId(path, userId);
+        }
+        
+        System.out.println(clickedFile);
+        mp.put("clickedFile", clickedFile);
+        return ResponseEntity.ok().body(mp);
     }
 }

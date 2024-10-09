@@ -84,7 +84,7 @@ let fileIsVisible = ref(false);
 let createFileName = ref("");
 
 const props = defineProps(["files", "myInput"]);
-const emit = defineEmits(["update-files"]);
+const emit = defineEmits(["update-files", "pop-files-cache"]);
 const apiStore = useApiStore();
 const route = useRoute();
 
@@ -141,8 +141,7 @@ watch(
   async (newPath, oldPath) => {
     await nextTick();
     emit("get-file-list", newPath);
-    console.log("new : " + JSON.stringify(newPath));
-    console.log("old : " + JSON.stringify(oldPath));
+    emit("pop-files-cache");
   }
 );
 

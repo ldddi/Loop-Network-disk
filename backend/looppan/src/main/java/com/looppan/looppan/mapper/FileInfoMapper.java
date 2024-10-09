@@ -2,10 +2,7 @@ package com.looppan.looppan.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.looppan.looppan.pojo.FileInfo;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,12 +26,22 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
 
     // 根据userid和 pid 查找所有文件夹或文件
-    @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId}")
+    @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId} and folder_type = #{folderType}")
     List<FileInfo> selectByFilePidAndUserIdAndLimitType(@Param("filePId") String filePId,
                                                        @Param("userId") Integer userId,
                                                        @Param("folderType") Integer folderType);
+    // 根据userid 查找当前文件夹下的所有文件
+    @Select("select * from file_info where user_id = #{userId} and file_category = #{type}")
+    List<FileInfo> selectAllFilesByUserId(@Param("userId") Integer userId, @Param("type") Integer category);
+
     // 根据用户id和文件id删除当前文件
     @Delete("delete from file_info where file_id = #{fileId} and user_id = #{userId}")
     Integer DeleteByFileIdAndUserId(@Param("fileId") String fileId, @Param("userId") Integer userId);
+
+    @Update("UPDATE file_info SET file_pid = #{filePId}, file_path = #{filePath}  WHERE file_id = #{fileId} AND user_id = #{userId}")
+    Integer updateByFileIdAndUserId(@Param("fileId") String fileId,
+                                    @Param("userId") String userId,
+                                    @Param("filePId") String filePId,
+                                    @Param("filePath") String filePath);
 
 }

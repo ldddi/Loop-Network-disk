@@ -44,6 +44,7 @@ export const useUserStore = defineStore("User", () => {
         token: jwtToken,
         is_login: true,
       });
+      console.log("ttt", resp);
       router.push({ name: "HomeAll" });
     } catch (error) {
       localStorage.removeItem(statickey.jwtToken);

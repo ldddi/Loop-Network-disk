@@ -80,7 +80,7 @@ let checkCodeUrl = ref();
 
 onMounted(() => {
   changeCheckCode();
-  tryGetLocalStorage();
+  // tryGetLocalStorage();
 });
 
 let passwordVisible = ref(false);

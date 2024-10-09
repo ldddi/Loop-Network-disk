@@ -4,6 +4,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
-public interface GetFileListService {
-    public ResponseEntity<Map> getFileList(Integer category, String path);
+public interface GetAllCategoryFileService {
+    public ResponseEntity<Map> getAllAudioFiles(Integer category);
 }

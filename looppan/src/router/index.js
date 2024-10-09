@@ -151,10 +151,20 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
+
   if (to.meta.requestAuth && !userStore.user.is_login) {
     next({ name: "LoginView" });
+  } else if (to.path === "/login" && !userStore.user.is_login) {
+    const jwtToken = localStorage.getItem("jwtToken");
+    if (jwtToken != null) {
+      userStore.getUserInfoByLocalJwt(jwtToken);
+    } else {
+      next();
+    }
+  } else if (to.path === "/login" && userStore.user.is_login) {
+    next({ name: "HomeAll" });
   } else {
-    next(); // 继续导航
+    next();
   }
 });
 
