@@ -64,45 +64,31 @@ const comfirmMoveFiles = () => {
       pId: modalFileTable.value.filesCache[modalFileTable.value.filesCache.length - 1].fileId,
     })
     .then((resp) => {
-      console.log(resp);
       getFileList();
-    })
-    .catch((err) => {
-      console.log(err.message);
     });
 };
 
 const deleteSelectedFiles = () => {
   if (fileTable.value.selectedFiles.length > 0) {
-    console.log(fileTable.value.selectedFiles);
     axios
       .post(apiStore.file.deleteSelectedFiles, {
         filesId: fileTable.value.selectedFiles,
       })
       .then((resp) => {
-        console.log(resp);
         const selectedFiles = fileTable.value.selectedFiles;
 
         files.value = files.value.filter((file) => !selectedFiles.includes(file.fileId));
         fileTable.value.selectedFiles = [];
-        console.log(files.value);
-      })
-      .catch((error) => {
-        console.log(error.message);
-        fileTable.value.selectedFiles = [];
       });
+    fileTable.value.selectedFiles = [];
   }
 };
 
 const getDocumentFileList = async () => {
-  try {
-    const resp = await axios.post(apiStore.file.getAllCategoryFile, {
-      category: statickey.category.document,
-    });
-    files.value = resp.data;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const resp = await axios.post(apiStore.file.getAllCategoryFile, {
+    category: statickey.category.document,
+  });
+  files.value = resp.data;
 };
 
 const uploadFile = (fileList) => {
@@ -116,18 +102,11 @@ const uploadFile = (fileList) => {
     formData.append("file[]", fileList[i]);
   }
   formData.append("filePId", filePid);
-  console.log(formData, fileList.length);
-  axios
-    .post(apiStore.file.uploadFile, formData)
-    .then((resp) => {
-      console.log(resp);
-      for (let i = 0; i < resp.data.length; i++) {
-        updateFiles(resp.data[i]);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  axios.post(apiStore.file.uploadFile, formData).then((resp) => {
+    for (let i = 0; i < resp.data.length; i++) {
+      updateFiles(resp.data[i]);
+    }
+  });
 };
 
 const updateFiles = (newFile) => {

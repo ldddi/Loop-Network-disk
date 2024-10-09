@@ -98,11 +98,9 @@ const selectAllFiles = (isChecked) => {
   if (isChecked) {
     // 如果选中，添加所有文件 ID 到数组
     selectedFiles.value = props.files.map((file) => file.fileId);
-    console.log("全选：" + selectedFiles.value);
   } else {
     // 如果取消选中，清空数组
     selectedFiles.value = [];
-    console.log("全不选：" + selectedFiles.value);
   }
 };
 
@@ -110,11 +108,9 @@ const toggleSelection = (fileId) => {
   if (selectedFiles.value.includes(fileId)) {
     // 取消选中
     selectedFiles.value = selectedFiles.value.filter((id) => id !== fileId);
-    console.log("取消：" + selectedFiles.value);
   } else {
     // 选中
     selectedFiles.value.push(fileId);
-    console.log("选中：" + selectedFiles.value);
   }
 };
 
@@ -125,7 +121,6 @@ const handleClick = () => {
 const getLink = (file) => {
   const prepath = route.query.path;
   if (file.folderType == statickey.folderType.folder) {
-    console.log("hhh");
     if (prepath == null) {
       return { name: "HomeAll", query: { path: file.fileId } };
     } else {
@@ -154,19 +149,12 @@ const createFileConfirm = async () => {
   if (route.query.path != null) {
     filePid = route.query.path;
   }
-
-  try {
-    const resp = await axios.post(apiStore.file.createFile, {
-      filePId: filePid,
-      fileName: createFileName.value,
-    });
-    console.log(resp);
-    emit("update-files", resp.data);
-  } catch (error) {
-    console.log(error.message);
-  } finally {
-    fileIsVisible.value = false;
-  }
+  const resp = await axios.post(apiStore.file.createFile, {
+    filePId: filePid,
+    fileName: createFileName.value,
+  });
+  emit("update-files", resp.data);
+  fileIsVisible.value = false;
 };
 
 const createFileCancel = () => {

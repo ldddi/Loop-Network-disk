@@ -70,31 +70,21 @@ const closeModal = () => {
 };
 
 const handleSubmit = async () => {
-  try {
-    const resp = await axios.post(apiStore.user.updatePassword, {
-      email: userStore.user.email,
-      password: password.value,
-      confirmPassword: confirmPassword.value,
-      emailCheckCode: emailCheckCode.value,
-    });
-    console.log(resp);
-    isVisible.value = false;
-    userStore.user.token = "";
-  } catch (error) {
-    console.log(error.message);
-  }
+  const resp = await axios.post(apiStore.user.updatePassword, {
+    email: userStore.user.email,
+    password: password.value,
+    confirmPassword: confirmPassword.value,
+    emailCheckCode: emailCheckCode.value,
+  });
+  isVisible.value = false;
+  userStore.user.token = "";
 };
 
 const sendEmailCheckCode2 = async () => {
-  try {
-    isSending.value = true;
-    const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
-      email: userStore.user.email,
-    });
-    console.log(resp);
-  } catch (error) {
-    console.log(error.message);
-  }
+  isSending.value = true;
+  const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
+    email: userStore.user.email,
+  });
   isSending.value = false;
 };
 

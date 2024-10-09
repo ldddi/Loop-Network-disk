@@ -118,10 +118,8 @@ const clickRegisterButton = async () => {
       picCheckCode: picCheckCode.value,
       emailCheckCode: emailCheckCode.value,
     });
-    console.log(resp);
     router.push({ name: "LoginView" });
   } catch (error) {
-    console.log(error.message);
     if (error.message == "图片验证码错误") {
       changeCheckCode();
     }
@@ -131,14 +129,9 @@ const clickRegisterButton = async () => {
 // 发送邮箱验证码
 let isSending = ref(false);
 const sendEmailCheckCode = async () => {
-  try {
-    const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
-      email: email.value,
-    });
-    console.log(resp);
-  } catch (error) {
-    console.log(error.message);
-  }
+  const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
+    email: email.value,
+  });
   isSending.value = true;
   setTimeout(() => {
     isSending.value = false;

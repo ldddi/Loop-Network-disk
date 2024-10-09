@@ -78,7 +78,6 @@ const ChildChangeInfoBox = ref(null);
 const ChildChangePasswordBox = ref(null);
 
 const toLogin = () => {
-  console.log("hhh");
   router.push({ path: "/home" });
 };
 
@@ -88,7 +87,6 @@ const onChangeDropdownVisible = () => {
 
 const onCloseDropdown = (event) => {
   if (arrow.value && !arrow.value.contains(event.target) && dropdown.value && !dropdown.value.contains(event.target)) {
-    console.log("在外边");
     isDropdownVisible.value = false;
   }
 };

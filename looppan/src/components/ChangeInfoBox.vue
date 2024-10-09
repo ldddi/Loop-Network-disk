@@ -75,19 +75,13 @@ const handleFileChange = (event) => {
 };
 
 const handleSubmit = async () => {
-  try {
-    formData.append("nickName", nickName.value);
-    const resp = await axios.post(apiStore.user.updateUserInfo, formData);
-    if (resp.nickName) {
-      userStore.user.nickName = resp.nickName;
-    }
-    if (resp.avatar) {
-      userStore.user.avatar = resp.avatar;
-    }
-
-    console.log(resp);
-  } catch (error) {
-    console.log(error.message);
+  formData.append("nickName", nickName.value);
+  const resp = await axios.post(apiStore.user.updateUserInfo, formData);
+  if (resp.nickName) {
+    userStore.user.nickName = resp.nickName;
+  }
+  if (resp.avatar) {
+    userStore.user.avatar = resp.avatar;
   }
   isVisible.value = false;
 };

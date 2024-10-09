@@ -35,21 +35,13 @@ export const useUserStore = defineStore("User", () => {
   };
 
   const getUserInfoByLocalJwt = async (jwtToken) => {
-    try {
-      const resp = await axios.post(apiStore.user.getUserInfo, {});
-      console.log(resp);
-
-      updateUser({
-        ...resp,
-        token: jwtToken,
-        is_login: true,
-      });
-      console.log("ttt", resp);
-      router.push({ name: "HomeAll" });
-    } catch (error) {
-      localStorage.removeItem(statickey.jwtToken);
-      console.log(error.message);
-    }
+    const resp = await axios.post(apiStore.user.getUserInfo, {});
+    updateUser({
+      ...resp,
+      token: jwtToken,
+      is_login: true,
+    });
+    router.push({ name: "HomeAll" });
   };
 
   return {

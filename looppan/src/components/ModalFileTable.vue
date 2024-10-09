@@ -22,7 +22,6 @@
 import { onMounted, ref } from "vue";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
-import statickey from "@/utils/statickey";
 
 const apiStore = useApiStore();
 
@@ -53,15 +52,10 @@ const updateFiles = (file) => {
         filePId: file.fileId,
       })
       .then((resp) => {
-        console.log(resp);
         if (!filesCache.value.includes(file)) {
-          console.log("insert");
           filesCache.value.push(file);
         }
         files.value = resp.data;
-      })
-      .catch((error) => {
-        console.error(error.message);
       });
   } else {
     axios
@@ -69,12 +63,7 @@ const updateFiles = (file) => {
         filePId: 0,
       })
       .then((resp) => {
-        console.log(resp);
-
         files.value = resp.data;
-      })
-      .catch((error) => {
-        console.error(error.message);
       });
   }
 };
@@ -85,11 +74,7 @@ const getFileList = () => {
       filePId: filePId.value,
     })
     .then((resp) => {
-      console.log("resp ", resp);
       files.value = resp.data;
-    })
-    .catch((error) => {
-      console.error(error.message);
     });
 };
 

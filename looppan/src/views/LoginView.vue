@@ -80,7 +80,6 @@ let checkCodeUrl = ref();
 
 onMounted(() => {
   changeCheckCode();
-  // tryGetLocalStorage();
 });
 
 let passwordVisible = ref(false);
@@ -88,16 +87,8 @@ const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
 };
 
-const tryGetLocalStorage = () => {
-  const jwtToken = localStorage.getItem(statickey.jwtToken);
-  if (jwtToken != null) {
-    userStore.getUserInfoByLocalJwt(jwtToken);
-  }
-};
-
 const changeCheckCode = () => {
   checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
-  console.log(checkCodeUrl.value);
 };
 
 const SubmitLoginForm = async () => {
