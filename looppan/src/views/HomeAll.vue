@@ -5,8 +5,8 @@
     <button type="button" class="btn btn-pull" onclick="document.getElementById('fileInput').click();">上传</button>
 
     <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件夹</button>
-    <button type="button" class="btn btn-delete">批量删除</button>
-    <button type="button" class="btn btn-move">批量移动</button>
+    <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
+    <button type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量移动</button>
     <div class="search-container mysearch">
       <input type="text" placeholder="输入文件名搜索..." class="search-input" />
       <i class="bi bi-search-heart search-icon"></i>
@@ -36,6 +36,28 @@ const myInput = ref(null);
 onMounted(() => {
   getFileList();
 });
+
+const deleteSelectedFiles = () => {
+  if (fileTable.value.selectedFiles.length > 0) {
+    console.log(fileTable.value.selectedFiles);
+    axios
+      .post(apiStore.file.deleteSelectedFiles, {
+        filesId: fileTable.value.selectedFiles,
+      })
+      .then((resp) => {
+        console.log(resp);
+        const selectedFiles = fileTable.value.selectedFiles;
+
+        files.value = files.value.filter((file) => !selectedFiles.includes(file.fileId));
+        fileTable.value.selectedFiles = [];
+        console.log(files.value);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        fileTable.value.selectedFiles = [];
+      });
+  }
+};
 
 const getFileList = async () => {
   try {
@@ -81,6 +103,14 @@ const updateFiles = (newFile) => {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  .disable {
+    opacity: 0.5;
+    cursor: not-allowed;
+    // pointer-events: none; /* 禁用鼠标事件 */
+  }
+}
+
 .header {
   height: 45px;
   display: flex;

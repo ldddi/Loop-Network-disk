@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input class="form-check-input" @change="selectAllFiles($event.target.checked)" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-3 container-title">文件名</div>
         <div class="col-4 container-title"></div>
@@ -24,7 +24,7 @@
       </div>
       <div v-for="file in props.files" class="row myrow" :key="file.fileId" tabindex="0">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input class="form-check-input" type="checkbox" :checked="isFileSelected(file.fileId)" @change="toggleSelection(file.fileId)" value="" id="defaultCheck1" />
         </div>
         <div class="col-3">
           <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
@@ -59,7 +59,7 @@
     </div>
     <div v-if="props.files.length == 0" class="test">
       <div>
-        <span>当前文件为空</span>
+        <span>当前文件夹为空</span>
       </div>
       <div class="upload-file" @click="handleClick">
         <i class="bi bi-file-earmark-diff-fill"></i>
@@ -87,6 +87,36 @@ const props = defineProps(["files", "myInput"]);
 const emit = defineEmits(["update-files"]);
 const apiStore = useApiStore();
 const route = useRoute();
+
+let selectedFiles = ref([]);
+
+const isFileSelected = (fileId) => {
+  return selectedFiles.value.includes(fileId);
+};
+
+const selectAllFiles = (isChecked) => {
+  if (isChecked) {
+    // 如果选中，添加所有文件 ID 到数组
+    selectedFiles.value = props.files.map((file) => file.fileId);
+    console.log("全选：" + selectedFiles.value);
+  } else {
+    // 如果取消选中，清空数组
+    selectedFiles.value = [];
+    console.log("全不选：" + selectedFiles.value);
+  }
+};
+
+const toggleSelection = (fileId) => {
+  if (selectedFiles.value.includes(fileId)) {
+    // 取消选中
+    selectedFiles.value = selectedFiles.value.filter((id) => id !== fileId);
+    console.log("取消：" + selectedFiles.value);
+  } else {
+    // 选中
+    selectedFiles.value.push(fileId);
+    console.log("选中：" + selectedFiles.value);
+  }
+};
 
 const handleClick = () => {
   props.myInput.click();
@@ -145,7 +175,7 @@ const createFileCancel = () => {
   fileIsVisible.value = false;
 };
 
-defineExpose({ createFile });
+defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>

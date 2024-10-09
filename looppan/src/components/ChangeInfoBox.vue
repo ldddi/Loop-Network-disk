@@ -40,7 +40,7 @@
 import { useApiStore } from "@/store/useApiStore";
 import { useUserStore } from "@/store/useUserStore";
 import axios from "@/utils/axiosInstance";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const userStore = useUserStore();
 const apiStore = useApiStore();
@@ -50,6 +50,10 @@ const isVisible = ref(false);
 let nickName = ref(userStore.user.nickName);
 const formData = new FormData();
 const imageUrl = ref(null); // 用于存储头像预览的URL
+
+onMounted(() => {
+  imageUrl.value = null;
+});
 
 const showModal = () => {
   isVisible.value = true;

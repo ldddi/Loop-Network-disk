@@ -65,7 +65,7 @@ public class UpdateUserInfoServiceImpl implements UpdateUserInfoService {
             Request request = new Request.Builder()
                     .url("https://api.github.com/repos/" + repo + "/contents/" + path)
                     .put(body)
-                    .addHeader("Authorization", "token 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") // 替换为你的 GitHub 令牌
+                    .addHeader("Authorization", "token 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") // 替换为你的 GitHub 令牌
                     .addHeader("Content-Type", "application/json")
                     .build();
 

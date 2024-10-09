@@ -18,9 +18,14 @@ public class UploadFileController {
 
     @RequestMapping(value = "/file/uploadFile", method = RequestMethod.POST)
     public ResponseEntity<Map> uploadFile(
-            @RequestParam("file[]") List<MultipartFile> files,
+            @RequestParam(value = "file[]", required = false) List<MultipartFile> files,
             @RequestParam(value = "filePId" , required = false) String filePId)
     {
+        if (files == null) {
+            Map<String, String> mp = new HashMap<>();
+            mp.put("message", "取消成功");
+            return ResponseEntity.ok().body(mp);
+        }
         System.out.println(files);
         System.out.println(filePId);
         return uploadFileService.uploadFile(files, filePId);
