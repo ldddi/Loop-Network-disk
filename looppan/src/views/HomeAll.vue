@@ -12,7 +12,8 @@
       <i class="bi bi-search-heart search-icon"></i>
     </div>
     <!-- Modal -->
-    <div v-if="fileTable != null && fileTable.selectedFiles.length != 0" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <!-- v-if="fileTable != null && fileTable.selectedFiles.length != 0"  -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable my-modal">
         <div class="modal-content">
           <div class="modal-header">
@@ -37,7 +38,7 @@
     <div v-for="file in filesCache" :key="file.fileId" class="active">{{ file.fileName }}</div>
   </div>
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @update-files="updateFiles" @get-file-list="getFileList" @pop-files-cache="popFilesCache" />
+  <FileTable ref="fileTable" :myInput="myInput" :files="files" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getFileList" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -138,6 +139,21 @@ const uploadFile = (fileList) => {
       updateFiles(resp.data[i]);
     }
   });
+};
+
+const removeFileFromFiles = (file) => {
+  files.value = files.value.filter((f) => f.fileId !== file.fileId);
+};
+
+const renameFile = ({ file, newName }) => {
+  console.log("rename file", file);
+  for (let i = 0; i < files.value.length; i++) {
+    console.log(files.value[i].fileId, file.fileId);
+    if (files.value[i].fileId === file.fileId) {
+      files.value[i].fileName = newName;
+      break;
+    }
+  }
 };
 
 const updateFiles = (newFile) => {

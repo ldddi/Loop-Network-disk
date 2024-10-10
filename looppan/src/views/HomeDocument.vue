@@ -2,7 +2,7 @@
   <div class="header">
     <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
     <input ref="myInput" type="file" id="fileInput" style="display: none" multiple accept=".pdf,.doc,.docx,.txt,.xls,.xlsx" @change="uploadFile($event.target.files)" />
-    <button type="button" class="btn btn-pull" onclick="document.getElementById('fileInput').click();">上传</button>
+    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传</button>
 
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
     <button type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']" data-bs-toggle="modal" data-bs-target="#staticBackdrop">批量移动</button>
@@ -11,7 +11,7 @@
       <i class="bi bi-search-heart search-icon"></i>
     </div>
     <!-- Modal -->
-    <div v-if="fileTable != null && fileTable.selectedFiles.length != 0" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable my-modal">
         <div class="modal-content">
           <div class="modal-header">
@@ -32,7 +32,7 @@
   </div>
   <div class="title">图片文件</div>
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @update-files="updateFiles" @get-file-list="getDocumentFileList" @pop-files-cache="popFilesCache" />
+  <FileTable ref="fileTable" :myInput="myInput" :files="files" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getDocumentFileList" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -57,13 +57,26 @@ onMounted(() => {
   getDocumentFileList();
 });
 
+const resetAndUpload = () => {
+  myInput.value.value = null; // 重置文件输入
+  document.getElementById("fileInput").click(); // 触发文件选择
+};
+
 const comfirmMoveFiles = () => {
+  let fileId;
+  if (modalFileTable.value.filesCache.length > 0) {
+    fileId = modalFileTable.value.filesCache[modalFileTable.value.filesCache.length - 1].fileId;
+  } else {
+    fileId = "0";
+  }
+
   axios
     .post(apiStore.file.moveFiles, {
       filesId: fileTable.value.selectedFiles,
-      pId: modalFileTable.value.filesCache[modalFileTable.value.filesCache.length - 1].fileId,
+      pId: fileId,
     })
     .then((resp) => {
+      fileTable.value.selectedFiles = [];
       getFileList();
     });
 };
@@ -107,6 +120,21 @@ const uploadFile = (fileList) => {
       updateFiles(resp.data[i]);
     }
   });
+};
+
+const removeFileFromFiles = (file) => {
+  files.value = files.value.filter((f) => f.fileId !== file.fileId);
+};
+
+const renameFile = ({ file, newName }) => {
+  console.log("rename file", file);
+  for (let i = 0; i < files.value.length; i++) {
+    console.log(files.value[i].fileId, file.fileId);
+    if (files.value[i].fileId === file.fileId) {
+      files.value[i].fileName = newName;
+      break;
+    }
+  }
 };
 
 const updateFiles = (newFile) => {

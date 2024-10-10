@@ -20,6 +20,7 @@ export const useApiStore = defineStore("api", () => {
     getFolderList: "/api/file/getFolderList",
     moveFiles: "/api/file/moveFiles",
     getAllCategoryFile: "/api/file/getAllCategoryFile",
+    renameFile: "/api/file/renameFile",
   };
 
   return {

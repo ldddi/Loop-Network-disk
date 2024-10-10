@@ -26,7 +26,7 @@
         <div class="col-auto">
           <input class="form-check-input" type="checkbox" :checked="isFileSelected(file.fileId)" @change="toggleSelection(file.fileId)" value="" id="defaultCheck1" />
         </div>
-        <div class="col-3">
+        <div class="col-3 my-col">
           <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
           <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
@@ -34,17 +34,30 @@
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
           <RouterLink :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <!--  -->
+          <div v-if="renameFileInput == file" class="my-rename-input">
+            <input v-model="newName" type="text" class="form-control" aria-label="输入内容" />
+            <div class="input-group-append">
+              <button @click="renameItem(file)" class="btn btn-info btn-square" type="button" title="确认">
+                <i class="bi bi-check"></i>
+              </button>
+              <button @click="cancleRename" class="btn btn-danger btn-square" type="button" title="取消">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+          <!--  -->
         </div>
         <div class="col-4 my-button">
           <div class="share-button item-button">
             <i class="bi bi-share item-icon"></i>
             <span>分享</span>
           </div>
-          <div class="del-button item-button">
+          <div @click="deleteItem(file)" class="del-button item-button">
             <i class="bi bi-trash item-icon"></i>
             <span>删除</span>
           </div>
-          <div class="reset-button item-button">
+          <div @click="clickRename(file)" class="reset-button item-button">
             <i class="bi bi-pencil-square item-icon"></i>
             <span>重命名</span>
           </div>
@@ -84,11 +97,29 @@ let fileIsVisible = ref(false);
 let createFileName = ref("");
 
 const props = defineProps(["files", "myInput"]);
-const emit = defineEmits(["update-files", "pop-files-cache"]);
+const emit = defineEmits(["update-files", "pop-files-cache", "remove-file-from-files", "rename-file"]);
 const apiStore = useApiStore();
 const route = useRoute();
 
 let selectedFiles = ref([]);
+let newName = ref();
+let renameFileInput = ref();
+
+const clickRename = (file) => {
+  renameFileInput.value = file;
+  if (file.folderType == statickey.folderType.file) {
+    let str = file.fileName;
+    console.log(str.substring(0, str.lastIndexOf(".")));
+    newName.value = str.substring(0, str.lastIndexOf("."));
+  } else {
+    newName.value = file.fileName;
+  }
+};
+
+const cancleRename = () => {
+  renameFileInput.value = null;
+  newName.value = null;
+};
 
 const isFileSelected = (fileId) => {
   return selectedFiles.value.includes(fileId);
@@ -145,6 +176,33 @@ const createFile = () => {
   fileIsVisible.value = true;
 };
 
+const deleteItem = (file) => {
+  const filesId = [];
+  filesId.push(file.fileId);
+  axios
+    .post(apiStore.file.deleteSelectedFiles, {
+      filesId: filesId,
+    })
+    .then((resp) => {
+      console.log(resp);
+      emit("remove-file-from-files", file);
+    });
+};
+
+const renameItem = (file) => {
+  axios
+    .post(apiStore.file.renameFile, {
+      fileId: file.fileId,
+      newName: newName.value,
+    })
+    .then((resp) => {
+      console.log(resp);
+      cancleRename();
+      let newName = resp.data;
+      emit("rename-file", { file, newName });
+    });
+};
+
 const createFileConfirm = async () => {
   let filePid = "0";
   if (route.query.path != null) {
@@ -167,6 +225,26 @@ defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>
+.my-col {
+  position: relative;
+}
+
+.my-rename-input {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: absolute;
+  top: 0;
+  width: 120%;
+  button {
+    width: 35px;
+    height: 35px;
+    line-height: 17.5px;
+
+    margin-left: 5px;
+  }
+}
+
 .test {
   width: 25%;
   height: 35%;

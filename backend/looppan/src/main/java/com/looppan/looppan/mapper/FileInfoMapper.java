@@ -49,4 +49,17 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
                                     @Param("filePId") String filePId,
                                     @Param("filePath") String filePath);
 
+    /**
+     * 根据文件id和用户id修改文件名
+     * @param fileId
+     * @param userId
+     * @param newName
+     * @return
+     */
+    @Update("UPDATE file_info SET file_name = #{newName}, file_path = #{newPath} WHERE file_id = #{fileId} AND user_id = #{userId}")
+    Integer updateFileNameAndPathByFileIdAndUserId(@Param("fileId") String fileId,
+                                    @Param("userId") String userId,
+                                    @Param("newName") String newName,
+                                                   @Param("newPath") String newPath);
+
 }
