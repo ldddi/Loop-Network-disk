@@ -2,7 +2,7 @@
   <div class="header">
     <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
     <input ref="myInput" type="file" id="fileInput" style="display: none" multiple @change="uploadFile($event.target.files)" />
-    <button type="button" class="btn btn-pull" onclick="document.getElementById('fileInput').click();">上传</button>
+    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传</button>
 
     <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件夹</button>
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
@@ -64,13 +64,26 @@ onMounted(() => {
   getFileList();
 });
 
+const resetAndUpload = () => {
+  myInput.value.value = null; // 重置文件输入
+  document.getElementById("fileInput").click(); // 触发文件选择
+};
+
 const comfirmMoveFiles = () => {
+  let fileId;
+  if (modalFileTable.value.filesCache.length > 0) {
+    fileId = modalFileTable.value.filesCache[modalFileTable.value.filesCache.length - 1].fileId;
+  } else {
+    fileId = "0";
+  }
+
   axios
     .post(apiStore.file.moveFiles, {
       filesId: fileTable.value.selectedFiles,
-      pId: modalFileTable.value.filesCache[modalFileTable.value.filesCache.length - 1].fileId,
+      pId: fileId,
     })
     .then((resp) => {
+      fileTable.value.selectedFiles = [];
       getFileList();
     });
 };

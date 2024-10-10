@@ -141,6 +141,7 @@ watch(
 );
 
 const createFile = () => {
+  createFileName.value = "";
   fileIsVisible.value = true;
 };
 

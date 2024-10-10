@@ -41,15 +41,15 @@ public class GetFileListServiceImpl implements GetFileListService {
 
         Map<String, Object> mp = new HashMap<>();
         mp.put("data", fileInfos);
-        System.out.println(path);
+
         FileInfo clickedFile = null;
         if (path != null) {
             path = path.substring(path.lastIndexOf("/") + 1);
-            System.out.println(path);
+
             clickedFile = fileInfoMapper.selectByFileIdAndUserId(path, userId);
         }
         
-        System.out.println(clickedFile);
+
         mp.put("clickedFile", clickedFile);
         return ResponseEntity.ok().body(mp);
     }

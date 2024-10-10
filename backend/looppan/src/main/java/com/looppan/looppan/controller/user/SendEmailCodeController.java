@@ -17,6 +17,7 @@ public class SendEmailCodeController {
     @RequestMapping(value = "/sendEmailCode", method = RequestMethod.POST)
     public ResponseEntity<Map> sendEmailCode(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
+
         return sendEmailCodeService.sendEmailCode(email);
     }
 }

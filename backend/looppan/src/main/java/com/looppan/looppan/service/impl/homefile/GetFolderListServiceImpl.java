@@ -36,7 +36,7 @@ public class GetFolderListServiceImpl implements GetFolderListService {
             throw new MyException("获取所有pid下的文件夹失败");
         }
         Map<String, Object> mp = new HashMap<>();
-        System.out.println(fileInfos);
+
         mp.put("data", fileInfos);
         return ResponseEntity.ok().body(mp);
     }

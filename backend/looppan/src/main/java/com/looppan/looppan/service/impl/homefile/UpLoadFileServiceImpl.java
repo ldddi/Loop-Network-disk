@@ -36,19 +36,11 @@ public class UpLoadFileServiceImpl implements UploadFileService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         Integer userId = Integer.valueOf(user.getUserId());
-        uploadDir += "/" + userId;
-
-
-
-        if (filePid != null && !filePid.equals("0")) {
-            filePid = filePid.substring(filePid.lastIndexOf("/") + 1);
-            System.out.println("pid = " + filePid);
-            FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filePid, userId);
-            System.out.println(fileInfo);
-            uploadDir = fileInfo.getFilePath();
-        }
 
         List<FileInfo> resFileinfo = new ArrayList<>();
+        if (filePid != null && !filePid.equals("0")) {
+            filePid = filePid.substring(filePid.lastIndexOf("/") + 1);
+        }
 
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
@@ -56,15 +48,6 @@ public class UpLoadFileServiceImpl implements UploadFileService {
             }
 
             String fileName = file.getOriginalFilename();
-
-            List<FileInfo> curFolder = fileInfoMapper.selectByFilePidAndUserId(filePid,userId);
-            System.out.println(curFolder);
-            for (FileInfo fileInfo : curFolder) {
-                System.out.println(fileInfo.getFileName() + "------" + fileName);
-                if (Objects.equals(fileInfo.getFileName(), fileName)) {
-                    throw new MyException("包含已存在的文件, 文件上传中断");
-                }
-            }
 
             String size = String.valueOf(file.getSize());
             String fileId = RandomUtils.generateRandomString(FileStaticKey.FILE_ID_LENGTH.toIntegerValue());
@@ -75,6 +58,7 @@ public class UpLoadFileServiceImpl implements UploadFileService {
             fileInfo.setFileName(fileName);
             fileInfo.setFileSize(size);
             fileInfo.setCreateTime(now);
+            fileInfo.setLastUpdateTime(now);
             fileInfo.setUserId(userId);
             fileInfo.setDelFlag(FileStaticKey.DEL_FLAG_NORMAL.toIntegerValue());
             fileInfo.setFilePid(filePid);
@@ -94,22 +78,38 @@ public class UpLoadFileServiceImpl implements UploadFileService {
                 fileInfo.setFileCategory(FileStaticKey.FILE_CATEGORY_OTHER.toIntegerValue());
             }
 
-            File destinationDir = new File(uploadDir);
-            if (!destinationDir.exists()) {
-                destinationDir.mkdirs();
-            }
             // 创建文件对象
-            File destinationFile = new File(destinationDir, file.getOriginalFilename());
+            File destinationFile = null;
+            if (filePid == null || filePid.equals("0")){
+                destinationFile = new File(uploadDir + "/" + userId, fileName);
+                if (destinationFile.exists()) {
+                    String newFileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_" + fileId + "." + extension;
+                    destinationFile = new File(uploadDir + "/" + userId, newFileName);
+                    fileInfo.setFileName(newFileName);
+                }
+            } else {
+                FileInfo pFileInfo = fileInfoMapper.selectByFileIdAndUserId(filePid, userId);
+                destinationFile = new File(pFileInfo.getFilePath() + "/", fileName);
+                if (destinationFile.exists()) {
+                    String newFileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_" + fileId + "." + extension;
+                    destinationFile = new File(uploadDir + "/" + userId, newFileName);
+                    fileInfo.setFileName(newFileName);
+                }
+            }
+
+            fileInfo.setFilePath(destinationFile.getAbsolutePath());
 
             try {
-                file.transferTo(destinationFile);
-                System.out.println("文件已保存到: " + destinationFile.getAbsolutePath());
-            } catch (IOException e) {
+                fileInfoMapper.insert(fileInfo);
+            } catch (Exception e) {
                 e.printStackTrace();
-                // 处理异常，比如文件保存失败
+                throw new MyException("文件存入数据库失败");
             }
-            fileInfo.setFilePath(destinationFile.getAbsolutePath());
-            fileInfoMapper.insert(fileInfo);
+            try {
+                file.transferTo(destinationFile);
+            } catch (IOException e) {
+                throw new MyException("存储文件失败!");
+            }
             resFileinfo.add(fileInfo);
         }
         Map<String, Object> mp = new HashMap<>();

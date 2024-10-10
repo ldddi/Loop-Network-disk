@@ -21,6 +21,7 @@ public class MoveFileController {
     public ResponseEntity<Map> moveFiles(@RequestBody Map<String, Object> mp) {
         List<String> filesId = (List<String>) mp.get("filesId");
         String pId = (String) mp.get("pId");
+        System.out.println(pId);
         return moveFileService.moveFiles(filesId, pId);
     }
 }

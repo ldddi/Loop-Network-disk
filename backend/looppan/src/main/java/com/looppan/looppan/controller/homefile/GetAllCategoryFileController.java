@@ -19,7 +19,7 @@ public class GetAllCategoryFileController {
     @RequestMapping(value = "/file/getAllCategoryFile", method = RequestMethod.POST)
     public ResponseEntity<Map> getAllAudioFile(@RequestBody Map<String, String> mp) {
         Integer category = Integer.valueOf(mp.get("category"));
-        System.out.println(category);
+
         return getAllCategoryFileService.getAllAudioFiles(category);
     }
 }

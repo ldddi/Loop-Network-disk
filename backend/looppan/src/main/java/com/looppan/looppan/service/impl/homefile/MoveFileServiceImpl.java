@@ -7,6 +7,7 @@ import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.homefile.MoveFileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,11 +21,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class MoveFileServiceImpl implements MoveFileService {
     @Autowired
     FileInfoMapper fileInfoMapper;
+
+    @Value("${file.upload-dir}")
+    String uploadDir;
 
     @Override
     @Transactional
@@ -37,30 +42,37 @@ public class MoveFileServiceImpl implements MoveFileService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
-        FileInfo pFileInfo = fileInfoMapper.selectByFileIdAndUserId(pId, Integer.valueOf(userId));
-        String pPath = pFileInfo.getFilePath();
+        String pPath = "";
+        if (!Objects.equals(pId, "0")) {
+            FileInfo pFileInfo = fileInfoMapper.selectByFileIdAndUserId(pId, Integer.valueOf(userId));
+            pPath = pFileInfo.getFilePath();
+        } else {
+            pPath = uploadDir + "/" + user.getUserId();
+        }
+
+
         for (int i = 0; i < filesId.size(); i++) {
+            FileInfo fileInfo;
             try {
-                FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
-                fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, pPath);
+                fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
+                fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, pPath + "/" + fileInfo.getFileName());
             } catch (Exception e) {
                 throw new MyException("更新失败");
             }
             // 源文件路径
-            String sourceFilePath = pFileInfo.getFilePath();
+            String sourceFilePath = fileInfo.getFilePath();
             // 目标文件路径
             String destinationFilePath = pPath;
             // 创建 Path 对象
             Path sourcePath = Paths.get(sourceFilePath);
-            Path destinationPath = Paths.get(destinationFilePath);
+            Path destinationPath = Paths.get(destinationFilePath, fileInfo.getFileName());
 
             try {
                 // 移动文件夹
                 Files.move(sourcePath, destinationPath);
-                System.out.println("文件夹移动成功！");
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("文件夹移动失败: " + e.getMessage());
+                throw new MyException("移动文件失败");
             }
         }
 

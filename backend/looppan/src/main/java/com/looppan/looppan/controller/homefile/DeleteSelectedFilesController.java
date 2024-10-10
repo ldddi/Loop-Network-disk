@@ -21,9 +21,9 @@ public class DeleteSelectedFilesController {
 
     @RequestMapping(value = "/file/deleteSelectedFiles", method = RequestMethod.POST)
     public ResponseEntity<Map> delFile(@RequestBody Map<String, Object> mp) {
-        System.out.println(mp);
+
         List<String> filesId = (List<String>) mp.get("filesId");
-        System.out.println(filesId);
+
         return deleteSelectedFilesService.deleteFiles(filesId);
     }
 }

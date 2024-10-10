@@ -7,12 +7,17 @@ import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.user.RegisterService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +34,9 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Value("${file.upload-dir}")
+    String uploadDir;
+
     @Override
     public ResponseEntity<Map> register(
             String email, String password, String confirmPassword,
@@ -42,16 +50,17 @@ public class RegisterServiceImpl implements RegisterService {
         if (picCode != null) {
             redisTemplate.delete(session.getId());
         }
-        String emailCOde = redisTemplate.opsForValue().get(email);
-        if (emailCOde != null) {
-            redisTemplate.delete(email);
-        }
 
         if (picCode == null || !picCode.equalsIgnoreCase(picCheckCode)) {
             throw new MyException("图片验证码错误");
         }
 
-        if (emailCOde == null || !emailCOde.equals(emailCheckCode)) {
+        String emailCode = redisTemplate.opsForValue().get(email);
+        if (emailCode != null) {
+            redisTemplate.delete(email);
+        }
+
+        if (emailCode == null || !emailCode.equals(emailCheckCode)) {
             throw new MyException("邮箱验证码错误");
         }
 
@@ -69,7 +78,21 @@ public class RegisterServiceImpl implements RegisterService {
         user.setUseSpace(BigInteger.valueOf(0));
         user.setAvatar(StaticKey.AVATAR_URL.toStringValue());
         user.setNickName(email);
-        userMapper.insert(user);
+
+
+        try {
+            userMapper.insert(user);
+        } catch (Exception e) {
+            throw new MyException("用户插入失败");
+        }
+
+        Path path = Paths.get(uploadDir + user.getUserId());
+
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new MyException("创建用户根目录失败");
+        }
 
         Map<String, String> mp = new HashMap<String, String>();
         mp.put("message", "注册成功!~");

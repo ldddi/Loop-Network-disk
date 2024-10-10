@@ -21,7 +21,12 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     @Select("select * from file_info where user_id = #{userId} and file_category = #{category}")
     List<FileInfo> selectByUserIdAndCategory(@Param("userId") Integer userId, @Param("category") Integer category);
 
-    // 根据userid和 文件的pid，查找当前文件夹下的所有文件
+    /**
+     * 根据userid和 文件的pid，查找当前文件夹下的所有文件
+     * @param filePId
+     * @param userId
+     * @return
+     */
     @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId}")
     List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
 

@@ -16,7 +16,7 @@
         <div class="mb-4">
           <div class="input-group">
             <input v-model="emailCheckCode" type="text" class="form-control" id="emailCode" placeholder="输入邮箱验证码" />
-            <button class="btn btn-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
+            <button type="button" class="btn btn-primary" @click="sendEmailCheckCode" :disabled="isSending">{{ isSending ? "发送中..." : "发送验证码" }}</button>
           </div>
         </div>
 
@@ -24,7 +24,7 @@
         <div class="mb-4">
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-            <input :type="passwordVisible ? 'text' : 'password'" v-model="password" class="form-control" id="password" placeholder="密码" required />
+            <input :type="passwordVisible ? 'text' : 'password'" v-model="password" class="form-control" id="password" placeholder="密码" />
             <span class="input-group-text cursor-pointer" @click="togglePasswordVisibility">
               <i :class="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
             </span>
@@ -129,10 +129,10 @@ const clickRegisterButton = async () => {
 // 发送邮箱验证码
 let isSending = ref(false);
 const sendEmailCheckCode = async () => {
+  isSending.value = true;
   const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
     email: email.value,
   });
-  isSending.value = true;
   setTimeout(() => {
     isSending.value = false;
   }, 2000);

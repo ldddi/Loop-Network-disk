@@ -26,8 +26,7 @@ public class UploadFileController {
             mp.put("message", "取消成功");
             return ResponseEntity.ok().body(mp);
         }
-        System.out.println(files);
-        System.out.println(filePId);
+
         return uploadFileService.uploadFile(files, filePId);
     }
 }
