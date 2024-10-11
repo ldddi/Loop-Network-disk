@@ -30,7 +30,8 @@ public class GetFileListServiceImpl implements GetFileListService {
         List<FileInfo> fileInfos;
         if (category == FileStaticKey.FILE_CATEGORY_FOLDER.toIntegerValue()) {
             if (path == null) {
-                fileInfos = fileInfoMapper.selectByUserId(userId, "0");
+                String FilePId = "0";
+                fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId);
             } else {
                 String FilePId = path.substring(path.lastIndexOf("/") + 1);
                 fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId);

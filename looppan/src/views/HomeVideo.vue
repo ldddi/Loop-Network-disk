@@ -11,7 +11,7 @@
       <i class="bi bi-search-heart search-icon"></i>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div ref="myModal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable my-modal">
         <div class="modal-content">
           <div class="modal-header">
@@ -31,8 +31,15 @@
     </div>
   </div>
   <div class="title">图片文件</div>
+  <!-- 加载覆盖层 -->
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getVideoFileList" @pop-files-cache="popFilesCache" />
+  <div v-if="isLoading" class="loading-overlay my-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">正在加载...</span>
+    </div>
+  </div>
+
+  <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getVideoFileList" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -43,6 +50,10 @@ import { useApiStore } from "@/store/useApiStore";
 import statickey from "@/utils/statickey";
 import { useRoute } from "vue-router";
 import ModalFileTable from "@/components/ModalFileTable.vue";
+import { Modal } from "bootstrap";
+
+// 加载状态
+const isLoading = ref(false);
 
 const fileTable = ref(null);
 const files = ref([]);
@@ -51,6 +62,16 @@ const apiStore = useApiStore();
 const route = useRoute();
 
 const myInput = ref(null);
+const myModal = ref(null);
+
+const openModal = () => {
+  if (myModal.value) {
+    const modalInstance = new Modal(myModal.value);
+    modalInstance.show();
+  } else {
+    console.error("Modal 元素未找到");
+  }
+};
 
 const modalFileTable = ref(null);
 onMounted(() => {
@@ -98,10 +119,12 @@ const deleteSelectedFiles = () => {
 };
 
 const getVideoFileList = async () => {
+  isLoading.value = true; // 开始加载
   const resp = await axios.post(apiStore.file.getAllCategoryFile, {
     category: statickey.category.video,
   });
   files.value = resp.data;
+  isLoading.value = false; // 结束加载
 };
 
 const uploadFile = (fileList) => {
@@ -144,6 +167,12 @@ const updateFiles = (newFile) => {
 </script>
 
 <style lang="scss" scoped>
+.my-loading {
+  position: absolute;
+  top: 40%;
+  left: 49%;
+}
+
 .my-modal {
   position: relative;
   top: 15vh;
@@ -154,6 +183,7 @@ const updateFiles = (newFile) => {
 }
 
 .header {
+  position: relative;
   .disable {
     opacity: 0.5;
     cursor: not-allowed;

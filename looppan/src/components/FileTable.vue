@@ -33,7 +33,7 @@
           <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
-          <RouterLink :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <RouterLink @click="clickFileName(file)" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
           <!--  -->
           <div v-if="renameFileInput == file" class="my-rename-input">
             <input v-model="newName" type="text" class="form-control" aria-label="输入内容" />
@@ -61,7 +61,7 @@
             <i class="bi bi-pencil-square item-icon"></i>
             <span>重命名</span>
           </div>
-          <div class="move-button item-button">
+          <div @click="clickOpenModal(file)" class="move-button item-button">
             <i class="bi bi-arrows-move item-icon"></i>
             <span>移动</span>
           </div>
@@ -70,7 +70,7 @@
         <div v-if="file.folderType != statickey.folderType.folder" class="col-1">{{ file.fileSize }}</div>
       </div>
     </div>
-    <div v-if="props.files.length == 0" class="test">
+    <div v-if="props.files == null || props.files.length == 0" class="test">
       <div>
         <span>当前文件夹为空</span>
       </div>
@@ -80,6 +80,25 @@
       </div>
     </div>
   </div>
+
+  <div v-if="isPreviewVisibleImage" class="preview-modal">
+    <div @click="closePreviewImage" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <img class="isImageScaled" :src="imageUrl" alt="Image Preview" />
+    </div>
+  </div>
+
+  <div v-if="isPreviewVisibleVideo" class="preview-modal">
+    <div @click="closePreviewVideo" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <video class="isVideoScaled" :src="videoUrl" controls></video>
+    </div>
+  </div>
+
   <ErrorAlertBox />
   <SuccessAlertBox />
 </template>
@@ -93,17 +112,48 @@ import ErrorAlertBox from "./ErrorAlertBox.vue";
 import SuccessAlertBox from "./SuccessAlertBox.vue";
 import statickey from "@/utils/statickey";
 
+const isPreviewVisibleVideo = ref(false);
+const isPreviewVisibleImage = ref(false);
+let imageUrl = ref("https://cdn.pixabay.com/photo/2022/06/11/09/20/snake-7256057_1280.jpg");
+let videoUrl = ref("https://www.w3schools.com/html/mov_bbb.mp4");
+const closePreviewImage = () => {
+  isPreviewVisibleImage.value = false;
+};
+
+const closePreviewVideo = () => {
+  isPreviewVisibleVideo.value = false;
+};
+
+const clickFileName = (file) => {
+  if (file.fileCategory == statickey.category.image) {
+    axios
+      .post(apiStore.file.returnImageUrl, {
+        fileId: file.fileId,
+      })
+      .then((resp) => {
+        imageUrl.value = resp;
+        console.log(resp);
+        isPreviewVisibleImage.value = true;
+      });
+  }
+};
+
 let fileIsVisible = ref(false);
 let createFileName = ref("");
 
 const props = defineProps(["files", "myInput"]);
-const emit = defineEmits(["update-files", "pop-files-cache", "remove-file-from-files", "rename-file"]);
+const emit = defineEmits(["update-files", "pop-files-cache", "remove-file-from-files", "rename-file", "open-modal"]);
 const apiStore = useApiStore();
 const route = useRoute();
 
 let selectedFiles = ref([]);
 let newName = ref();
 let renameFileInput = ref();
+
+const clickOpenModal = (file) => {
+  selectedFiles.value.push(file.fileId);
+  emit("open-modal");
+};
 
 const clickRename = (file) => {
   renameFileInput.value = file;
@@ -225,6 +275,59 @@ defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>
+.isImageScaled {
+  transform: scale(0.6); /* 进行缩放 */
+  transition: transform 0.1s; /* 添加过渡效果 */
+}
+
+.isVideoScaled {
+  transform: scale(1.2); /* 进行缩放 */
+  transition: transform 0.1s;
+}
+
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  .close-icon {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #fff;
+  }
+  .preview-content {
+    max-width: 90%;
+    max-height: 90%;
+    margin-bottom: 1%;
+    display: flex; /* 使内容为flex布局 */
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中 */
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      object-fit: cover; /* 保持图像的宽高比 */
+    }
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      object-fit: cover; /* 保持图像的宽高比 */
+    }
+  }
+}
+
+//
+
 .my-col {
   position: relative;
 }

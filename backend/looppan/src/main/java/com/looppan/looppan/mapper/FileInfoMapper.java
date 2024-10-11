@@ -27,7 +27,7 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      * @param userId
      * @return
      */
-    @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId}")
+    @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId}  ORDER BY create_time DESC")
     List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
 
     // 根据userid和 pid 查找所有文件夹或文件

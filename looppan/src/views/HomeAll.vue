@@ -6,14 +6,14 @@
 
     <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件夹</button>
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
-    <button type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']" data-bs-toggle="modal" data-bs-target="#staticBackdrop">批量移动</button>
+    <button @click="openModal" type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量移动</button>
     <div class="search-container mysearch">
       <input type="text" placeholder="输入文件名搜索..." class="search-input" />
       <i class="bi bi-search-heart search-icon"></i>
     </div>
     <!-- Modal -->
     <!-- v-if="fileTable != null && fileTable.selectedFiles.length != 0"  -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div ref="myModal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable my-modal">
         <div class="modal-content">
           <div class="modal-header">
@@ -38,7 +38,13 @@
     <div v-for="file in filesCache" :key="file.fileId" class="active">{{ file.fileName }}</div>
   </div>
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getFileList" @pop-files-cache="popFilesCache" />
+  <div v-if="isLoading" class="loading-overlay my-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">正在加载...</span>
+    </div>
+  </div>
+
+  <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getFileList" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -49,7 +55,8 @@ import { useApiStore } from "@/store/useApiStore";
 import statickey from "@/utils/statickey";
 import { useRoute } from "vue-router";
 import ModalFileTable from "@/components/ModalFileTable.vue";
-
+import { Modal } from "bootstrap";
+const isLoading = ref(false);
 const fileTable = ref(null);
 const files = ref([]);
 
@@ -59,6 +66,16 @@ const apiStore = useApiStore();
 const route = useRoute();
 
 const myInput = ref(null);
+const myModal = ref(null);
+
+const openModal = () => {
+  if (myModal.value) {
+    const modalInstance = new Modal(myModal.value);
+    modalInstance.show();
+  } else {
+    console.error("Modal 元素未找到");
+  }
+};
 
 const modalFileTable = ref(null);
 onMounted(() => {
@@ -113,6 +130,7 @@ const deleteSelectedFiles = () => {
 };
 
 const getFileList = async () => {
+  isLoading.value = true;
   const resp = await axios.get(apiStore.file.getFileList, {
     category: statickey.category.folder,
     path: route.query.path,
@@ -121,6 +139,7 @@ const getFileList = async () => {
   if (resp.clickedFile != null && !filesCache.value.includes(resp.clickedFile)) {
     filesCache.value.push(resp.clickedFile);
   }
+  isLoading.value = false;
 };
 
 const uploadFile = (fileList) => {
@@ -162,6 +181,12 @@ const updateFiles = (newFile) => {
 </script>
 
 <style lang="scss" scoped>
+.my-loading {
+  position: absolute;
+  top: 40%;
+  left: 49%;
+}
+
 .my-modal {
   position: relative;
   top: 15vh;
@@ -172,6 +197,7 @@ const updateFiles = (newFile) => {
 }
 
 .header {
+  position: relative;
   .disable {
     opacity: 0.5;
     cursor: not-allowed;
