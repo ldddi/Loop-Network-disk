@@ -64,13 +64,13 @@ axiosInstance.interceptors.response.use(
 );
 
 // 封装 GET 方法
-const get = (url, params) => {
-  return axiosInstance.get(url, { params });
+const get = (url, params, responseType = "json") => {
+  return axiosInstance.get(url, { params, responseType });
 };
 
 // 封装 POST 方法
-const post = (url, data) => {
-  return axiosInstance.post(url, data);
+const post = (url, data, responseType = "json") => {
+  return axiosInstance.post(url, data, { responseType });
 };
 
 // 导出封装的 axios 实例

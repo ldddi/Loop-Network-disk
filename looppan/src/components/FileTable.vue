@@ -33,7 +33,9 @@
           <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
-          <RouterLink @click="clickFileName(file)" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <RouterLink v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <span v-else-if="file.fileCategory == statickey.category.image" @click="clickFileName(file)" class="file-name">{{ file.fileName }}</span>
+          <span v-else class="file-name">{{ file.fileName }}</span>
           <!--  -->
           <div v-if="renameFileInput == file" class="my-rename-input">
             <input v-model="newName" type="text" class="form-control" aria-label="输入内容" />
@@ -114,7 +116,7 @@ import statickey from "@/utils/statickey";
 
 const isPreviewVisibleVideo = ref(false);
 const isPreviewVisibleImage = ref(false);
-let imageUrl = ref("https://cdn.pixabay.com/photo/2022/06/11/09/20/snake-7256057_1280.jpg");
+let imageUrl = ref("");
 let videoUrl = ref("https://www.w3schools.com/html/mov_bbb.mp4");
 const closePreviewImage = () => {
   isPreviewVisibleImage.value = false;
@@ -127,11 +129,16 @@ const closePreviewVideo = () => {
 const clickFileName = (file) => {
   if (file.fileCategory == statickey.category.image) {
     axios
-      .post(apiStore.file.returnImageUrl, {
-        fileId: file.fileId,
-      })
+      .post(
+        apiStore.file.returnImageUrl,
+        {
+          fileId: file.fileId,
+        },
+        "blob"
+      )
       .then((resp) => {
-        imageUrl.value = resp;
+        const imageBlob = resp; // 获取 Blob 数据
+        imageUrl.value = URL.createObjectURL(imageBlob);
         console.log(resp);
         isPreviewVisibleImage.value = true;
       });

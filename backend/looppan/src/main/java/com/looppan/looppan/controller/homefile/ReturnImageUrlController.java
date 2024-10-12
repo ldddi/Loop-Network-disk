@@ -3,6 +3,7 @@ package com.looppan.looppan.controller.homefile;
 
 import com.looppan.looppan.service.ReturnImageUrlService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +18,9 @@ public class ReturnImageUrlController {
     ReturnImageUrlService returnImageUrlService;
 
     @PostMapping("/file/returnImageUrl")
-    public ResponseEntity<String> returnImageUrl(@RequestBody Map<String, String> mp) {
+    public ResponseEntity<Resource> returnImageUrl(@RequestBody Map<String, String> mp) {
         String fileId = mp.get("fileId");
+
         return returnImageUrlService.returnImageUrl(fileId);
     }
 

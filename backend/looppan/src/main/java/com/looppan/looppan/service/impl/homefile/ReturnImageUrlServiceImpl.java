@@ -7,11 +7,20 @@ import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.ReturnImageUrlService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ReturnImageUrlServiceImpl implements ReturnImageUrlService {
@@ -20,7 +29,7 @@ public class ReturnImageUrlServiceImpl implements ReturnImageUrlService {
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<String> returnImageUrl(String fileId) {
+    public ResponseEntity<Resource> returnImageUrl(String fileId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
@@ -33,23 +42,24 @@ public class ReturnImageUrlServiceImpl implements ReturnImageUrlService {
             throw new MyException("获取文件信息失败");
         }
 
-//        Path file = Paths.get(fileInfo.getFilePath());
-//        Resource resource = null;
-//        try {
-//            resource = new UrlResource(file.toUri());
-//        } catch (MalformedURLException e) {
-//            throw new MyException("resource 失败");
-//        }
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-//                .body(resource);
-        // 构建可以直接访问的 URL
-        String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/files/")
-                .path(fileInfo.getFileName())
-                .toUriString();
+        File file = new File(fileInfo.getFilePath());
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok(fileUrl);
+        Resource resource = new FileSystemResource(file);
+        HttpHeaders headers = new HttpHeaders();
+        String encodedFilename;
+        try {
+            encodedFilename = URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + encodedFilename); // inline以便在浏览器中查看
+        return ResponseEntity.ok()
+                .headers(headers)
+//                .contentType(MediaType.IMAGE_JPEG) // 根据实际文件类型设置
+                .body(resource);
     }
 }
