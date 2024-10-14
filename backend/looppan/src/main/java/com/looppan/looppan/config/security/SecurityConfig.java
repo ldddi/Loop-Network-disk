@@ -49,8 +49,7 @@ public class SecurityConfig {
                                 "/sendEmailCode",
                                 "/register",
                                 "/images/**",
-                                "/test",
-                                "/file/returnImageUrl/**"
+                                "/test"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

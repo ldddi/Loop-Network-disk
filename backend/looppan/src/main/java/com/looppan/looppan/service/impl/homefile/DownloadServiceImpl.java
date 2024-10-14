@@ -5,61 +5,59 @@ import com.looppan.looppan.config.security.UserDetailsImpl;
 import com.looppan.looppan.mapper.FileInfoMapper;
 import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
-import com.looppan.looppan.service.ReturnImageUrlService;
+import com.looppan.looppan.service.homefile.DownloadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
-public class ReturnImageUrlServiceImpl implements ReturnImageUrlService {
-
+public class DownloadServiceImpl implements DownloadService {
     @Autowired
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<Resource> returnImageUrl(String fileId) {
+    public ResponseEntity<FileSystemResource> download(String fileId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
-        FileInfo fileInfo;
+        FileInfo fileInfo = null;
         try {
             fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
-        } catch (NumberFormatException e) {
-            throw new MyException("获取文件信息失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException("获取文件失败");
         }
 
-        File file = new File(fileInfo.getFilePath());
-        if (!file.exists()) {
-            return ResponseEntity.notFound().build();
+        Path path = Paths.get(fileInfo.getFilePath());
+        if (!Files.exists(path) || !Files.isRegularFile(path)) {
+            throw new MyException("文件不存在");
         }
+        FileSystemResource resource = new FileSystemResource(path.toFile());
 
-        Resource resource = new FileSystemResource(file);
         HttpHeaders headers = new HttpHeaders();
+        // 处理文件名编码，确保文件名中的特殊字符不会导致问题
         String encodedFilename;
-        try {
-            encodedFilename = URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        encodedFilename = URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        // 设置 Content-Disposition 头部为附件下载
+        String contentDisposition = "attachment; filename=\"" + encodedFilename + "\"";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
 
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + encodedFilename); // inline以便在浏览器中查看
         return ResponseEntity.ok()
                 .headers(headers)
-//                .contentType(MediaType.IMAGE_JPEG) // 根据实际文件类型设置
                 .body(resource);
     }
 }

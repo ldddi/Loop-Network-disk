@@ -8,6 +8,7 @@ import "element-plus/dist/index.css";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";
+
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 // 引入图标

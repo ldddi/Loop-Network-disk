@@ -34,8 +34,7 @@
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
           <RouterLink v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
-          <span v-else-if="file.fileCategory == statickey.category.image" @click="clickFileName(file)" class="file-name">{{ file.fileName }}</span>
-          <span v-else class="file-name">{{ file.fileName }}</span>
+          <span v-else class="file-name" @click="clickFileName(file)">{{ file.fileName }}</span>
           <!--  -->
           <div v-if="renameFileInput == file" class="my-rename-input">
             <input v-model="newName" type="text" class="form-control" aria-label="输入内容" />
@@ -53,7 +52,11 @@
         <div class="col-4 my-button">
           <div class="share-button item-button">
             <i class="bi bi-share item-icon"></i>
-            <span>分享</span>
+            <span @click="(file) => (shareFile = file)" data-bs-toggle="modal" data-bs-target="#shareModal">分享</span>
+          </div>
+          <div v-if="file.folderType != statickey.folderType.folder" class="download-button item-button">
+            <i class="bi bi-download item-icon"></i>
+            <span @click="clickDownload(file)">下载</span>
           </div>
           <div @click="deleteItem(file)" class="del-button item-button">
             <i class="bi bi-trash item-icon"></i>
@@ -69,7 +72,7 @@
           </div>
         </div>
         <div class="col-3">{{ file.createTime }}</div>
-        <div v-if="file.folderType != statickey.folderType.folder" class="col-1">{{ file.fileSize }}</div>
+        <div v-if="file.folderType != statickey.folderType.folder" class="col-1">{{ getFileSize(file.fileSize) }}</div>
       </div>
     </div>
     <div v-if="props.files == null || props.files.length == 0" class="test">
@@ -101,6 +104,62 @@
     </div>
   </div>
 
+  <!-- 音频预览模态框 -->
+  <div v-if="isPreviewVisibleAudio" class="preview-modal">
+    <div @click="closePreviewAudio" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <audio class="isAudioScaled" :src="audioUrl" controls></audio>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="shareModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">分享</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body my-body">
+          <div class="time">
+            <label for="fileName">
+              <span>&nbsp;</span>
+              文件名:&nbsp;{{ shareFile.fileName }}
+            </label>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="time">
+            <label>
+              <span style="color: red">*</span>
+              有效期:
+            </label>
+            <div class="input">
+              <input type="radio" id="sevenDays" value="7" v-model="selectedDuration" />
+              <label for="sevenDays">7天</label>
+            </div>
+            <div class="input">
+              <input type="radio" id="thirtyDays" value="30" v-model="selectedDuration" />
+              <label for="thirtyDays">30天</label>
+            </div>
+            <div class="input">
+              <input type="radio" id="perpetual" value="perpetual" v-model="selectedDuration" />
+              <label for="perpetual">永久</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" @click="clickShare" class="btn btn-primary">分享</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <ErrorAlertBox />
   <SuccessAlertBox />
 </template>
@@ -116,8 +175,12 @@ import statickey from "@/utils/statickey";
 
 const isPreviewVisibleVideo = ref(false);
 const isPreviewVisibleImage = ref(false);
+const isPreviewVisibleAudio = ref(false);
+
 let imageUrl = ref("");
-let videoUrl = ref("https://www.w3schools.com/html/mov_bbb.mp4");
+let videoUrl = ref("");
+let audioUrl = ref("");
+
 const closePreviewImage = () => {
   isPreviewVisibleImage.value = false;
 };
@@ -126,22 +189,83 @@ const closePreviewVideo = () => {
   isPreviewVisibleVideo.value = false;
 };
 
+const closePreviewAudio = () => {
+  isPreviewVisibleAudio.value = false;
+};
+let shareFile = ref("");
+let selectedDuration = ref();
+const clickShare = () => {};
+
+const clickDownload = (file) => {
+  axios
+    .post(
+      apiStore.file.downloadFile,
+      {
+        fileId: file.fileId,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const url = URL.createObjectURL(resp);
+
+      // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+      const link = document.createElement("a");
+      link.href = url;
+
+      // 设置下载文件名
+      link.setAttribute("download", file.fileName || "downloadedFile");
+
+      // 将链接添加到 DOM，并模拟点击下载
+      document.body.appendChild(link);
+      link.click();
+
+      // 下载完成后移除链接
+      document.body.removeChild(link);
+
+      // 释放 Blob URL
+      window.URL.revokeObjectURL(url);
+      console.log(resp);
+    });
+};
+
 const clickFileName = (file) => {
-  if (file.fileCategory == statickey.category.image) {
-    axios
-      .post(
-        apiStore.file.returnImageUrl,
-        {
-          fileId: file.fileId,
-        },
-        "blob"
-      )
-      .then((resp) => {
-        const imageBlob = resp; // 获取 Blob 数据
-        imageUrl.value = URL.createObjectURL(imageBlob);
-        console.log(resp);
+  axios
+    .post(
+      apiStore.file.returnFileByte,
+      {
+        fileId: file.fileId,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const Blob = resp; // 获取 Blob 数据
+      console.log(resp);
+      if (file.fileCategory == statickey.category.video) {
+        isPreviewVisibleVideo.value = true;
+        videoUrl.value = URL.createObjectURL(Blob);
+      } else if (file.fileCategory == statickey.category.audio) {
+        isPreviewVisibleAudio.value = true;
+        audioUrl.value = URL.createObjectURL(Blob);
+      } else if (file.fileCategory == statickey.category.image) {
         isPreviewVisibleImage.value = true;
-      });
+        imageUrl.value = URL.createObjectURL(Blob);
+      }
+    });
+};
+
+const getFileSize = (size) => {
+  if (size / (1024 * 1024 * 1024) >= 1) {
+    // gb
+    return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  } else if (size / (1024 * 1024) >= 1) {
+    // mb
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  } else if (size / 1024 >= 1) {
+    // kb
+    return `${(size / 1024).toFixed(2)} KB`;
+  } else {
+    // b
+    return `${size} B`;
   }
 };
 
@@ -282,13 +406,25 @@ defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>
+.my-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .time {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 15px;
+  }
+}
+
 .isImageScaled {
   transform: scale(0.6); /* 进行缩放 */
   transition: transform 0.1s; /* 添加过渡效果 */
 }
 
 .isVideoScaled {
-  transform: scale(1.2); /* 进行缩放 */
+  transform: scale(0.9); /* 进行缩放 */
   transition: transform 0.1s;
 }
 

@@ -21,7 +21,8 @@ export const useApiStore = defineStore("api", () => {
     moveFiles: "/api/file/moveFiles",
     getAllCategoryFile: "/api/file/getAllCategoryFile",
     renameFile: "/api/file/renameFile",
-    returnImageUrl: "/api/file/returnImageUrl",
+    returnFileByte: "/api/file/returnFileByte",
+    downloadFile: "/api/file/download",
   };
 
   return {
