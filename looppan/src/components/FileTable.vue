@@ -50,9 +50,9 @@
           <!--  -->
         </div>
         <div class="col-4 my-button">
-          <div class="share-button item-button">
+          <div class="share-button item-button" data-bs-toggle="modal" data-bs-target="#shareModal">
             <i class="bi bi-share item-icon"></i>
-            <span @click="(file) => (shareFile = file)" data-bs-toggle="modal" data-bs-target="#shareModal">分享</span>
+            <span @click="clickShareIcon(file)">分享</span>
           </div>
           <div v-if="file.folderType != statickey.folderType.folder" class="download-button item-button">
             <i class="bi bi-download item-icon"></i>
@@ -122,7 +122,7 @@
           <h1 class="modal-title fs-5" id="staticBackdropLabel">分享</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body my-body">
+        <div v-if="!isShowShareUrl" class="modal-body my-body">
           <div class="time">
             <label for="fileName">
               <span>&nbsp;</span>
@@ -151,10 +151,28 @@
               <label for="perpetual">永久</label>
             </div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button type="button" @click="clickShare" class="btn btn-primary">分享</button>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-          <button type="button" @click="clickShare" class="btn btn-primary">分享</button>
+
+        <div v-else class="modal-body my-body">
+          <div>
+            <label class="share" for="fileName">文件名:</label>
+            <span>{{ shareFile.fileName }}</span>
+          </div>
+          <div>
+            <label class="share" for="">分享链接:</label>
+            <span>{{ shareUrl }}</span>
+          </div>
+          <div>
+            <label class="share" for="">提取码:</label>
+            <span>{{ shareCode }}</span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+          </div>
         </div>
       </div>
     </div>
@@ -192,9 +210,30 @@ const closePreviewVideo = () => {
 const closePreviewAudio = () => {
   isPreviewVisibleAudio.value = false;
 };
+
+const clickShareIcon = (file) => {
+  isShowShareUrl.value = false;
+  shareFile.value = file;
+};
+
 let shareFile = ref("");
 let selectedDuration = ref();
-const clickShare = () => {};
+let isShowShareUrl = ref(false);
+let shareUrl = ref("");
+let shareCode = ref("");
+const clickShare = () => {
+  axios
+    .post(apiStore.file.shareFile, {
+      fileId: shareFile.value.fileId,
+      time: selectedDuration.value,
+    })
+    .then((resp) => {
+      console.log(resp);
+      shareUrl.value = resp.data.url;
+      shareCode.value = resp.data.code;
+      isShowShareUrl.value = true;
+    });
+};
 
 const clickDownload = (file) => {
   axios
@@ -229,6 +268,7 @@ const clickDownload = (file) => {
 };
 
 const clickFileName = (file) => {
+  if (file.fileCategory == statickey.category.folder || file.fileCategory == statickey.category.document) return;
   axios
     .post(
       apiStore.file.returnFileByte,
@@ -255,16 +295,12 @@ const clickFileName = (file) => {
 
 const getFileSize = (size) => {
   if (size / (1024 * 1024 * 1024) >= 1) {
-    // gb
     return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   } else if (size / (1024 * 1024) >= 1) {
-    // mb
     return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   } else if (size / 1024 >= 1) {
-    // kb
     return `${(size / 1024).toFixed(2)} KB`;
   } else {
-    // b
     return `${size} B`;
   }
 };
@@ -406,10 +442,16 @@ defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>
+.share {
+  width: 60px;
+  margin-right: 15px;
+}
+
 .my-body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 200px;
   .time {
     display: flex;
     align-items: center;
@@ -419,7 +461,7 @@ defineExpose({ createFile, selectedFiles });
 }
 
 .isImageScaled {
-  transform: scale(0.6); /* 进行缩放 */
+  transform: scale(0.7); /* 进行缩放 */
   transition: transform 0.1s; /* 添加过渡效果 */
 }
 

@@ -12,7 +12,8 @@ public enum FileStaticKey {
     FILE_CATEGORY_OTHER(5),
     DEL_FLAG_DELETE(0),
     DEL_FLAG_RECOVERY(1),
-    DEL_FLAG_NORMAL(2);
+    DEL_FLAG_NORMAL(2),
+    LENGTH_SHARE_CODE(5);
 
     final Integer integerValue;
     final String stringValue;

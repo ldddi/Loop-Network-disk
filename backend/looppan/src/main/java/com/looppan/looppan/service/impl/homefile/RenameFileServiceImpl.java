@@ -33,7 +33,7 @@ public class RenameFileServiceImpl implements RenameFileService {
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
-        System.out.println("newName : " + newName);
+
         FileInfo fileInfo = null;
         try {
             fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
@@ -54,10 +54,6 @@ public class RenameFileServiceImpl implements RenameFileService {
         Path sourcePath = Paths.get(path);
         Path targetPath = Paths.get(newPath);
 
-        System.out.println("if");
-        System.out.println(sourcePath);
-        System.out.println(targetPath);
-        System.out.println(fileInfo);
         try {
             Files.move(sourcePath, targetPath);
         } catch (IOException e) {

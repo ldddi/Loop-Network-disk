@@ -23,6 +23,8 @@ export const useApiStore = defineStore("api", () => {
     renameFile: "/api/file/renameFile",
     returnFileByte: "/api/file/returnFileByte",
     downloadFile: "/api/file/download",
+    shareFile: "/api/file/shareFile",
+    getSharedFilesList: "/api/file/getSharedFilesList",
   };
 
   return {

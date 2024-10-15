@@ -70,7 +70,6 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
 
         contentDisposition = "inline; filename=\"" + encodedFilename + "\"";
         headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
-        System.out.println("Content-Disposition: " + contentDisposition);
 
         // 创建 FileSystemResource
         FileSystemResource resource = new FileSystemResource(filePath.toFile());

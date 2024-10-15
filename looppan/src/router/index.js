@@ -13,6 +13,8 @@ import { useUserStore } from "@/store/useUserStore";
 import HomeNav from "@/components/HomeNav.vue";
 import ShareNav from "@/components/ShareNav.vue";
 import RecycleNav from "@/components/RecycleNav.vue";
+import ShareCheckCode from "@/views/ShareCheckCode.vue";
+import ShareFilesInfo from "@/views/ShareFilesInfo.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -145,6 +147,16 @@ const router = createRouter({
           },
         },
       ],
+    },
+    {
+      path: "/shareCheckCode",
+      name: "ShareCheckCode",
+      component: ShareCheckCode,
+    },
+    {
+      path: "/shareFilesInfo",
+      name: "ShareFilesInfo",
+      component: ShareFilesInfo,
     },
   ],
 });

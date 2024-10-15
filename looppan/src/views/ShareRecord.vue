@@ -12,8 +12,9 @@
           <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-6 container-title">文件名</div>
-        <div class="col-3 container-title">修改时间</div>
-        <div class="col-2 container-title">大小</div>
+        <div class="col-2 container-title">分享时间</div>
+        <div class="col-2 container-title">失效时间</div>
+        <div class="col-auto container-title">浏览次数</div>
       </div>
 
       <div v-for="file in files" :key="file.fileId" tabindex="0" class="row myrow">
@@ -31,33 +32,33 @@
             <span>取消分享</span>
           </div>
         </div>
-        <div class="col-3">{{ file.createTime }}</div>
-        <div class="col-2">大小</div>
+        <div class="col-2">{{ file.shareTime }}</div>
+        <div class="col-2">{{ file.failTime }}</div>
+        <div class="col-auto">{{ file.views }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
 
-const files = ref([
-  {
-    fileName: "hhh",
-    fileId: "1",
-    createTime: "2015-12-6",
-  },
-  {
-    fileName: "xxx",
-    fileId: "2",
-    createTime: "2016-12-6",
-  },
-  {
-    fileName: "ccc",
-    fileId: "3",
-    createTime: "2017-12-6",
-  },
-]);
+const apiStore = useApiStore();
+
+const files = ref([]);
+
+onMounted(() => {
+  getSharedFilesList();
+});
+
+const getSharedFilesList = () => {
+  axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
+    console.log(resp);
+    files.value = resp.data;
+  });
+};
 </script>
 
 <style lang="scss" scoped>
