@@ -60,12 +60,13 @@ public class ShareFileServiceImpl implements ShareFileService {
         fileShared.setShareTime(now);
         fileShared.setFailTime(now.plusDays(Long.parseLong(time)));
         fileShared.setExtractionCode(code);
-
+        String url = "http:localhost:1030/shareFilesInfo/" + fileId + "/" + userId;
+        fileShared.setFileUrl(url);
         fileShareMapper.insert(fileShared);
 
         Map<String, Object> mp = new HashMap<>();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("url", "http:localhost:1030/shareFilesInfo/" + fileId + "/" + userId);
+        jsonObject.put("url", url);
         jsonObject.put("code", code);
         mp.put("message", "分享成功");
         mp.put("data", jsonObject);

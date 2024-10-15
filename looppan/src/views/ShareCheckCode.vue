@@ -1,32 +1,120 @@
 <template>
   <div class="my-container">
-    <div class="header">
-      <i class="bi bi-cloud-check my-title-icon"></i>
-      <span class="logo-text">Loop网盘</span>
-    </div>
-    <div class="box">
-      <div class="box-header">
-        <div class="my-img">
-          <img src="https://cdn.acwing.com/media/user/profile/photo/136759_lg_199ac0224c.jpg" alt="" />
-        </div>
-        <div class="header-right">
-          <div class="user-info">
-            <span>phhh</span>
-            <span>2024-10-2</span>
+    <div class="all">
+      <div class="header">
+        <i class="bi bi-cloud-check my-title-icon"></i>
+        <span class="logo-text">Loop网盘</span>
+      </div>
+      <div class="box">
+        <div class="box-header">
+          <div class="my-img">
+            <img src="https://cdn.acwing.com/media/user/profile/photo/136759_lg_199ac0224c.jpg" alt="" />
           </div>
-          <div class="file-info">
-            <span>文件名</span>
+          <div class="header-right">
+            <div class="user-info">
+              <span class="user-info-username">phhh</span>
+              <span class="user-info-file-sharedtime">分享于: 2024-10-2</span>
+            </div>
+            <div class="file-info">
+              <span class="file-info-filename">分享文件:</span>
+              <span>hhh</span>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="label">
+            <label for="">请输入提取码:</label>
+          </div>
+          <div class="input">
+            <input v-model="code" class="my-input" type="text" />
+            <button @click="getFile" type="button" class="btn btn-primary my-button">提取文件</button>
           </div>
         </div>
       </div>
-      <div class="box-body"></div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
+import { useRoute } from "vue-router";
+import router from "@/router";
+import { useUserStore } from "@/store/useUserStore";
+
+const apiStore = useApiStore();
+const userStore = useUserStore();
+const route = useRoute();
+
+let code = ref("");
+const getFile = () => {
+  axios
+    .get(apiStore.file.shareCheckCode + "/" + route.params.fileId + "/" + route.params.userId, {
+      code: code.value,
+    })
+    .then((resp) => {
+      console.log(resp);
+      console.log(route);
+      userStore.user.is_code_ok = true;
+      router.push({ path: `/shareFilesInfo/${route.params.fileId}/${route.params.userId}` });
+    });
+};
+</script>
 
 <style lang="scss" scoped>
+.box-body {
+  width: 100%;
+  height: 170px;
+  padding: 40px 20px 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ffffff;
+  .label {
+    label {
+      font-weight: 800;
+    }
+  }
+  .input {
+    white-space: nowrap;
+    input {
+      height: 30px;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      width: calc(100% - 100px);
+      margin-right: 10px;
+    }
+    .my-input:focus {
+      border: 1px solid #3f9eff;
+    }
+  }
+}
+
+.my-button {
+  background-color: #3f9eff;
+  border: none;
+  border-radius: 8px !important;
+}
+
+.my-button:hover {
+  background-color: #79bbff;
+}
+
+.my-button:active {
+  background-color: #347ecc;
+}
+
+.all {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  top: 20vh;
+}
+
 .my-container {
   width: 100vw;
   height: 100vh;
@@ -35,7 +123,10 @@
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  top: 20vh;
+  background-image: url(/src/assets/images/back.jpg);
+  background-size: cover;
+
+  background-repeat: no-repeat;
   .header {
     .my-title-icon {
       color: #09a6ff;
@@ -54,13 +145,18 @@
   .box {
     width: 500px;
     height: 240px;
+    border-radius: 12px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
     .box-header {
       height: 70px;
       padding: 10px 20px;
-      background-color: #09a6ff;
+      background-color: #3f9eff;
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      position: relative;
       .my-img {
         width: 50px;
         height: 50px;
@@ -74,25 +170,33 @@
       .header-right {
         width: 100%;
         height: 100%;
-        background-color: rebeccapurple;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         .user-info {
           width: 100%;
-          background-color: aqua;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          .user-info-username {
+            font-size: 18px;
+            margin-right: 16px;
+          }
+          .user-info-file-sharedtime {
+            font-size: 12px;
+          }
         }
         .file-info {
           width: 100%;
-          background-color: bisque;
+          color: #ffffff;
+          font-size: 12px;
+          .file-info-filename {
+            margin-right: 15px;
+          }
         }
       }
-    }
-    .box-body {
-      width: 100%;
-      height: 100%;
-      background-color: blueviolet;
     }
   }
 }

@@ -149,12 +149,12 @@ const router = createRouter({
       ],
     },
     {
-      path: "/shareCheckCode",
+      path: "/shareCheckCode/:fileId/:userId",
       name: "ShareCheckCode",
       component: ShareCheckCode,
     },
     {
-      path: "/shareFilesInfo",
+      path: "/shareFilesInfo/:fileId/:userId",
       name: "ShareFilesInfo",
       component: ShareFilesInfo,
     },
@@ -163,7 +163,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-
   if (to.meta.requestAuth && !userStore.user.is_login) {
     next({ name: "LoginView" });
   } else if (to.path === "/login" && !userStore.user.is_login) {
@@ -175,6 +174,8 @@ router.beforeEach((to, from, next) => {
     }
   } else if (to.path === "/login" && userStore.user.is_login) {
     next({ name: "HomeAll" });
+  } else if (to.name === "ShareFilesInfo" && !userStore.user.is_code_ok) {
+    next({ path: `/shareCheckCode/${to.params.fileId}/${to.params.userId}` });
   } else {
     next();
   }

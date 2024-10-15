@@ -14,6 +14,7 @@ export const useUserStore = defineStore("User", () => {
     useSpace: "",
     token: "",
     is_login: false,
+    is_code_ok: false,
   });
 
   const apiStore = useApiStore();
