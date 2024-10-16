@@ -8,16 +8,16 @@
       <div class="box">
         <div class="box-header">
           <div class="my-img">
-            <img src="https://cdn.acwing.com/media/user/profile/photo/136759_lg_199ac0224c.jpg" alt="" />
+            <img :src="userAvatar" alt="" />
           </div>
           <div class="header-right">
             <div class="user-info">
-              <span class="user-info-username">phhh</span>
-              <span class="user-info-file-sharedtime">分享于: 2024-10-2</span>
+              <span class="user-info-username">{{ nickName }}</span>
+              <span class="user-info-file-sharedtime">分享于:&nbsp; {{ shareTime }}</span>
             </div>
             <div class="file-info">
               <span class="file-info-filename">分享文件:</span>
-              <span>hhh</span>
+              <span>{{ fileName }}</span>
             </div>
           </div>
         </div>
@@ -36,16 +36,25 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import { useUserStore } from "@/store/useUserStore";
 
+let fileName = ref("");
+let nickName = ref("");
+let shareTime = ref("");
+let userAvatar = ref("");
+
 const apiStore = useApiStore();
 const userStore = useUserStore();
 const route = useRoute();
+
+onMounted(() => {
+  getSharedUserInfo();
+});
 
 let code = ref("");
 const getFile = () => {
@@ -57,7 +66,23 @@ const getFile = () => {
       console.log(resp);
       console.log(route);
       userStore.user.is_code_ok = true;
+      userStore.user.extraction_code = code.value;
       router.push({ path: `/shareFilesInfo/${route.params.fileId}/${route.params.userId}` });
+    });
+};
+
+const getSharedUserInfo = () => {
+  axios
+    .get(apiStore.file.getSharedUserInfo, {
+      fileId: route.params.fileId,
+      userId: route.params.userId,
+    })
+    .then((resp) => {
+      console.log(resp);
+      fileName.value = resp.data.fileName;
+      nickName.value = resp.data.nickName;
+      shareTime.value = resp.data.shareTime;
+      userAvatar.value = resp.data.userAvatar;
     });
 };
 </script>

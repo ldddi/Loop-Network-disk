@@ -34,11 +34,9 @@ public class ShareCheckCodeServiceImpl implements ShareCheckCodeService {
         if (!Objects.equals(fileCode, code)) {
             ResponseEntity.notFound();
         }
-        fileShared.setExtractionCode("null");
-        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(fileShared));
-        Map<String, Object> mp = new HashMap<>();
+
+        Map<String, String> mp = new HashMap<>();
         mp.put("message", "获取成功");
-        mp.put("data", jsonObject);
         return ResponseEntity.ok().body(mp);
     }
 }

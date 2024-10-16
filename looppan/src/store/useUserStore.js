@@ -15,6 +15,7 @@ export const useUserStore = defineStore("User", () => {
     token: "",
     is_login: false,
     is_code_ok: false,
+    extraction_code: "",
   });
 
   const apiStore = useApiStore();

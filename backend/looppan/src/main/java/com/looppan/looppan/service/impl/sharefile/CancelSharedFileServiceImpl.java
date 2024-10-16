@@ -3,7 +3,6 @@ package com.looppan.looppan.service.impl.sharefile;
 import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
 import com.looppan.looppan.mapper.FileShareMapper;
-import com.looppan.looppan.pojo.FileShared;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.sharefile.CancelSharedFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class cancelSharedFileServiceImpl implements CancelSharedFileService {
+public class CancelSharedFileServiceImpl implements CancelSharedFileService {
 
     @Autowired
     FileShareMapper fileShareMapper;

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ShareFileServiceImpl implements ShareFileService {
@@ -36,6 +37,8 @@ public class ShareFileServiceImpl implements ShareFileService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
+        String nickName = user.getNickName();
+        String avatar = user.getAvatar();
         FileInfo fileInfo = null;
         try {
             fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
@@ -50,12 +53,19 @@ public class ShareFileServiceImpl implements ShareFileService {
 
         String code = RandomUtils.generateRandomString(FileStaticKey.LENGTH_SHARE_CODE.toIntegerValue());
         LocalDateTime now = LocalDateTime.now();
-        if (time == "perpetual") time = "0";
+        if (Objects.equals(time, "perpetual")) {
+            time = "0";
+        }
+
         FileShared fileShared = new FileShared();
         fileShared.setShareId(shareId);
         fileShared.setFileId(fileId);
         fileShared.setUserId(Integer.valueOf(userId));
+        fileShared.setUserNickName(nickName);
+        fileShared.setUserAvatar(avatar);
         fileShared.setFileName(fileInfo.getFileName());
+        fileShared.setFilePath(fileInfo.getFilePath());
+        fileShared.setFileSize(fileInfo.getFileSize());
         fileShared.setFileCategory(fileInfo.getFileCategory());
         fileShared.setShareTime(now);
         fileShared.setFailTime(now.plusDays(Long.parseLong(time)));

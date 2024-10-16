@@ -23,11 +23,17 @@ export const useApiStore = defineStore("api", () => {
     renameFile: "/api/file/renameFile",
     returnFileByte: "/api/file/returnFileByte",
     downloadFile: "/api/file/download",
+    //
     shareFile: "/api/file/shareFile",
     getSharedFilesList: "/api/file/getSharedFilesList",
     getSharedFileUrl: "/api/file/getSharedFileUrl",
     cancelSharedFile: "/api/file/cancelSharedFile",
+    //
     shareCheckCode: "/api/shareCheckCode",
+    getSharedUserInfo: "/api/getSharedUserInfo",
+    getSharedFileInfo: "/api/shareFileInfo",
+    downloadSharedFile: "/api/downloadSharedFile",
+    saveMyPan: "/api/saveMyPan",
   };
 
   return {

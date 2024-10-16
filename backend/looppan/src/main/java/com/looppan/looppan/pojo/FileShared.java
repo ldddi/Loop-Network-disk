@@ -17,7 +17,11 @@ public class FileShared {
     String shareId;
     String fileId;
     Integer userId;
+    String userNickName;
+    String userAvatar;
     String fileName;
+    String filePath;
+    String fileSize;
     String fileUrl;
     Integer fileCategory;
     LocalDateTime shareTime;

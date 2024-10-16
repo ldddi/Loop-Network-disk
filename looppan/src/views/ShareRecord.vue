@@ -1,6 +1,6 @@
 <template>
   <div class="title">
-    <button type="button" class="btn btn-share">
+    <button type="button" :disabled="!selectedCheck.length" :class="['btn', 'btn-share']">
       <i class="bi bi-ban"></i>
       取消分享
     </button>
@@ -9,7 +9,7 @@
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input @change="selectAll($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-6 container-title">文件名</div>
         <div class="col-2 container-title">分享时间</div>
@@ -19,7 +19,7 @@
 
       <div v-for="file in files" :key="file.fileId" tabindex="0" class="row myrow">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input :checked="isFileSelected(file.shareId)" @change="selectedCheckBox(file.shareId)" class="form-check-input" type="checkbox" id="defaultCheck1" />
         </div>
         <div class="col-4 my-fileName">
           <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
@@ -67,6 +67,31 @@ import statickey from "@/utils/statickey";
 const apiStore = useApiStore();
 
 const files = ref([]);
+let selectedCheck = ref([]);
+
+const selectAll = (isSelected) => {
+  if (isSelected) {
+    selectedCheck.value = [];
+    for (let i = 0; i < files.value.length; i++) {
+      selectedCheck.value.unshift(files.value[i].shareId); // 使用 files.value
+    }
+  } else {
+    selectedCheck.value = [];
+  }
+};
+
+const selectedCheckBox = (shareId) => {
+  if (selectedCheck.value.includes(shareId)) {
+    selectedCheck.value = selectedCheck.value.filter((id) => id != shareId);
+  } else {
+    selectedCheck.value.unshift(shareId);
+  }
+  console.log(selectedCheck.value);
+};
+
+const isFileSelected = (shareId) => {
+  return selectedCheck.value.includes(shareId);
+};
 
 onMounted(() => {
   getSharedFilesList();
@@ -109,6 +134,12 @@ const deleteFileByShareId = (shareId) => {
 </script>
 
 <style lang="scss" scoped>
+.active {
+}
+.not-active {
+  opacity: 0.5 !important;
+}
+
 span {
   user-select: none;
 }
@@ -120,6 +151,16 @@ span {
   align-items: center;
   justify-content: center;
   user-select: none;
+  span {
+    width: 100px;
+    height: 50px;
+    background-color: #edf3f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+  }
 }
 
 .my-floder-folder {
