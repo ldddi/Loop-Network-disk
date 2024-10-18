@@ -168,7 +168,11 @@ router.beforeEach((to, from, next) => {
   } else if (to.path === "/login" && !userStore.user.is_login) {
     const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken != null) {
-      userStore.getUserInfoByLocalJwt(jwtToken);
+      userStore.getUserInfoByLocalJwt(jwtToken).then((resp) => {
+        if (resp == true) {
+          router.push({ name: "HomeAll" });
+        }
+      });
     } else {
       next();
     }

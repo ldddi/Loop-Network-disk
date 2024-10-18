@@ -28,6 +28,7 @@ public class GetUserInfoServiceImpl implements GetUserInfoService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         Map<String, String> mp = new HashMap<>();
+        mp.put("userId", user.getUserId());
         mp.put("nickName", user.getNickName());
         mp.put("avatar", user.getAvatar());
         mp.put("totalSpace", String.valueOf(user.getTotalSpace()));

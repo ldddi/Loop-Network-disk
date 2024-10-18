@@ -48,8 +48,12 @@ public class SecurityConfig {
                                 "/getPicCheckCode",
                                 "/sendEmailCode",
                                 "/register",
-                                "/images/**",
-                                "/test"
+//                                "/images/**",
+                                "/shareFileInfo",
+                                "/getSharedUserInfo",
+                                "/shareCheckCode/**",
+                                "/saveMyPan",
+                                "/downloadSharedFile"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

@@ -7,6 +7,7 @@ import statickey from "@/utils/statickey";
 
 export const useUserStore = defineStore("User", () => {
   let user = reactive({
+    userId: "",
     nickName: "",
     avatar: "",
     email: "",
@@ -21,6 +22,7 @@ export const useUserStore = defineStore("User", () => {
   const apiStore = useApiStore();
 
   const updateUser = (data) => {
+    user.userId = data.userId;
     user.nickName = data.nickName;
     user.email = data.email;
     user.totalSpace = data.totalSpace;
@@ -37,13 +39,19 @@ export const useUserStore = defineStore("User", () => {
   };
 
   const getUserInfoByLocalJwt = async (jwtToken) => {
-    const resp = await axios.post(apiStore.user.getUserInfo, {});
-    updateUser({
-      ...resp,
-      token: jwtToken,
-      is_login: true,
-    });
-    router.push({ name: "HomeAll" });
+    try {
+      const resp = await axios.post(apiStore.user.getUserInfo, {});
+      updateUser({
+        ...resp,
+        token: jwtToken,
+        is_login: true,
+      });
+
+      // router.push({ name: "HomeAll" });
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   return {

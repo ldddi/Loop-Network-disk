@@ -7,6 +7,7 @@ import com.looppan.looppan.service.sharefile.DownSharedFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,19 @@ public class DownSharedFileServiceImpl implements DownSharedFileService {
         encodedFilename = URLEncoder.encode(fileShared.getFileName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         HttpHeaders headers = new HttpHeaders();
         String contentDisposition = "attachment; filename=\"" + encodedFilename + "\"";
+        // 自动推断Content-Type
+        String contentType;
+        try {
+            contentType = Files.probeContentType(path);
+        } catch (Exception e) {
+            contentType = "application/octet-stream"; // 默认的二进制流类型
+        }
+
         headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
-        return ResponseEntity.ok().headers(headers).body(resource);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
     }
 }

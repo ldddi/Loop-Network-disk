@@ -71,11 +71,11 @@
             <span>移动</span>
           </div>
         </div>
-        <div class="col-3">{{ file.createTime }}</div>
+        <div class="col-3">{{ getCreateTime(file.createTime) }}</div>
         <div v-if="file.folderType != statickey.folderType.folder" class="col-1">{{ getFileSize(file.fileSize) }}</div>
       </div>
     </div>
-    <div v-if="props.files == null || props.files.length == 0" class="test">
+    <div v-if="!alertStore.load.isLoading && (props.files == null || props.files.length == 0)" class="test">
       <div>
         <span>当前文件夹为空</span>
       </div>
@@ -85,7 +85,7 @@
       </div>
     </div>
   </div>
-
+  <!-- image preview modal -->
   <div v-if="isPreviewVisibleImage" class="preview-modal">
     <div @click="closePreviewImage" class="close-icon">
       <i class="bi bi-x"></i>
@@ -95,6 +95,7 @@
     </div>
   </div>
 
+  <!-- viedo preview modal -->
   <div v-if="isPreviewVisibleVideo" class="preview-modal">
     <div @click="closePreviewVideo" class="close-icon">
       <i class="bi bi-x"></i>
@@ -190,6 +191,9 @@ import { useRoute } from "vue-router";
 import ErrorAlertBox from "./ErrorAlertBox.vue";
 import SuccessAlertBox from "./SuccessAlertBox.vue";
 import statickey from "@/utils/statickey";
+import { useAlertStore } from "@/store/useAlertStore";
+
+const alertStore = useAlertStore();
 
 const isPreviewVisibleVideo = ref(false);
 const isPreviewVisibleImage = ref(false);
@@ -228,7 +232,6 @@ const clickShare = () => {
       time: selectedDuration.value,
     })
     .then((resp) => {
-      console.log(resp);
       shareUrl.value = resp.data.url;
       shareCode.value = resp.data.code;
       isShowShareUrl.value = true;
@@ -263,7 +266,6 @@ const clickDownload = (file) => {
 
       // 释放 Blob URL
       window.URL.revokeObjectURL(url);
-      console.log(resp);
     });
 };
 
@@ -279,7 +281,6 @@ const clickFileName = (file) => {
     )
     .then((resp) => {
       const Blob = resp; // 获取 Blob 数据
-      console.log(resp);
       if (file.fileCategory == statickey.category.video) {
         isPreviewVisibleVideo.value = true;
         videoUrl.value = URL.createObjectURL(Blob);
@@ -291,6 +292,23 @@ const clickFileName = (file) => {
         imageUrl.value = URL.createObjectURL(Blob);
       }
     });
+};
+
+const getCreateTime = (time) => {
+  const date = new Date(time);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
 };
 
 const getFileSize = (size) => {
@@ -326,7 +344,6 @@ const clickRename = (file) => {
   renameFileInput.value = file;
   if (file.folderType == statickey.folderType.file) {
     let str = file.fileName;
-    console.log(str.substring(0, str.lastIndexOf(".")));
     newName.value = str.substring(0, str.lastIndexOf("."));
   } else {
     newName.value = file.fileName;
@@ -344,20 +361,16 @@ const isFileSelected = (fileId) => {
 
 const selectAllFiles = (isChecked) => {
   if (isChecked) {
-    // 如果选中，添加所有文件 ID 到数组
     selectedFiles.value = props.files.map((file) => file.fileId);
   } else {
-    // 如果取消选中，清空数组
     selectedFiles.value = [];
   }
 };
 
 const toggleSelection = (fileId) => {
   if (selectedFiles.value.includes(fileId)) {
-    // 取消选中
     selectedFiles.value = selectedFiles.value.filter((id) => id !== fileId);
   } else {
-    // 选中
     selectedFiles.value.push(fileId);
   }
 };
@@ -401,7 +414,6 @@ const deleteItem = (file) => {
       filesId: filesId,
     })
     .then((resp) => {
-      console.log(resp);
       emit("remove-file-from-files", file);
     });
 };
@@ -413,7 +425,6 @@ const renameItem = (file) => {
       newName: newName.value,
     })
     .then((resp) => {
-      console.log(resp);
       cancleRename();
       let newName = resp.data;
       emit("rename-file", { file, newName });

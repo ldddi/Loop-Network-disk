@@ -47,7 +47,7 @@ public class LoginServiceImpl implements LoginService {
         String jwt = JwtUtil.createJWT(user.getUserId());
         Map<String, String> mp = new HashMap<>();
 
-
+        mp.put("userId", user.getUserId());
         mp.put("nickName", user.getNickName());
         mp.put("email", user.getEmail());
         mp.put("totalSpace", String.valueOf(user.getTotalSpace()));

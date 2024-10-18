@@ -63,8 +63,6 @@ const getFile = () => {
       code: code.value,
     })
     .then((resp) => {
-      console.log(resp);
-      console.log(route);
       userStore.user.is_code_ok = true;
       userStore.user.extraction_code = code.value;
       router.push({ path: `/shareFilesInfo/${route.params.fileId}/${route.params.userId}` });
@@ -78,7 +76,6 @@ const getSharedUserInfo = () => {
       userId: route.params.userId,
     })
     .then((resp) => {
-      console.log(resp);
       fileName.value = resp.data.fileName;
       nickName.value = resp.data.nickName;
       shareTime.value = resp.data.shareTime;

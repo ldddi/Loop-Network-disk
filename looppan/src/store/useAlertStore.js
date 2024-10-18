@@ -12,8 +12,13 @@ export const useAlertStore = defineStore("alert", () => {
     message: "",
   });
 
+  const load = reactive({
+    isLoading: false,
+  });
+
   return {
     error,
     success,
+    load,
   };
 });

@@ -31,12 +31,7 @@
     </div>
   </div>
   <div class="title">音频文件</div>
-
-  <div v-if="isLoading" class="loading-overlay my-loading">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">正在加载...</span>
-    </div>
-  </div>
+  <LoadingBox />
 
   <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getAudioFileList" @pop-files-cache="popFilesCache" />
 </template>
@@ -50,11 +45,14 @@ import statickey from "@/utils/statickey";
 import { useRoute } from "vue-router";
 import ModalFileTable from "@/components/ModalFileTable.vue";
 import { Modal } from "bootstrap";
-const isLoading = ref(false);
+import LoadingBox from "@/components/LoadingBox.vue";
+import { useAlertStore } from "@/store/useAlertStore";
+
 const fileTable = ref(null);
 const files = ref([]);
 
 const apiStore = useApiStore();
+const alertStore = useAlertStore();
 const route = useRoute();
 
 const myInput = ref(null);
@@ -114,12 +112,12 @@ const deleteSelectedFiles = () => {
 };
 
 const getAudioFileList = async () => {
-  isLoading.value = true;
+  alertStore.load.isLoading = true;
   const resp = await axios.post(apiStore.file.getAllCategoryFile, {
     category: statickey.category.audio,
   });
   files.value = resp.data;
-  isLoading.value = false;
+  alertStore.load.isLoading = false;
 };
 
 const uploadFile = (fileList) => {
@@ -145,9 +143,7 @@ const removeFileFromFiles = (file) => {
 };
 
 const renameFile = ({ file, newName }) => {
-  console.log("rename file", file);
   for (let i = 0; i < files.value.length; i++) {
-    console.log(files.value[i].fileId, file.fileId);
     if (files.value[i].fileId === file.fileId) {
       files.value[i].fileName = newName;
       break;
@@ -161,12 +157,6 @@ const updateFiles = (newFile) => {
 </script>
 
 <style lang="scss" scoped>
-.my-loading {
-  position: absolute;
-  top: 40%;
-  left: 49%;
-}
-
 .my-modal {
   position: relative;
   top: 15vh;

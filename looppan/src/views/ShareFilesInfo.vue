@@ -70,6 +70,8 @@ let selectedFiles = ref([]);
 
 onMounted(() => {
   getSharedFileInfo();
+  const jwtToken = localStorage.getItem("jwtToken");
+  userStore.getUserInfoByLocalJwt(jwtToken);
 });
 
 const saveMyPan = () => {
@@ -85,10 +87,9 @@ const saveMyPan = () => {
   axios
     .get(apiStore.file.saveMyPan, {
       shareId: selectedFiles.value[0],
-      userId: "5",
+      userId: userStore.user.userId,
     })
     .then((resp) => {
-      console.log(resp);
       selectedFiles.value = [];
     });
 };
@@ -116,7 +117,6 @@ const getSharedFileInfo = () => {
     })
     .then((resp) => {
       files.value.unshift(resp.data);
-      console.log(resp.data);
     });
 };
 

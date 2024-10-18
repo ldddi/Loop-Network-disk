@@ -16,7 +16,6 @@ public class ShareCheckCodeController {
     @RequestMapping(value = "/shareCheckCode/{fileId}/{userId}", method = RequestMethod.GET)
     public ResponseEntity<Map> shareCheckCode(@PathVariable String fileId, @PathVariable String userId, @RequestParam(value = "code") String code) {
 
-
         return shareCheckCodeService.shareCheckCode(fileId, userId, code);
     }
 }

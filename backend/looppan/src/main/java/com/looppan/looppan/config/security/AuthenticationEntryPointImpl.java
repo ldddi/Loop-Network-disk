@@ -18,7 +18,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "user is unauthorized");
+        jsonObject.put("message", "please login");
         // 返回自定义的错误信息
         response.getWriter().write(jsonObject.toJSONString());
     }

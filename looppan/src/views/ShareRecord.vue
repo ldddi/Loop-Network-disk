@@ -86,7 +86,6 @@ const selectedCheckBox = (shareId) => {
   } else {
     selectedCheck.value.unshift(shareId);
   }
-  console.log(selectedCheck.value);
 };
 
 const isFileSelected = (shareId) => {
@@ -99,10 +98,7 @@ onMounted(() => {
 
 const getSharedFilesList = () => {
   axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
-    console.log(resp);
-
     files.value = resp.data;
-    console.log(files.value);
   });
 };
 
@@ -123,7 +119,6 @@ const cancelSharedFile = (file) => {
       shareId: file.shareId,
     })
     .then((resp) => {
-      console.log(resp);
       deleteFileByShareId(file.shareId);
     });
 };
