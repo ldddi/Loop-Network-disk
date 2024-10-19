@@ -172,7 +172,7 @@
             <span>{{ shareCode }}</span>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            <button @click="clickCloseIcon" type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
           </div>
         </div>
       </div>
@@ -213,11 +213,16 @@ const closePreviewVideo = () => {
 
 const closePreviewAudio = () => {
   isPreviewVisibleAudio.value = false;
+  selectedDuration.value = null;
 };
 
 const clickShareIcon = (file) => {
   isShowShareUrl.value = false;
   shareFile.value = file;
+};
+
+const clickCloseIcon = () => {
+  isShowShareUrl.value = false;
 };
 
 let shareFile = ref("");

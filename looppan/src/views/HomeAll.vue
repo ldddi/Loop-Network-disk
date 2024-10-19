@@ -143,6 +143,9 @@ const getFileList = async () => {
 };
 
 const uploadFile = (fileList) => {
+  if (fileList == null) {
+    return;
+  }
   const formData = new FormData();
   let filePid = "0";
   if (route.query.path != null) {

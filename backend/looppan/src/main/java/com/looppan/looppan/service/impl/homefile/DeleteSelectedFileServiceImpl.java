@@ -18,6 +18,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,55 +37,17 @@ public class DeleteSelectedFileServiceImpl implements DeleteSelectedFilesService
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
-        for (int i = 0; i < filesId.size(); i++) {
-            FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
-            try {
-                if (Objects.equals(FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue(), fileInfo.getFolderType())) {
-                    Path filePath = Paths.get(fileInfo.getFilePath());
-                    Files.delete(filePath);
-                } else {
-                    File directory = new File(fileInfo.getFilePath());
-                    File[] files = directory.listFiles();
-                    for (File file : files) {
-                        if (file.isDirectory()) {
-                            deleteDirectory(file);
-                        } else {
-                            Files.delete(file.toPath());
-                        }
-                    }
-                    directory.delete();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException("删除系统文件失败");
-            }
-        }
-
         try {
             for (String fileId : filesId) {
-                fileInfoMapper.DeleteByFileIdAndUserId(fileId, Integer.valueOf(userId));
+                LocalDateTime now = LocalDateTime.now();
+                fileInfoMapper.updateDelFlagByFileIdAndUserId(fileId, Integer.valueOf(userId), FileStaticKey.DEL_FLAG_RECOVERY.toIntegerValue(),now);
             }
         } catch (RuntimeException e) {
             throw new MyException("删除失败");
         }
 
         Map<String, String> mp = new HashMap<String, String>();
-        mp.put("message", "删除成功");
+        mp.put("message", "删除成功, 将在回收站保存10天");
         return ResponseEntity.ok().body(mp);
-    }
-
-    // 递归删除目录的方法
-    private void deleteDirectory(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectory(file); // 递归删除
-                } else {
-                    file.delete(); // 删除文件
-                }
-            }
-        }
-        dir.delete(); // 删除空目录
     }
 }

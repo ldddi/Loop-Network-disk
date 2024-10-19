@@ -1,10 +1,10 @@
 <template>
   <div class="title">
-    <button type="button" class="btn btn-new">
+    <button @click="cancelDelete" :disabled="!selectedFiles.length" type="button" class="btn btn-new">
       <i class="bi bi-arrow-clockwise"></i>
       还原
     </button>
-    <button type="button" class="btn btn-delete">
+    <button @click="deleteRecycleFiles" :disabled="!selectedFiles.length" type="button" class="btn btn-delete">
       <i class="bi bi-trash"></i>
       批量删除
     </button>
@@ -13,7 +13,7 @@
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input @change="selectAllFiles($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-6 container-title">文件名</div>
         <div class="col-3 container-title">删除时间</div>
@@ -22,54 +22,190 @@
 
       <div v-for="file in files" :key="file.fileId" tabindex="0" class="row myrow">
         <div class="col-auto">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input @change="toggleSelection(file.fileId)" :checked="isFileSelected(file.fileId)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
-        <div class="col-4 my-fileName">{{ file.fileName }}</div>
+        <div class="col-4 my-fileName">
+          <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
+          <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
+          <span>{{ file.fileName }}</span>
+        </div>
         <div class="col-2 my-icon">
-          <div class="copy-link">
+          <div @click="deleteRecycleFiles2(file)" class="copy-link">
             <i class="bi bi-trash"></i>
             <span>删除</span>
           </div>
-          <div class="cancle-link">
+          <div @click="cancelDelete2(file)" class="cancle-link">
             <i class="bi bi-arrow-clockwise"></i>
             <span>还原</span>
           </div>
         </div>
-        <div class="col-3">{{ file.createTime }}</div>
-        <div class="col-2">大小</div>
+        <div class="col-3">{{ getTime(file.recoveryTime) }}</div>
+        <div class="col-2">{{ getSize(file.fileSize) }}</div>
       </div>
     </div>
+
+    <div v-if="alertStore.load.isLoading != true && files.length == 0" class="noll">
+      <span>暂无数据</span>
+    </div>
   </div>
+  <LoadingBox />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import axios from "@/utils/axiosInstance";
+import { useApiStore } from "@/store/useApiStore";
+import LoadingBox from "@/components/LoadingBox.vue";
+import { useAlertStore } from "@/store/useAlertStore";
+import statickey from "@/utils/statickey";
+const apiStore = useApiStore();
+const alertStore = useAlertStore();
+const files = ref([]);
+const selectedFiles = ref([]);
+onMounted(() => {
+  getRecycleFiles();
+});
 
-const files = ref([
-  {
-    fileName: "hhh",
-    fileId: "1",
-    createTime: "2015-12-6",
-  },
-  {
-    fileName: "xxx",
-    fileId: "2",
-    createTime: "2016-12-6",
-  },
-  {
-    fileName: "ccc",
-    fileId: "3",
-    createTime: "2017-12-6",
-  },
-]);
+const cancelDelete = () => {
+  axios
+    .post(apiStore.file.cancelDelete, {
+      filesId: selectedFiles.value,
+    })
+    .then((resp) => {
+      files.value = files.value.filter((file) => !selectedFiles.value.includes(file.fileId));
+      selectedFiles.value = [];
+    });
+};
+
+const cancelDelete2 = (file) => {
+  axios
+    .post(apiStore.file.cancelDelete, {
+      filesId: [file.fileId],
+    })
+    .then((resp) => {
+      files.value = files.value.filter((f) => f.fileId != file.fileId);
+      selectedFiles.value = [];
+    });
+};
+
+const deleteRecycleFiles = () => {
+  axios
+    .post(apiStore.file.deleteRecycleFiles, {
+      filesId: selectedFiles.value,
+    })
+    .then((resp) => {
+      files.value = files.value.filter((file) => !selectedFiles.value.includes(file.fileId));
+      selectedFiles.value = [];
+    });
+};
+
+const deleteRecycleFiles2 = (file) => {
+  axios
+    .post(apiStore.file.deleteRecycleFiles, {
+      filesId: [file.fileId],
+    })
+    .then((resp) => {
+      files.value = files.value.filter((f) => f.fileId != file.fileId);
+      selectedFiles.value = [];
+    });
+};
+
+const getRecycleFiles = () => {
+  alertStore.load.isLoading = true;
+  axios.get(apiStore.file.getRecycleFiles, {}).then((resp) => {
+    files.value = resp.data;
+  });
+  alertStore.load.isLoading = false;
+};
+
+const getTime = (time) => {
+  const date = new Date(time);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
+};
+
+const getSize = (size) => {
+  if (size / (1024 * 1024 * 1024) >= 1) {
+    return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  } else if (size / (1024 * 1024) >= 1) {
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  } else if (size / 1024 >= 1) {
+    return `${(size / 1024).toFixed(2)} KB`;
+  } else {
+    return `${size} B`;
+  }
+};
+
+const selectAllFiles = (isChecked) => {
+  if (isChecked) {
+    selectedFiles.value = files.value.map((file) => file.fileId);
+  } else {
+    selectedFiles.value = [];
+  }
+};
+
+const toggleSelection = (fileId) => {
+  if (selectedFiles.value.includes(fileId)) {
+    selectedFiles.value = selectedFiles.value.filter((id) => id !== fileId);
+  } else {
+    selectedFiles.value.push(fileId);
+  }
+};
+
+const isFileSelected = (fileId) => {
+  return selectedFiles.value.includes(fileId);
+};
 </script>
 
 <style lang="scss" scoped>
-.my-fileName {
+.my-floder-folder {
+  color: #ffcf40;
+}
+
+.my-floder {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.noll {
+  height: calc(100% - 60px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  span {
+    width: 100px;
+    height: 50px;
+    background-color: #edf3f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
+
+.my-fileName span {
   cursor: pointer;
 }
 
-.my-fileName:hover {
+.my-fileName span:hover {
   color: #3f9eff;
 }
 
@@ -124,6 +260,7 @@ const files = ref([
   overflow-y: auto;
   position: relative;
   white-space: nowrap;
+  user-select: none;
   .container {
     position: absolute;
     left: 0;

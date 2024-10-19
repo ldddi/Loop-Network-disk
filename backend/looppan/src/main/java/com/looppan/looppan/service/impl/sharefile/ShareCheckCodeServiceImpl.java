@@ -34,7 +34,9 @@ public class ShareCheckCodeServiceImpl implements ShareCheckCodeService {
         if (!Objects.equals(fileCode, code)) {
             ResponseEntity.notFound();
         }
-
+        Integer views = fileShared.getViews() + 1;
+        fileShared.setViews(views);
+        fileShareMapper.updateById(fileShared);
         Map<String, String> mp = new HashMap<>();
         mp.put("message", "获取成功");
         return ResponseEntity.ok().body(mp);

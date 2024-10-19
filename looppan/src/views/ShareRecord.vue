@@ -1,6 +1,6 @@
 <template>
   <div class="title">
-    <button type="button" :disabled="!selectedCheck.length" :class="['btn', 'btn-share']">
+    <button @click="cancelSharedFiles" type="button" :disabled="!selectedCheck.length" :class="['btn', 'btn-share']">
       <i class="bi bi-ban"></i>
       取消分享
     </button>
@@ -42,10 +42,10 @@
           </div>
         </div>
         <div class="col-2">
-          <span>{{ file.shareTime }}</span>
+          <span>{{ getShareTime(file.shareTime) }}</span>
         </div>
         <div class="col-2">
-          <span>{{ file.failTime }}</span>
+          <span>{{ getFailTime(file.shareTime, file.failTime) }}</span>
         </div>
         <div class="col-auto">
           <span>{{ file.views }}</span>
@@ -53,9 +53,11 @@
       </div>
     </div>
   </div>
-  <div v-else class="noll">
+  <div v-else-if="alertStore.load.isLoading == false" class="noll">
     <span>暂无数据</span>
   </div>
+
+  <LoadingBox />
 </template>
 
 <script setup>
@@ -63,11 +65,52 @@ import { onMounted, ref } from "vue";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
 import statickey from "@/utils/statickey";
+import LoadingBox from "@/components/LoadingBox.vue";
+import { useAlertStore } from "@/store/useAlertStore";
 
 const apiStore = useApiStore();
+const alertStore = useAlertStore();
 
 const files = ref([]);
 let selectedCheck = ref([]);
+
+const getShareTime = (time) => {
+  const date = new Date(time);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
+};
+
+const getFailTime = (shareTime, failTime) => {
+  if (shareTime == failTime) {
+    return "永久";
+  }
+
+  const date = new Date(failTime);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
+};
 
 const selectAll = (isSelected) => {
   if (isSelected) {
@@ -97,9 +140,11 @@ onMounted(() => {
 });
 
 const getSharedFilesList = () => {
+  alertStore.load.isLoading = true;
   axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
     files.value = resp.data;
   });
+  alertStore.load.isLoading = false;
 };
 
 const getSharedFileUrl = (file) => {
@@ -111,6 +156,13 @@ const getSharedFileUrl = (file) => {
       // 将 URL 复制到剪贴板
       navigator.clipboard.writeText(resp.data);
     });
+};
+
+const cancelSharedFiles = () => {
+  axios.post(apiStore.file.cancelSharedFile, selectedCheck.value).then((resp) => {
+    files.value = files.value.filter((file) => !selectedCheck.value.includes(file.shareId));
+    selectedCheck.value = [];
+  });
 };
 
 const cancelSharedFile = (file) => {

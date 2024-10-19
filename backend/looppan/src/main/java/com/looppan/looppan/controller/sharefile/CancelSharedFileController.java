@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,9 +18,8 @@ public class CancelSharedFileController {
     CancelSharedFileService cancelSharedFileService;
 
     @RequestMapping(value = "/file/cancelSharedFile", method = RequestMethod.POST)
-    public ResponseEntity<Map> cancelSharedFile(@RequestBody Map<String, String> mp) {
-        String shareId = mp.get("shareId");
+    public ResponseEntity<Map> cancelSharedFile(@RequestBody List<String> shareIds) {
 
-        return cancelSharedFileService.cancelSharedFile(shareId);
+        return cancelSharedFileService.cancelSharedFile(shareIds);
     }
 }

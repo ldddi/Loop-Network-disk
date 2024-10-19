@@ -15,4 +15,6 @@ public enum FIleDelFlagEnums {
         this.flag = flag;
         this.desc = desc;
     }
+
+
 }

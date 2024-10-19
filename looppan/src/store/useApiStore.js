@@ -34,6 +34,10 @@ export const useApiStore = defineStore("api", () => {
     getSharedFileInfo: "/api/shareFileInfo",
     downloadSharedFile: "/api/downloadSharedFile",
     saveMyPan: "/api/saveMyPan",
+    //
+    getRecycleFiles: "/api/getRecycleFiles",
+    deleteRecycleFiles: "/api/deleteRecycleFiles",
+    cancelDelete: "/api/cancelDelete",
   };
 
   return {
