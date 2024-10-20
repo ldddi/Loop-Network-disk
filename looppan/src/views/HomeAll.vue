@@ -35,8 +35,9 @@
   </div>
   <div v-if="computedIsShowAllFile" class="title">全部文件</div>
   <div v-else class="title">
-    <span class="allFolder">当前文件夹：</span>
-    <div v-for="file in filesCache" :key="file.fileId" class="active">{{ file.fileName }}</div>
+    <span @click="returnLastFolder" class="return-last">返回上一级</span>
+    <span class="all-file">全部文件</span>
+    <div v-for="file in filesCache" :key="file.fileId" class="file-cache">>&nbsp;{{ file.fileName }}&nbsp;</div>
   </div>
 
   <LoadingBox />
@@ -55,6 +56,7 @@ import ModalFileTable from "@/components/ModalFileTable.vue";
 import { Modal } from "bootstrap";
 import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
+import router from "@/router";
 
 const fileTable = ref(null);
 const files = ref([]);
@@ -81,6 +83,17 @@ const modalFileTable = ref(null);
 onMounted(() => {
   getFileList();
 });
+
+const returnLastFolder = () => {
+  filesCache.value.pop();
+  let path = route.query.path;
+  path = path.substring(0, path.lastIndexOf("/"));
+  if (path != "" && path != null) {
+    router.push({ name: route.name, query: { path: path } });
+  } else {
+    router.push({ name: route.name });
+  }
+};
 
 const resetAndUpload = () => {
   myInput.value.value = null; // 重置文件输入
@@ -131,15 +144,19 @@ const deleteSelectedFiles = () => {
 
 const getFileList = async () => {
   alertStore.load.isLoading = true;
-  const resp = await axios.get(apiStore.file.getFileList, {
-    category: statickey.category.folder,
-    path: route.query.path,
-  });
-  files.value = resp.data;
-  if (resp.clickedFile != null && !filesCache.value.includes(resp.clickedFile)) {
-    filesCache.value.push(resp.clickedFile);
+  try {
+    const resp = await axios.get(apiStore.file.getFileList, {
+      category: statickey.category.folder,
+      path: route.query.path,
+    });
+    files.value = resp.data;
+
+    if (resp.clickedFile != null && !filesCache.value.some((file) => file.fileId === resp.clickedFile.fileId)) {
+      filesCache.value.push(resp.clickedFile);
+    }
+  } finally {
+    alertStore.load.isLoading = false;
   }
-  alertStore.load.isLoading = false;
 };
 
 const uploadFile = (fileList) => {
@@ -221,5 +238,20 @@ const updateFiles = (newFile) => {
   align-items: center;
   font-size: 14px;
   font-weight: 700;
+  .return-last {
+    padding: 0 5px;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    color: #5faeff;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .all-file {
+    padding: 0 5px;
+    color: #5faeff;
+    font-weight: 500;
+  }
+  .file-cache {
+    color: #5faeff;
+  }
 }
 </style>

@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="col-3">{{ getTime(file.recoveryTime) }}</div>
-        <div class="col-2">{{ getSize(file.fileSize) }}</div>
+        <div v-if="file.folderType != statickey.folderType.folder" class="col-2">{{ getSize(file.fileSize) }}</div>
       </div>
     </div>
 
@@ -114,9 +114,9 @@ const deleteRecycleFiles2 = (file) => {
     });
 };
 
-const getRecycleFiles = () => {
+const getRecycleFiles = async () => {
   alertStore.load.isLoading = true;
-  axios.get(apiStore.file.getRecycleFiles, {}).then((resp) => {
+  const resp = await axios.get(apiStore.file.getRecycleFiles, {}).then((resp) => {
     files.value = resp.data;
   });
   alertStore.load.isLoading = false;

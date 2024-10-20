@@ -4,6 +4,7 @@ import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
 import com.looppan.looppan.controller.homefile.utils.FileStaticKey;
 import com.looppan.looppan.mapper.FileInfoMapper;
+import com.looppan.looppan.mapper.FileShareMapper;
 import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.recycle.DeleteFilesFromRecycleService;
@@ -28,6 +29,8 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
 
     @Autowired
     FileInfoMapper fileInfoMapper;
+    @Autowired
+    private FileShareMapper fileShareMapper;
 
     @Override
     public ResponseEntity<Map> deleteFilesFromRecycleService(List<String> filesId) {
@@ -69,6 +72,11 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
                     } else {
                         fileInfoMapper.DeleteByFileIdAndUserId(fileInfo.getFileId(), Integer.valueOf(userId));
                     }
+                }
+                FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+                if (fileInfo.getShared()) {
+                    String shareId = fileInfo.getFileId() + userId;
+                    fileShareMapper.deleteById(shareId);
                 }
                 fileInfoMapper.DeleteByFileIdAndUserId(fileId, Integer.valueOf(userId));
             }

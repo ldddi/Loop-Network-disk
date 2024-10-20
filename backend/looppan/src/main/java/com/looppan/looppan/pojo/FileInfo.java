@@ -32,4 +32,5 @@ public class FileInfo {
     Integer fileCategory;
     LocalDateTime recoveryTime;
     Integer delFlag;
+    Boolean shared;
 }

@@ -28,6 +28,7 @@ export const useApiStore = defineStore("api", () => {
     getSharedFilesList: "/api/file/getSharedFilesList",
     getSharedFileUrl: "/api/file/getSharedFileUrl",
     cancelSharedFile: "/api/file/cancelSharedFile",
+    returnSharedFileByte: "/api/file/returnSharedFileByte",
     //
     shareCheckCode: "/api/shareCheckCode",
     getSharedUserInfo: "/api/getSharedUserInfo",

@@ -1,11 +1,12 @@
-package com.looppan.looppan.service.impl.homefile;
+package com.looppan.looppan.service.impl.sharefile;
 
 import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
-import com.looppan.looppan.mapper.FileInfoMapper;
+import com.looppan.looppan.mapper.FileShareMapper;
 import com.looppan.looppan.pojo.FileInfo;
+import com.looppan.looppan.pojo.FileShared;
 import com.looppan.looppan.pojo.User;
-import com.looppan.looppan.service.homefile.ReturnFileByteService;
+import com.looppan.looppan.service.sharefile.GetSharedFileByteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -24,34 +24,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class ReturnFileByteServiceImpl implements ReturnFileByteService {
+public class GetSharedFileByteServiceImpl implements GetSharedFileByteService {
 
     @Autowired
-    FileInfoMapper fileInfoMapper;
+    FileShareMapper fileShareMapper;
 
     @Override
-    public ResponseEntity<FileSystemResource> returnFileByte(String fileId) {
+    public ResponseEntity<FileSystemResource> getSharedFile(String fileId) {
         // 获取当前认证的用户信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
-
+        String shareId = fileId + userId;
         // 查询文件信息
-        FileInfo fileInfo;
+        FileShared fileShared;
         try {
-            fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+            fileShared = fileShareMapper.selectById(shareId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException("获取文件信息失败");
         }
 
-        if (fileInfo == null) {
+        if (fileShared == null) {
             throw new MyException("文件信息不存在");
         }
 
-        Path filePath = Paths.get(fileInfo.getFilePath());
+        Path filePath = Paths.get(fileShared.getFilePath());
+
         if (!Files.exists(filePath)) {
+
             throw new MyException("文件不存在");
         }
 
@@ -59,7 +61,7 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
         HttpHeaders headers = new HttpHeaders();
         String encodedFilename;
         try {
-            encodedFilename = URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+            encodedFilename = URLEncoder.encode(fileShared.getFileName(), StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -84,6 +86,4 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
     }
-
-
 }

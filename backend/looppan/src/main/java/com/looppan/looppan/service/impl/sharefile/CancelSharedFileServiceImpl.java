@@ -2,7 +2,9 @@ package com.looppan.looppan.service.impl.sharefile;
 
 import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
+import com.looppan.looppan.mapper.FileInfoMapper;
 import com.looppan.looppan.mapper.FileShareMapper;
+import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.sharefile.CancelSharedFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class CancelSharedFileServiceImpl implements CancelSharedFileService {
     @Autowired
     FileShareMapper fileShareMapper;
 
+    @Autowired
+    FileInfoMapper fileInfoMapper;
+
     @Override
     @Transactional
     public ResponseEntity<Map> cancelSharedFile(List<String> shareIds) {
@@ -30,11 +35,17 @@ public class CancelSharedFileServiceImpl implements CancelSharedFileService {
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
+
         try {
             for (String shareId : shareIds) {
+                String fileId = shareId.substring(0, shareId.length() - 1);
+                FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+                fileInfo.setShared(false);
+                fileInfoMapper.updateById(fileInfo);
                 fileShareMapper.deleteById(shareId);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MyException("取消分享失败");
         }
 

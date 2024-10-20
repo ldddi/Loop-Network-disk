@@ -28,8 +28,8 @@
           <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
-
-          <span>{{ file.fileName }}</span>
+          <RouterLink v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <span v-else class="file-name" @click="clickFileName(file)">{{ file.fileName }}</span>
         </div>
         <div class="col-2 my-icon">
           <div @click="getSharedFileUrl(file)" class="copy-link">
@@ -57,6 +57,36 @@
     <span>暂无数据</span>
   </div>
 
+  <!-- image preview modal -->
+  <div v-if="isPreviewVisibleImage" class="preview-modal">
+    <div @click="closePreviewImage" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <img class="isImageScaled" :src="imageUrl" alt="Image Preview" />
+    </div>
+  </div>
+
+  <!-- viedo preview modal -->
+  <div v-if="isPreviewVisibleVideo" class="preview-modal">
+    <div @click="closePreviewVideo" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <video class="isVideoScaled" :src="videoUrl" controls></video>
+    </div>
+  </div>
+
+  <!-- 音频预览模态框 -->
+  <div v-if="isPreviewVisibleAudio" class="preview-modal">
+    <div @click="closePreviewAudio" class="close-icon">
+      <i class="bi bi-x"></i>
+    </div>
+    <div class="preview-content">
+      <audio class="isAudioScaled" :src="audioUrl" controls></audio>
+    </div>
+  </div>
+
   <LoadingBox />
 </template>
 
@@ -73,6 +103,68 @@ const alertStore = useAlertStore();
 
 const files = ref([]);
 let selectedCheck = ref([]);
+
+const getLink = (file) => {
+  const prepath = route.query.path;
+  if (file.folderType == statickey.folderType.folder) {
+    if (prepath == null) {
+      return { name: "HomeAll", query: { path: file.fileId } };
+    } else {
+      return { name: "HomeAll", query: { path: prepath + "/" + file.fileId } };
+    }
+  }
+
+  return { name: "HomeAll" };
+};
+
+const isPreviewVisibleVideo = ref(false);
+const isPreviewVisibleImage = ref(false);
+const isPreviewVisibleAudio = ref(false);
+
+let imageUrl = ref("");
+let videoUrl = ref("");
+let audioUrl = ref("");
+
+const closePreviewImage = () => {
+  isPreviewVisibleImage.value = false;
+};
+
+const closePreviewVideo = () => {
+  isPreviewVisibleVideo.value = false;
+};
+
+const closePreviewAudio = () => {
+  isPreviewVisibleAudio.value = false;
+  selectedDuration.value = null;
+};
+
+const clickFileName = (file) => {
+  if (file.fileCategory == statickey.category.folder || file.fileCategory == statickey.category.document) {
+    return;
+  }
+
+  axios
+    .get(
+      apiStore.file.returnSharedFileByte,
+      {
+        fileId: file.fileId,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const Blob = resp; // 获取 Blob 数据
+      if (file.fileCategory == statickey.category.video) {
+        isPreviewVisibleVideo.value = true;
+        videoUrl.value = URL.createObjectURL(Blob);
+      } else if (file.fileCategory == statickey.category.audio) {
+        isPreviewVisibleAudio.value = true;
+        audioUrl.value = URL.createObjectURL(Blob);
+      } else if (file.fileCategory == statickey.category.image) {
+        isPreviewVisibleImage.value = true;
+        imageUrl.value = URL.createObjectURL(Blob);
+      }
+    });
+};
 
 const getShareTime = (time) => {
   const date = new Date(time);
@@ -139,9 +231,9 @@ onMounted(() => {
   getSharedFilesList();
 });
 
-const getSharedFilesList = () => {
+const getSharedFilesList = async () => {
   alertStore.load.isLoading = true;
-  axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
+  const resp = await axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
     files.value = resp.data;
   });
   alertStore.load.isLoading = false;
@@ -166,13 +258,9 @@ const cancelSharedFiles = () => {
 };
 
 const cancelSharedFile = (file) => {
-  axios
-    .post(apiStore.file.cancelSharedFile, {
-      shareId: file.shareId,
-    })
-    .then((resp) => {
-      deleteFileByShareId(file.shareId);
-    });
+  axios.post(apiStore.file.cancelSharedFile, [file.shareId]).then((resp) => {
+    deleteFileByShareId(file.shareId);
+  });
 };
 
 const deleteFileByShareId = (shareId) => {
@@ -181,6 +269,57 @@ const deleteFileByShareId = (shareId) => {
 </script>
 
 <style lang="scss" scoped>
+.isImageScaled {
+  transform: scale(0.7); /* 进行缩放 */
+  transition: transform 0.1s; /* 添加过渡效果 */
+}
+
+.isVideoScaled {
+  transform: scale(0.9); /* 进行缩放 */
+  transition: transform 0.1s;
+}
+
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  .close-icon {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #fff;
+  }
+  .preview-content {
+    max-width: 90%;
+    max-height: 90%;
+    margin-bottom: 1%;
+    display: flex; /* 使内容为flex布局 */
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中 */
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      object-fit: cover; /* 保持图像的宽高比 */
+    }
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      object-fit: cover; /* 保持图像的宽高比 */
+    }
+  }
+}
+
 .active {
 }
 .not-active {

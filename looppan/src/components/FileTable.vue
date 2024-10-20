@@ -226,7 +226,7 @@ const clickCloseIcon = () => {
 };
 
 let shareFile = ref("");
-let selectedDuration = ref();
+let selectedDuration = ref(7);
 let isShowShareUrl = ref(false);
 let shareUrl = ref("");
 let shareCode = ref("");
@@ -402,7 +402,10 @@ watch(
   async (newPath, oldPath) => {
     await nextTick();
     emit("get-file-list", newPath);
-    emit("pop-files-cache");
+
+    if (newPath.path == null || (oldPath.path != null && newPath.path.length < oldPath.path.length)) {
+      emit("pop-files-cache");
+    }
   }
 );
 

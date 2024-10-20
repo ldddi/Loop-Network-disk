@@ -39,10 +39,15 @@ axiosInstance.interceptors.response.use(
 
     return response.data; // 直接返回数据
   },
-  (error) => {
+  async (error) => {
     // 处理响应错误
     if (error.response) {
-      if (error.response.data.message == "user is unauthorized" || error.response.status == 401) {
+      let data = error.response.data;
+      if (error.response.data instanceof Blob) {
+        data = await error.response.data.text().then((text) => JSON.parse(text));
+      }
+
+      if (data.message == "user is unauthorized" || error.response.status == 401) {
         localStorage.removeItem(statickey.jwtToken);
         const userStore = useUserStore();
         userStore.user.is_login = false;
@@ -50,12 +55,12 @@ axiosInstance.interceptors.response.use(
         router.push({ name: "LoginView" });
       }
       const alertStore = useAlertStore();
-      alertStore.error.message = error.response.data.message;
+      alertStore.error.message = data.message;
       alertStore.error.isVisible = true;
       setTimeout(() => {
         alertStore.error.isVisible = false;
       }, 3000);
-      return Promise.reject(error.response.data);
+      return Promise.reject(data);
     } else {
       console.error(error);
       return Promise.reject(error.message);

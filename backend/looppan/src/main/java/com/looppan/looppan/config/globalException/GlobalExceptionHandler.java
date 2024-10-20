@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
     // 处理自定义异常
     @ExceptionHandler(MyException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(MyException ex, WebRequest request) {
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(),

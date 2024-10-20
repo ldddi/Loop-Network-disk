@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ public class ShareFileServiceImpl implements ShareFileService {
     FileShareMapper fileShareMapper;
 
     @Override
+    @Transactional
     public ResponseEntity<Map> shareFile(String fileId, String time) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -73,6 +75,9 @@ public class ShareFileServiceImpl implements ShareFileService {
         String url = "http:localhost:1030/shareFilesInfo/" + fileId + "/" + userId;
         fileShared.setFileUrl(url);
         fileShareMapper.insert(fileShared);
+
+        fileInfo.setShared(true);
+        fileInfoMapper.updateById(fileInfo);
 
         Map<String, Object> mp = new HashMap<>();
         JSONObject jsonObject = new JSONObject();
