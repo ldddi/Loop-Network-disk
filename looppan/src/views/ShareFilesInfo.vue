@@ -1,8 +1,26 @@
 <template>
   <div class="my-container">
     <div class="header">
-      <i class="bi bi-cloud-check my-title-icon"></i>
-      <span class="logo-text">Loop 网盘</span>
+      <div class="header-left">
+        <i class="bi bi-cloud-check my-title-icon"></i>
+        <span class="logo-text">Loop 网盘</span>
+      </div>
+      <div v-if="userStore.user.is_login" class="header-right">
+        <span @click="goToHomeAll" class="go-login">前往首页</span>
+        <div class="user-avatar">
+          <img :src="userStore.user.avatar" alt="" />
+          <div class="dropdown">
+            <ul>
+              <li @click="userStore.logOut">退出</li>
+            </ul>
+          </div>
+        </div>
+        <div class="user-nickname">{{ userStore.user.nickName }}</div>
+      </div>
+      <div v-else class="header-right">
+        <span @click="goToHomeAll" class="go-login">前往登陆</span>
+        <span class="no-login">未登录</span>
+      </div>
     </div>
     <div class="box">
       <div class="line-1">
@@ -60,6 +78,7 @@ import statickey from "@/utils/statickey";
 import { useAlertStore } from "@/store/useAlertStore";
 import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
+import router from "@/router";
 
 const apiStore = useApiStore();
 const userStore = useUserStore();
@@ -71,8 +90,14 @@ let selectedFiles = ref([]);
 onMounted(() => {
   getSharedFileInfo();
   const jwtToken = localStorage.getItem("jwtToken");
-  userStore.getUserInfoByLocalJwt(jwtToken);
+  if (jwtToken != null) {
+    userStore.getUserInfoByLocalJwt(jwtToken);
+  }
 });
+
+const goToHomeAll = () => {
+  router.push({ name: "HomeAll" });
+};
 
 const saveMyPan = () => {
   if (userStore.user.token == null) {
@@ -162,6 +187,63 @@ let files = ref([]);
 </script>
 
 <style lang="scss" scoped>
+.no-login {
+  color: white;
+}
+
+.go-login {
+  margin-right: 18px;
+  width: 80px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background-color: #5c90f0;
+  cursor: pointer;
+}
+
+.dropdown {
+  width: 80px;
+  display: none; /* 默认隐藏下拉菜单 */
+  position: absolute; /* 绝对定位，放置在父元素下方 */
+  top: 44px;
+  right: -1px;
+  background-color: white; /* 背景色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  z-index: 100; /* 确保下拉菜单在最上层 */
+  padding-top: 10px;
+}
+
+.dropdown ul {
+  list-style: none;
+  padding: 0; /* 去掉内边距 */
+  margin: 0; /* 去掉外边距 */
+  width: 100%; /* 设置宽度为100% */
+
+  text-align: center; /* 文本居中 */
+}
+
+.dropdown li {
+  display: flex; /* 使用 flexbox */
+  justify-content: center; /* 居中内容 */
+  margin: 0 10px 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.dropdown li:hover {
+  background-color: #cedff3;
+}
+
+.user-avatar:hover .dropdown {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 .myrow:hover {
   background-color: #f4f7fa;
 }
@@ -212,7 +294,7 @@ let files = ref([]);
     height: 56px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 0 15vw;
     background-color: #09a6ff;
     box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
@@ -228,6 +310,22 @@ let files = ref([]);
       margin-left: 5px;
       font-weight: 700;
       user-select: none;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      .user-avatar {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+        position: relative;
+        & img {
+          width: 100%;
+          height: 100%;
+        }
+      }
     }
   }
   .box {

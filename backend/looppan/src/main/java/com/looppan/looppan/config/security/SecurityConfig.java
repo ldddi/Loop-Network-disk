@@ -48,7 +48,6 @@ public class SecurityConfig {
                                 "/getPicCheckCode",
                                 "/sendEmailCode",
                                 "/register",
-//                                "/images/**",
                                 "/shareFileInfo",
                                 "/getSharedUserInfo",
                                 "/shareCheckCode/**",

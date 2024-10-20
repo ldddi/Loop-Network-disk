@@ -116,11 +116,37 @@ const deleteSelectedFiles = () => {
 
 const getImageFileList = async () => {
   alertStore.load.isLoading = true;
-  const resp = await axios.post(apiStore.file.getAllCategoryFile, {
-    category: statickey.category.image,
-  });
-  files.value = resp.data;
-  alertStore.load.isLoading = false;
+  try {
+    const resp = await axios.post(apiStore.file.getAllCategoryFile, {
+      category: statickey.category.image,
+    });
+    files.value = resp.data;
+    const promises = files.value.map(async (file) => {
+      if (file.fileCategory == statickey.category.image) {
+        file.fileCover = await getImageUrl(file.fileId);
+      }
+      return file;
+    });
+    files.value = await Promise.all(promises);
+  } finally {
+    alertStore.load.isLoading = false;
+  }
+};
+
+const getImageUrl = async (fileId) => {
+  try {
+    const resp = await axios.post(
+      apiStore.file.returnFileByte,
+      {
+        fileId: fileId,
+      },
+      "blob"
+    );
+    const url = URL.createObjectURL(resp);
+    return url;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const uploadFile = (fileList) => {

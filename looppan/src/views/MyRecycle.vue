@@ -28,7 +28,9 @@
           <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
           <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
-          <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
+          <!-- <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i> -->
+          <img v-else-if="file.fileCategory == statickey.category.image" class="my-floder my-image" :src="file.fileCover" alt="" />
+
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
           <span>{{ file.fileName }}</span>
@@ -116,10 +118,37 @@ const deleteRecycleFiles2 = (file) => {
 
 const getRecycleFiles = async () => {
   alertStore.load.isLoading = true;
-  const resp = await axios.get(apiStore.file.getRecycleFiles, {}).then((resp) => {
-    files.value = resp.data;
-  });
-  alertStore.load.isLoading = false;
+  try {
+    const resp = await axios.get(apiStore.file.getRecycleFiles, {}).then((resp) => {
+      files.value = resp.data;
+    });
+
+    const promises = files.value.map(async (file) => {
+      if (file.fileCategory == statickey.category.image) {
+        file.fileCover = await getImageUrl(file.fileId);
+      }
+      return file;
+    });
+    files.value = await Promise.all(promises);
+  } finally {
+    alertStore.load.isLoading = false;
+  }
+};
+
+const getImageUrl = async (fileId) => {
+  try {
+    const resp = await axios.post(
+      apiStore.file.returnFileByte,
+      {
+        fileId: fileId,
+      },
+      "blob"
+    );
+    const url = URL.createObjectURL(resp);
+    return url;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const getTime = (time) => {
@@ -173,6 +202,11 @@ const isFileSelected = (fileId) => {
 </script>
 
 <style lang="scss" scoped>
+.my-image {
+  width: 24px;
+  height: 24px;
+}
+
 .my-floder-folder {
   color: #ffcf40;
 }

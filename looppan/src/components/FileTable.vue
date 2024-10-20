@@ -30,7 +30,8 @@
           <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
           <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
-          <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
+          <!-- <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i> -->
+          <img :src="file.fileCover" class="img-cover my-floder" v-else-if="file.fileCategory == statickey.category.image" alt="" />
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
           <RouterLink v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
@@ -205,15 +206,17 @@ let audioUrl = ref("");
 
 const closePreviewImage = () => {
   isPreviewVisibleImage.value = false;
+  imageUrl.value = null;
 };
 
 const closePreviewVideo = () => {
   isPreviewVisibleVideo.value = false;
+  videoUrl.value = null;
 };
 
 const closePreviewAudio = () => {
   isPreviewVisibleAudio.value = false;
-  selectedDuration.value = null;
+  audioUrl.value = null;
 };
 
 const clickShareIcon = (file) => {
@@ -461,6 +464,11 @@ defineExpose({ createFile, selectedFiles });
 </script>
 
 <style lang="scss" scoped>
+.img-cover {
+  width: 24px;
+  height: 24px;
+}
+
 .share {
   width: 60px;
   margin-right: 15px;

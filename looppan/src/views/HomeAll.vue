@@ -154,8 +154,32 @@ const getFileList = async () => {
     if (resp.clickedFile != null && !filesCache.value.some((file) => file.fileId === resp.clickedFile.fileId)) {
       filesCache.value.push(resp.clickedFile);
     }
+
+    const promises = files.value.map(async (file) => {
+      if (file.fileCategory == statickey.category.image) {
+        file.fileCover = await getImageUrl(file.fileId);
+      }
+      return file;
+    });
+    files.value = await Promise.all(promises);
   } finally {
     alertStore.load.isLoading = false;
+  }
+};
+
+const getImageUrl = async (fileId) => {
+  try {
+    const resp = await axios.post(
+      apiStore.file.returnFileByte,
+      {
+        fileId: fileId,
+      },
+      "blob"
+    );
+    const url = URL.createObjectURL(resp);
+    return url;
+  } catch (error) {
+    console.log(error);
   }
 };
 
