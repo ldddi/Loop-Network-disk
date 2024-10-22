@@ -15,7 +15,28 @@
             <div class="triangle-1"></div>
             <div class="triangle-2"></div>
             <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
-            <div class="upload-content">暂无上传任务</div>
+            <div v-if="uploadFileStore.files == null || uploadFileStore.files.length == 0" class="upload-content">暂无上传任务</div>
+            <div v-else class="upload-files">
+              <div v-for="(file, index) in uploadFileStore.files" :key="index" class="upload-files-item">
+                <span>{{ file.fileName }}</span>
+                <div class="progress">
+                  <div class="bottom">
+                    <div :style="{ width: getProgress(file) }" class="top"></div>
+                  </div>
+                  <span>{{ getProgress(file) }}</span>
+                </div>
+
+                <div v-if="file.isFinish == true" class="ok">
+                  <span class="ok-icon">
+                    <i class="bi bi-check"></i>
+                  </span>
+                  <span>上传完成</span>
+                </div>
+                <div v-else class="notOk">
+                  <span>正在传输</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <!-- 弹出框 -->
@@ -61,21 +82,28 @@
 
 <script setup>
 import { useUserStore } from "@/store/useUserStore";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import ChangeInfoBox from "./ChangeInfoBox.vue";
 import ChangePasswordBox from "./ChangePasswordBox.vue";
 import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 import router from "@/router";
+import { useUploadFileStore } from "@/store/useUploadFileStore";
+
+const userStore = useUserStore();
+const uploadFileStore = useUploadFileStore();
 
 let route = useRoute();
 let isDropdownVisible = ref(false);
 const dropdown = ref(null);
 const arrow = ref(null);
-const userStore = useUserStore();
 const ChildChangeInfoBox = ref(null);
 const ChildChangePasswordBox = ref(null);
+
+const getProgress = (file) => {
+  return `${((file.finishChunks / file.totalChunks) * 100).toFixed(2)}%`;
+};
 
 const toLogin = () => {
   router.push({ path: "/home" });
@@ -108,6 +136,70 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.notOk {
+  color: #636d7d;
+  user-select: none;
+}
+
+.ok {
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #67c039;
+  user-select: none;
+  .ok-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+    background-color: #67c039;
+  }
+}
+
+.upload-files {
+  width: 100%;
+  height: 90%;
+
+  .upload-files-item {
+    width: 100%;
+    height: 60px;
+    padding: 0 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 3px;
+    .progress {
+      width: 100%;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      background-color: white;
+      position: relative;
+      user-select: none;
+      .bottom {
+        height: 40%;
+        width: 90%;
+        background-color: #afb7c3;
+        border-radius: 8px;
+        .top {
+          height: 100%;
+          border-radius: 8px;
+          background-color: #09a6ff;
+        }
+      }
+      span {
+        position: absolute;
+        right: 0;
+      }
+    }
+  }
+}
+
 .my-title-icon {
   color: #09a6ff;
   font-size: 40px;
@@ -313,6 +405,7 @@ onBeforeUnmount(() => {
   margin-bottom: 10px;
   height: 30px;
   border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+  user-select: none;
 }
 
 .upload-content {

@@ -17,7 +17,7 @@ public class ReturnFileByteController {
     ReturnFileByteService returnFileByteService;
 
     @PostMapping("/file/returnFileByte")
-    public ResponseEntity<FileSystemResource> returnFileByte(@RequestBody Map<String, String> mp) {
+    public ResponseEntity<Object> returnFileByte(@RequestBody Map<String, String> mp) {
         String fileId = mp.get("fileId");
 
         return returnFileByteService.returnFileByte(fileId);

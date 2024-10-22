@@ -7,7 +7,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 // 创建 Axios 实例
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:7090", // 替换为你的基础 URL
-  timeout: 5000, // 超时时间
+  timeout: 100000, // 超时时间
 });
 
 // 请求拦截器
@@ -74,8 +74,8 @@ const get = (url, params, responseType = "json") => {
 };
 
 // 封装 POST 方法
-const post = (url, data, responseType = "json") => {
-  return axiosInstance.post(url, data, { responseType });
+const post = (url, data, responseType = "json", onUploadProgress) => {
+  return axiosInstance.post(url, data, { responseType, onUploadProgress });
 };
 
 // 导出封装的 axios 实例

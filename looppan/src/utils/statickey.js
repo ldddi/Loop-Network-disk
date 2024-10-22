@@ -14,8 +14,13 @@ const folderType = {
   folder: 1,
 };
 
+const upload = {
+  time: 1500,
+};
+
 export default {
   jwtToken,
   category,
   folderType,
+  upload,
 };

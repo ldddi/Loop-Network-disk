@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
-    <input ref="myInput" type="file" id="fileInput" style="display: none" multiple @change="uploadFile($event.target.files)" />
+    <input ref="myInput" type="file" id="fileInput" style="display: none" multiple @change="uploadFile2($event.target.files)" />
     <button type="button" class="btn btn-pull" @click="resetAndUpload">上传</button>
 
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
@@ -48,11 +48,13 @@ import ModalFileTable from "@/components/ModalFileTable.vue";
 import { Modal } from "bootstrap";
 import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
+import { useUploadFileStore } from "@/store/useUploadFileStore";
 const fileTable = ref(null);
 const files = ref([]);
 
 const apiStore = useApiStore();
 const alertStore = useAlertStore();
+const uploadFileStore = useUploadFileStore();
 const route = useRoute();
 
 const myInput = ref(null);
@@ -120,23 +122,81 @@ const getOhterFileList = async () => {
   alertStore.load.isLoading = false;
 };
 
-const uploadFile = (fileList) => {
+const chunkSize = ref(1024 * 1024);
+
+const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, totalChunks) => {
   const formData = new FormData();
+  formData.append("filePId", filePid);
+  formData.append("chunk", chunk);
+  formData.append("fileName", fileName);
+  formData.append("fileSize", fileSize);
+  formData.append("chunkIndex", chunkIndex);
+  formData.append("totalChunks", totalChunks);
+
+  let resp;
+  await new Promise((resolve) => {
+    setTimeout(async () => {
+      resp = await axios.post(apiStore.file.uploadFile2, formData);
+      resolve();
+    }, statickey.upload.time); // 调整这里的值以控制速度
+  });
+  return resp;
+};
+
+const uploadFile2 = async (files) => {
+  if (files == null) {
+    return;
+  }
+
   let filePid = "0";
   if (route.query.path != null) {
     filePid = route.query.path;
   }
-
-  for (let i = 0; i < fileList.length; i++) {
-    formData.append("file[]", fileList[i]);
+  let isOk = false;
+  let fileNameList = [];
+  for (let i = 0; i < files.length; i++) {
+    fileNameList.unshift(files[i].name);
   }
-  formData.append("filePId", filePid);
+  await axios
+    .post(apiStore.file.checkFilename, {
+      filePId: filePid,
+      fileNameList: fileNameList,
+    })
+    .then((resp) => {
+      isOk = true;
+    });
 
-  axios.post(apiStore.file.uploadFile, formData).then((resp) => {
-    for (let i = 0; i < resp.data.length; i++) {
-      updateFiles(resp.data[i]);
+  if (isOk == false) {
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    uploadFileStore.files.unshift({
+      fileName: files[i].name,
+      fileSize: files[i].size,
+      isFinish: false,
+      finishChunks: 0,
+      totalChunks: 0,
+    });
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const totalChunks = Math.ceil(file.size / chunkSize.value);
+
+    uploadFileStore.files[i].totalChunks = totalChunks;
+    let resp;
+    for (let j = 0; j < totalChunks; j++) {
+      const start = j * chunkSize.value;
+      const end = Math.min(start + chunkSize.value, file.size);
+      const chunk = file.slice(start, end);
+      resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
+      uploadFileStore.files[i].finishChunks = j + 1;
     }
-  });
+
+    uploadFileStore.files[i].isFinish = true;
+    updateFiles(resp.data);
+  }
 };
 
 const removeFileFromFiles = (file) => {
