@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MoveFileServiceImpl implements MoveFileService {
@@ -50,15 +47,29 @@ public class MoveFileServiceImpl implements MoveFileService {
             pPath = uploadDir + "/" + user.getUserId();
         }
 
+        List<String> fileNameList = fileInfoMapper.selectFilenameByFilePidAndUserId(pId, Integer.valueOf(userId));
+        List<FileInfo> fileInfoList = new ArrayList<>();
 
         for (int i = 0; i < filesId.size(); i++) {
             FileInfo fileInfo;
             try {
                 fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
-                fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, pPath + "/" + fileInfo.getFileName());
+                fileInfoList.add(fileInfo);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new MyException("更新失败");
             }
+
+            if (fileNameList.contains(fileInfo.getFileName())) {
+                throw new MyException("目标目录中包含要移动的文件或文件夹");
+            }
+        }
+
+
+        for (int i = 0; i < fileInfoList.size(); i++) {
+            FileInfo fileInfo = fileInfoList.get(i);
+            fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, pPath + "/" + fileInfo.getFileName());
+
             // 源文件路径
             String sourceFilePath = fileInfo.getFilePath();
             // 目标文件路径

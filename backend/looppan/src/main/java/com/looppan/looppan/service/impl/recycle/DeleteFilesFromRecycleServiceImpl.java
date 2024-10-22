@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,39 +66,60 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
 
         try {
             for (String fileId : filesId) {
+                // 如果删除的是目录, 删除它的子文件
                 List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId(fileId, Integer.valueOf(userId));
-                for (FileInfo fileInfo : fileInfos) {
+                for (int i = 0; i < fileInfos.size(); i++) {
+                    FileInfo fileInfo = fileInfos.get(i);
                     if (Objects.equals(fileInfo.getFolderType(), FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue())) {
                         deleteFileinfo(fileInfo, userId);
                     } else {
+                        if (fileInfo.getFileCover() != null) {
+                            Path coverPath = Paths.get(fileInfo.getFileCover());
+                            Files.deleteIfExists(coverPath);
+                        }
                         fileInfoMapper.DeleteByFileIdAndUserId(fileInfo.getFileId(), Integer.valueOf(userId));
                     }
                 }
+
                 FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
                 if (fileInfo.getShared()) {
                     String shareId = fileInfo.getFileId() + userId;
                     fileShareMapper.deleteById(shareId);
                 }
+                if (fileInfo.getFileCover() != null) {
+                    Path coverPath = Paths.get(fileInfo.getFileCover());
+                    Files.delete(coverPath);
+                }
                 fileInfoMapper.DeleteByFileIdAndUserId(fileId, Integer.valueOf(userId));
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace();
             throw new MyException("删除失败");
         }
 
         Map<String, String> mp = new HashMap<>();
         mp.put("message", "删除成功");
+
         return ResponseEntity.ok().body(mp);
     }
-
-    private void deleteFileinfo(FileInfo folder, String userId) {
+    private void deleteFileinfo(FileInfo folder, String userId) throws IOException {
         List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId(folder.getFileId(), Integer.valueOf(userId));
         for (FileInfo fileInfo : fileInfos) {
             if (fileInfo.getFolderType() == FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue()) {
                 deleteFileinfo(fileInfo, userId);
             } else {
+                if (fileInfo.getFileCover() != null) {
+                    Path coverPath = Paths.get(fileInfo.getFileCover());
+                    Files.deleteIfExists(coverPath);
+                }
                 fileInfoMapper.DeleteByFileIdAndUserId(fileInfo.getFileId(), Integer.valueOf(userId));
             }
         }
+        if (folder.getFileCover() != null) {
+            Path coverPath = Paths.get(folder.getFileCover());
+            Files.delete(coverPath);
+        }
+
         fileInfoMapper.DeleteByFileIdAndUserId(folder.getFileId(), Integer.valueOf(userId));
     }
 

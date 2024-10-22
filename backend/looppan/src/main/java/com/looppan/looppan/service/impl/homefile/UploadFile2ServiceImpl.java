@@ -68,10 +68,15 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
         Path uploadPath = basePath.resolve(fileName + ".part" + index);
         fileChunk.transferTo(uploadPath.toFile());
 
+        // 合并
         if (Objects.equals(index, totalChunks - 1)) {
             mergeChunks(basePath ,fileName, totalChunks);
             String filePath = basePath.resolve(fileName).toString();
             FileInfo dataFileInfo = insertToFileInfo(fileName, fileSize, filePId,filePath, userId ,fileChunk.getContentType());
+
+            if (Objects.equals(dataFileInfo.getFileCategory(), FileStaticKey.FILE_CATEGORY_IMAGE.toIntegerValue())) {
+                createImageCover(userId, fileName, dataFileInfo);
+            }
 
             Map<String, Object> mp = new HashMap<>();
             mp.put("message", "文件上传成功");
@@ -134,7 +139,31 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
             e.printStackTrace();
             throw new MyException("文件上传失败");
         }
-        System.out.println(fileInfo);
         return fileInfo;
+    }
+
+    private void createImageCover (String userId, String fileName, FileInfo dataFileInfo) throws IOException {
+        Path basePath = Paths.get(uploadDir);
+        Path coverPath = basePath.resolve(userId).resolve("cover");
+
+        if (!Files.exists(coverPath)) {
+            Files.createDirectories(coverPath);
+        }
+        String extension = fileName.substring(fileName.lastIndexOf('.'));
+        String random = RandomUtils.generateRandomString(FileStaticKey.FILE_ID_LENGTH.toIntegerValue());
+        random += extension;
+        Path outputFilePath = coverPath.resolve(random);
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("ffmpeg", "-i", dataFileInfo.getFilePath(), "-q:v", "20", outputFilePath.toString());
+
+        try {
+            Process process = processBuilder.start();
+            process.waitFor(); // 等待 FFmpeg 进程完成
+            dataFileInfo.setFileCover(outputFilePath.toString());
+            fileInfoMapper.updateById(dataFileInfo);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error processing file with FFmpeg", e);
+        }
     }
 }

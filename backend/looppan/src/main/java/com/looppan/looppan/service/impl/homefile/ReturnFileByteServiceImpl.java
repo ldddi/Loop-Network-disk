@@ -30,7 +30,7 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<Object> returnFileByte(String fileId) {
+    public ResponseEntity<FileSystemResource> returnFileByte(String fileId) {
         // 获取当前认证的用户信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -75,38 +75,18 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
         } catch (Exception e) {
             contentType = "application/octet-stream"; // 默认的二进制流类型
         }
-
-//        if (contentType.substring(0, contentType.lastIndexOf("/")).equals("image")) {
-//            // 使用 FFmpeg 处理文件并返回输入流
-//            InputStream inputStream = processFileWithFFmpeg(filePath.toString());
-//
-//            // 创建 InputStreamResource
-//            InputStreamResource resource = new InputStreamResource(inputStream);
-//            return ResponseEntity.ok()
-//                    .headers(headers)
-//                    .contentType(MediaType.parseMediaType(contentType))
-//                    .body(resource);
-//        }
-
-        // 创建 FileSystemResource
-        FileSystemResource resource = new FileSystemResource(filePath.toFile());
+        FileSystemResource resource;
+        String fileCover = fileInfo.getFileCover();
+        if (contentType.substring(0, contentType.lastIndexOf("/")).equals("image") && fileCover != null) {
+            Path coverPath = Paths.get(fileCover);
+            resource = new FileSystemResource(coverPath.toFile());
+        } else {
+            resource = new FileSystemResource(filePath.toFile());
+        }
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
     }
-
-
-//    private InputStream processFileWithFFmpeg(String inputFilePath) {
-//        ProcessBuilder processBuilder = new ProcessBuilder();
-//        processBuilder.command("ffmpeg", "-i", inputFilePath, "-q:v", "20", "-f", "image2pipe", "pipe:1");
-//
-//        try {
-//            Process process = processBuilder.start();
-//            return process.getInputStream(); // 返回 FFmpeg 的输出流
-//        } catch (IOException e) {
-//            throw new RuntimeException("Error processing file with FFmpeg", e);
-//        }
-//    }
 }

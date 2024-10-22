@@ -18,7 +18,7 @@
                 <label for="checkCode" class="form-label">验证码</label>
                 <div class="checkcode-css">
                   <input class="form-control" id="checkCode" v-model="emailCheckCode" />
-                  <button class="btn btn-primary" @click="sendEmailCheckCode2">{{ isSending ? "发送中..." : "发送验证码" }}</button>
+                  <button class="btn btn-primary" :disabled="isSending" @click="sendEmailCheckCode2">{{ isSending ? "发送中..." : "发送验证码" }}</button>
                 </div>
               </div>
             </div>

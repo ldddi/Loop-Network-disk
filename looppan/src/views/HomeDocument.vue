@@ -101,13 +101,12 @@ const comfirmMoveFiles = () => {
 
 const deleteSelectedFiles = () => {
   if (fileTable.value.selectedFiles.length > 0) {
+    const selectedFiles = fileTable.value.selectedFiles;
     axios
       .post(apiStore.file.deleteSelectedFiles, {
         filesId: fileTable.value.selectedFiles,
       })
       .then((resp) => {
-        const selectedFiles = fileTable.value.selectedFiles;
-
         files.value = files.value.filter((file) => !selectedFiles.includes(file.fileId));
         fileTable.value.selectedFiles = [];
       });

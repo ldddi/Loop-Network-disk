@@ -11,7 +11,7 @@
       <div class="right-info">
         <div @click="onChangeDropdownVisible" ref="arrow" class="right-arrow">
           <i class="bi bi-arrow-down-up arrow-icon"></i>
-          <div v-if="isDropdownVisible" ref="dropdown" class="upload-box" @click.stop>
+          <div v-if="uploadFileStore.isDropdownVisible" ref="dropdown" class="upload-box" @click.stop>
             <div class="triangle-1"></div>
             <div class="triangle-2"></div>
             <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
@@ -23,7 +23,18 @@
                   <div class="bottom">
                     <div :style="{ width: getProgress(file) }" class="top"></div>
                   </div>
-                  <span>{{ getProgress(file) }}</span>
+                  <div class="span">
+                    <span>{{ getProgress(file) }}</span>
+                    <div v-if="!file.isFinish" @click="PasueUpload(file)" class="pasue">
+                      <i v-if="!file.isPause" title="暂停上传" class="bi bi-pause"></i>
+                      <i v-else title="继续上传" class="bi bi-caret-right-fill"></i>
+                    </div>
+                    <div v-if="!file.isFinish" @click="CancelUpolad(file)" class="cancel-icon" title="取消上传"><i class="bi bi-x"></i></div>
+                    <div v-if="file.isFinish" @click="CleanUpolad(file)" class="clean">
+                      <div class="clean-icon"><i class="bi bi-trash"></i></div>
+                      <span>清除记录</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div v-if="file.isFinish == true" class="ok">
@@ -95,13 +106,27 @@ const userStore = useUserStore();
 const uploadFileStore = useUploadFileStore();
 
 let route = useRoute();
-let isDropdownVisible = ref(false);
+
 const dropdown = ref(null);
 const arrow = ref(null);
 const ChildChangeInfoBox = ref(null);
 const ChildChangePasswordBox = ref(null);
 
+const PasueUpload = (file) => {
+  file.isPause = !file.isPause;
+};
+
+const CancelUpolad = (file) => {
+  file.isCancel = true;
+};
+
+const CleanUpolad = (file) => {
+  uploadFileStore.files = uploadFileStore.files.filter((f) => f.fileId != file.fileId);
+  return;
+};
+
 const getProgress = (file) => {
+  if (file.finishChunks == 0) return "0%";
   return `${((file.finishChunks / file.totalChunks) * 100).toFixed(2)}%`;
 };
 
@@ -110,12 +135,12 @@ const toLogin = () => {
 };
 
 const onChangeDropdownVisible = () => {
-  isDropdownVisible.value = !isDropdownVisible.value;
+  uploadFileStore.isDropdownVisible = !uploadFileStore.isDropdownVisible;
 };
 
 const onCloseDropdown = (event) => {
   if (arrow.value && !arrow.value.contains(event.target) && dropdown.value && !dropdown.value.contains(event.target)) {
-    isDropdownVisible.value = false;
+    uploadFileStore.isDropdownVisible = false;
   }
 };
 
@@ -136,6 +161,21 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.cancel-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  background-color: #dff4ff;
+  i {
+    color: #09a6ff;
+    font-size: 13px;
+  }
+}
+
 .notOk {
   color: #636d7d;
   user-select: none;
@@ -166,7 +206,7 @@ onBeforeUnmount(() => {
 .upload-files {
   width: 100%;
   height: 90%;
-
+  overflow-y: auto;
   .upload-files-item {
     width: 100%;
     height: 60px;
@@ -183,7 +223,7 @@ onBeforeUnmount(() => {
       user-select: none;
       .bottom {
         height: 40%;
-        width: 90%;
+        width: 80%;
         background-color: #afb7c3;
         border-radius: 8px;
         .top {
@@ -192,9 +232,49 @@ onBeforeUnmount(() => {
           background-color: #09a6ff;
         }
       }
-      span {
+      .span {
+        width: 20%;
+        padding-left: 5px;
         position: absolute;
-        right: 0;
+        left: 80%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        .pasue {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: #dff4ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          i {
+            font-size: 16px;
+            color: #09a6ff;
+          }
+        }
+        .clean {
+          width: 72px;
+          height: 16px;
+          border-radius: 8px;
+          background-color: #e2f5ff;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          cursor: pointer;
+          .clean-icon {
+            width: 18px;
+            height: 18px;
+            font-size: 13px;
+            color: #09a6ff;
+            display: flex;
+            align-items: center;
+          }
+          span {
+            color: #09a6ff;
+          }
+        }
       }
     }
   }

@@ -26,7 +26,7 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      * @param category
      * @return
      */
-    @Select("select * from file_info where user_id = #{userId} and file_category = #{category}  and del_flag = 2")
+    @Select("select * from file_info where user_id = #{userId} and file_category = #{category}  and del_flag = 2 order by create_time desc")
     List<FileInfo> selectByUserIdAndCategory(@Param("userId") Integer userId, @Param("category") Integer category);
 
     /**
@@ -37,6 +37,10 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      */
     @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag = 2  ORDER BY create_time DESC")
     List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
+
+    @Select("select file_name from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag = 2")
+    List<String> selectFilenameByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
+
 
     /**
      * 根据用户id和 pid 查找 所有文件夹或文件

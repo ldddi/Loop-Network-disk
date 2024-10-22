@@ -205,60 +205,157 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
   return resp;
 };
 
+// const uploadFile2 = async (files) => {
+//   if (files == null) {
+//     return;
+//   }
+
+//   let filePid = "0";
+//   if (route.query.path != null) {
+//     filePid = route.query.path;
+//   }
+//   let isOk = false;
+//   let fileNameList = [];
+//   for (let i = 0; i < files.length; i++) {
+//     fileNameList.unshift(files[i].name);
+//   }
+//   await axios
+//     .post(apiStore.file.checkFilename, {
+//       filePId: filePid,
+//       fileNameList: fileNameList,
+//     })
+//     .then((resp) => {
+//       isOk = true;
+//     });
+
+//   if (isOk == false) {
+//     return;
+//   }
+
+//   for (let i = 0; i < files.length; i++) {
+//     uploadFileStore.files.push({
+//       fileId: uploadFileStore.fileId,
+//       fileName: files[i].name,
+//       fileSize: files[i].size,
+//       isFinish: false,
+//       finishChunks: 0,
+//       totalChunks: 0,
+//       isCancel: false,
+//       isPause: false,
+//     });
+//     uploadFileStore.fileId += 1;
+//     if (i == 0) {
+//       uploadFileStore.isDropdownVisible = true;
+//     }
+//   }
+
+//   for (let i = 0; i < files.length; i++) {
+//     const file = files[i];
+//     const totalChunks = Math.ceil(file.size / chunkSize.value);
+//     console.log(uploadFileStore.files[i]);
+//     uploadFileStore.files[i].totalChunks = totalChunks;
+//     let resp;
+//     let flag = true;
+//     for (let j = 0; j < totalChunks; j++) {
+//       // if (uploadFileStore.files[i].isCancel) {
+//       //   flag = false;
+//       //   console.log("isCancel");
+//       //   break;
+//       // }
+
+//       // while (uploadFileStore.files[i].isPause) {
+//       //   await new Promise((resolve) => setTimeout(resolve, 100));
+//       // }
+
+//       const start = j * chunkSize.value;
+//       const end = Math.min(start + chunkSize.value, file.size);
+//       const chunk = file.slice(start, end);
+//       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
+//       uploadFileStore.files[i].finishChunks = j + 1;
+//     }
+//     console.log(i, flag);
+//     if (flag) {
+//       uploadFileStore.files[i].isFinish = true;
+//       updateFiles(resp.data);
+//     }
+//   }
+// };
+
 const uploadFile2 = async (files) => {
-  if (files == null) {
+  // 确保 files 是一个 FileList 对象，并转换为数组
+  if (!(files instanceof FileList) || files.length === 0) {
     return;
   }
 
-  let filePid = "0";
-  if (route.query.path != null) {
-    filePid = route.query.path;
-  }
+  const fileArray = Array.from(files); // 或者使用 const fileArray = [...files];
+
+  let filePid = route.query.path || "0";
   let isOk = false;
-  let fileNameList = [];
-  for (let i = 0; i < files.length; i++) {
-    fileNameList.unshift(files[i].name);
-  }
+  let fileNameList = fileArray.map((file) => file.name);
+
   await axios
     .post(apiStore.file.checkFilename, {
       filePId: filePid,
       fileNameList: fileNameList,
     })
-    .then((resp) => {
+    .then(() => {
       isOk = true;
     });
 
-  if (isOk == false) {
+  if (!isOk) {
     return;
   }
-
-  for (let i = 0; i < files.length; i++) {
+  uploadFileStore.isDropdownVisible = true;
+  const uploadPromises = fileArray.map(async (file, index) => {
     uploadFileStore.files.unshift({
-      fileName: files[i].name,
-      fileSize: files[i].size,
+      fileId: uploadFileStore.fileId,
+      fileName: file.name,
+      fileSize: file.size,
       isFinish: false,
       finishChunks: 0,
       totalChunks: 0,
+      isCancel: false,
+      isPause: false,
     });
-  }
+    uploadFileStore.fileId += 1;
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
     const totalChunks = Math.ceil(file.size / chunkSize.value);
-
-    uploadFileStore.files[i].totalChunks = totalChunks;
+    uploadFileStore.files[index].totalChunks = totalChunks;
     let resp;
     for (let j = 0; j < totalChunks; j++) {
+      if (uploadFileStore.files[index].isCancel) {
+        break;
+      }
+
+      while (uploadFileStore.files[index].isPause) {
+        // 检测 isCancel
+        if (uploadFileStore.files[index].isCancel) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      if (uploadFileStore.files[index].isCancel) {
+        break;
+      }
+
       const start = j * chunkSize.value;
       const end = Math.min(start + chunkSize.value, file.size);
       const chunk = file.slice(start, end);
       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
-      uploadFileStore.files[i].finishChunks = j + 1;
+      uploadFileStore.files[index].finishChunks = j + 1;
     }
 
-    uploadFileStore.files[i].isFinish = true;
-    updateFiles(resp.data);
-  }
+    if (!uploadFileStore.files[index].isCancel) {
+      uploadFileStore.files[index].isFinish = true;
+    } else {
+      console.log("取消");
+      uploadFileStore.files = uploadFileStore.files.filter((f) => f.fileId != uploadFileStore.files[index].fileId);
+    }
+    console.log(resp.data);
+    updateFiles(resp.data); // 更新状态
+  });
+
+  await Promise.all(uploadPromises);
 };
 
 const removeFileFromFiles = (file) => {
