@@ -10,6 +10,7 @@ export const useUserStore = defineStore("User", () => {
     userId: "",
     nickName: "",
     avatar: "",
+    avatarUrl: "",
     email: "",
     totalSpace: "",
     useSpace: "",
@@ -41,6 +42,7 @@ export const useUserStore = defineStore("User", () => {
   const getUserInfoByLocalJwt = async (jwtToken) => {
     try {
       const resp = await axios.post(apiStore.user.getUserInfo, {});
+      console.log(resp);
       updateUser({
         ...resp,
         token: jwtToken,
@@ -54,10 +56,25 @@ export const useUserStore = defineStore("User", () => {
     }
   };
 
+  const getAvatarUrl = () => {
+    axios
+      .get(
+        apiStore.user.getAvatarByte,
+        {
+          avatar: user.avatar,
+        },
+        "blob"
+      )
+      .then((resp) => {
+        user.avatarUrl = URL.createObjectURL(resp);
+      });
+  };
+
   return {
     user,
     updateUser,
     logOut,
     getUserInfoByLocalJwt,
+    getAvatarUrl,
   };
 });

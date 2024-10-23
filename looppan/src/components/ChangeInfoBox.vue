@@ -82,6 +82,7 @@ const handleSubmit = async () => {
   }
   if (resp.avatar) {
     userStore.user.avatar = resp.avatar;
+    userStore.getAvatarUrl();
   }
   isVisible.value = false;
 };

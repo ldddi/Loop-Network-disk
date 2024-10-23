@@ -53,6 +53,10 @@ public class ShareFileServiceImpl implements ShareFileService {
             throw new MyException("文件已分享");
         }
 
+        if(fileInfo == null) {
+            throw new MyException("获取文件失败");
+        }
+
         String code = RandomUtils.generateRandomString(FileStaticKey.LENGTH_SHARE_CODE.toIntegerValue());
         LocalDateTime now = LocalDateTime.now();
         if (Objects.equals(time, "perpetual")) {

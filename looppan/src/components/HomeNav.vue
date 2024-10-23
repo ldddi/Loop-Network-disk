@@ -96,6 +96,7 @@ const route = useRoute();
     }
     .home-nav-top-item:hover {
       background-color: #f3f3f3;
+      transition: all ease-in-out 0.1s;
     }
   }
 }

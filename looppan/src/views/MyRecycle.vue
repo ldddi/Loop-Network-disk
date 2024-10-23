@@ -13,7 +13,7 @@
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input @change="selectAllFiles($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input v-model="isSelected" @change="selectAllFiles($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-6 container-title">文件名</div>
         <div class="col-3 container-title">删除时间</div>
@@ -80,6 +80,7 @@ const cancelDelete = () => {
     .then((resp) => {
       files.value = files.value.filter((file) => !selectedFiles.value.includes(file.fileId));
       selectedFiles.value = [];
+      isSelected.value = false;
     });
 };
 
@@ -102,6 +103,7 @@ const deleteRecycleFiles = () => {
     .then((resp) => {
       files.value = files.value.filter((file) => !selectedFiles.value.includes(file.fileId));
       selectedFiles.value = [];
+      isSelected.value = false;
     });
 };
 
@@ -179,7 +181,7 @@ const getSize = (size) => {
     return `${size} B`;
   }
 };
-
+const isSelected = ref(false);
 const selectAllFiles = (isChecked) => {
   if (isChecked) {
     selectedFiles.value = files.value.map((file) => file.fileId);

@@ -10,6 +10,7 @@ export const useApiStore = defineStore("api", () => {
     login: "/api/login",
     emailCheckCode: "/api/sendEmailCode",
     register: "/api/register",
+    getAvatarByte: "/api/user/getAvatarByte",
   };
 
   const file = {
@@ -17,6 +18,7 @@ export const useApiStore = defineStore("api", () => {
     getFileList: "/api/file/getFileList",
     uploadFile: "/api/file/uploadFile",
     uploadFile2: "/api/file/uploadFile2",
+    uploadFileCancel: "/api/file/uploadFileCancel",
     checkFilename: "/api/file/checkFilename",
     deleteSelectedFiles: "/api/file/deleteSelectedFiles",
     getFolderList: "/api/file/getFolderList",

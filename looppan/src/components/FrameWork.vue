@@ -17,7 +17,7 @@
             <div class="upload-title">上传任务 (仅展示本次上传任务)</div>
             <div v-if="uploadFileStore.files == null || uploadFileStore.files.length == 0" class="upload-content">暂无上传任务</div>
             <div v-else class="upload-files">
-              <div v-for="(file, index) in uploadFileStore.files" :key="index" class="upload-files-item">
+              <div v-for="file in uploadFileStore.files" :key="file.fileId" class="upload-files-item">
                 <span>{{ file.fileName }}</span>
                 <div class="progress">
                   <div class="bottom">
@@ -54,7 +54,7 @@
 
         <div class="right-user-info">
           <div class="user-avatar">
-            <img :src="userStore.user.avatar" alt="" />
+            <img :src="userStore.user.avatarUrl" alt="" />
             <div class="dropdown">
               <ul>
                 <li @click="changePersonInfo">修改个人信息</li>
@@ -291,14 +291,18 @@ onBeforeUnmount(() => {
   width: 150px;
   display: none; /* 默认隐藏下拉菜单 */
   position: absolute; /* 绝对定位，放置在父元素下方 */
-  top: 40px;
+  top: 46px;
   right: -1px;
   background-color: white; /* 背景色 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
   z-index: 100; /* 确保下拉菜单在最上层 */
   padding-top: 10px;
   ul {
     text-align: center;
+
+    li {
+      box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
   }
 }
 
@@ -309,7 +313,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   padding: 10px 0;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown ul {
@@ -397,11 +401,11 @@ onBeforeUnmount(() => {
         position: relative;
         width: 46px;
         height: 46px;
-        border-radius: 50%;
         // background-color: lightblue;
         img {
           width: 100%;
           height: 100%;
+          border-radius: 50%;
         }
       }
       .user-nickname {

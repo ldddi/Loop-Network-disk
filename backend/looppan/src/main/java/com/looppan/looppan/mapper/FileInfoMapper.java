@@ -38,6 +38,12 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag = 2  ORDER BY create_time DESC")
     List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
 
+    /**
+     * 根据用户id和 pid，查找 所有文件和文件夹 的filename
+     * @param filePId
+     * @param userId
+     * @return
+     */
     @Select("select file_name from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag = 2")
     List<String> selectFilenameByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
 

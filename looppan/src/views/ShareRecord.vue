@@ -5,11 +5,11 @@
       取消分享
     </button>
   </div>
-  <div v-if="files.length != 0" class="content">
+  <div class="content">
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input @change="selectAll($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+          <input v-model="isChecked" @change="selectAll($event.target.checked)" class="form-check-input" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-6 container-title">文件名</div>
         <div class="col-2 container-title">分享时间</div>
@@ -54,9 +54,9 @@
         </div>
       </div>
     </div>
-  </div>
-  <div v-else-if="alertStore.load.isLoading == false" class="noll">
-    <span>暂无数据</span>
+    <div v-if="alertStore.load.isLoading == false && files.length == 0" class="noll">
+      <span>暂无数据</span>
+    </div>
   </div>
 
   <!-- image preview modal -->
@@ -205,7 +205,7 @@ const getFailTime = (shareTime, failTime) => {
 
   return formattedTime;
 };
-
+const isChecked = ref(false);
 const selectAll = (isSelected) => {
   if (isSelected) {
     selectedCheck.value = [];
