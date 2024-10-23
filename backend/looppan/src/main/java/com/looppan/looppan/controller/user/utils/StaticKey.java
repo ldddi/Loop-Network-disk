@@ -12,10 +12,9 @@ public enum StaticKey {
     EMAIL_CHECK_CODE_VALID_TIME(5),
 
     // space
-    ALL_SPACE(10),
+    ALL_SPACE(500),
 
     // Avatar
-    AVATAR_URL("https://images.squarespace-cdn.com/content/v1/58ed33aeb8a79b05bed202aa/1496332556337-3976XQLXIFXJ3SBGPRAA/Loop-Logo-black.png"),
     AVATAR_UUID_LENGTH(10);
 
     private final String stringValue;

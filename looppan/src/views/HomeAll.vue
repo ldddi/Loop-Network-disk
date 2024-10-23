@@ -175,19 +175,15 @@ const getFileList = async () => {
 };
 
 const getImageUrl = async (fileId) => {
-  try {
-    const resp = await axios.post(
-      apiStore.file.returnFileByte,
-      {
-        fileId: fileId,
-      },
-      "blob"
-    );
-    const url = URL.createObjectURL(resp);
-    return url;
-  } catch (error) {
-    console.log(error);
-  }
+  const resp = await axios.post(
+    apiStore.file.returnFileByte,
+    {
+      fileId: fileId,
+    },
+    "blob"
+  );
+  const url = URL.createObjectURL(resp);
+  return url;
 };
 const chunkSize = ref(1024 * 1024);
 
@@ -200,14 +196,17 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
   formData.append("chunkIndex", chunkIndex);
   formData.append("totalChunks", totalChunks);
 
-  let resp;
-  await new Promise((resolve) => {
-    setTimeout(async () => {
-      resp = await axios.post(apiStore.file.uploadFile2, formData);
-      resolve();
-    }, statickey.upload.time); // 调整这里的值以控制速度
-  });
-  return resp;
+  try {
+    await new Promise((resolve) => {
+      setTimeout(async () => {
+        resolve();
+      }, statickey.upload.time); // 调整这里的值以控制速度
+    });
+    const resp = await axios.post(apiStore.file.uploadFile2, formData);
+    return resp;
+  } catch (error) {
+    return error;
+  }
 };
 
 const uploadFile2 = async (files) => {
@@ -237,7 +236,7 @@ const uploadFile2 = async (files) => {
   uploadFileStore.isDropdownVisible = true;
   const uploadPromises = fileArray.map(async (file) => {
     const fileId = uploadFileStore.fileId;
-    uploadFileStore.files.push({
+    uploadFileStore.files.unshift({
       fileId: uploadFileStore.fileId,
       fileName: file.name,
       fileSize: file.size,
@@ -246,6 +245,8 @@ const uploadFile2 = async (files) => {
       totalChunks: 0,
       isCancel: false,
       isPause: false,
+      isError: false,
+      errorMessage: "",
     });
     uploadFileStore.fileId += 1;
     const f = uploadFileStore.files.find((item) => item.fileId === fileId);
@@ -272,19 +273,32 @@ const uploadFile2 = async (files) => {
       const end = Math.min(start + chunkSize.value, file.size);
       const chunk = file.slice(start, end);
       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
+      if (resp.timestamp != null) {
+        console.log(resp);
+        f.isError = true;
+        f.errorMessage = resp.message;
+        break;
+      }
       f.finishChunks += 1;
     }
 
-    if (!f.isCancel) {
+    if (!f.isCancel && !f.isError) {
       f.isFinish = true;
-    } else {
-      // uploadFileCancel(filePid, f.fileName);
+      updateFiles(resp.data); // 更新状态
+      await getUseSpace();
+    } else if (!f.isError) {
+      uploadFileCancel(filePid, f.fileName);
       uploadFileStore.files = uploadFileStore.files.filter((file) => file.fileId != f.fileId);
     }
-    updateFiles(resp.data); // 更新状态
   });
 
   await Promise.all(uploadPromises);
+};
+
+const getUseSpace = async () => {
+  const resp = await axios.get(apiStore.user.getUseSpace, {});
+  console.log(resp);
+  userStore.user.useSpace = resp.data;
 };
 
 const uploadFileCancel = (filePId, fileName) => {
@@ -295,7 +309,6 @@ const uploadFileCancel = (filePId, fileName) => {
 };
 
 const cancelUpload = async () => {
-  console.log("cancelUpload");
   axios.post(apiStore.file.uploadFileCancel, {
     filePId: null,
     fileName: null,

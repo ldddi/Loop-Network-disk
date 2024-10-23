@@ -25,26 +25,32 @@
                   </div>
                   <div class="span">
                     <span>{{ getProgress(file) }}</span>
-                    <div v-if="!file.isFinish" @click="PasueUpload(file)" class="pasue">
+                    <div v-if="!file.isFinish && !file.isError" @click="PasueUpload(file)" class="pasue">
                       <i v-if="!file.isPause" title="暂停上传" class="bi bi-pause"></i>
                       <i v-else title="继续上传" class="bi bi-caret-right-fill"></i>
                     </div>
-                    <div v-if="!file.isFinish" @click="CancelUpolad(file)" class="cancel-icon" title="取消上传"><i class="bi bi-x"></i></div>
-                    <div v-if="file.isFinish" @click="CleanUpolad(file)" class="clean">
+                    <div v-if="!file.isFinish && !file.isError" @click="CancelUpolad(file)" class="cancel-icon" title="取消上传"><i class="bi bi-x"></i></div>
+                    <div v-if="file.isFinish || file.isError" @click="CleanUpolad(file)" class="clean">
                       <div class="clean-icon"><i class="bi bi-trash"></i></div>
                       <span>清除记录</span>
                     </div>
                   </div>
                 </div>
 
-                <div v-if="file.isFinish == true" class="ok">
+                <div v-if="file.isFinish == true && file.isError == false" class="ok">
                   <span class="ok-icon">
                     <i class="bi bi-check"></i>
                   </span>
                   <span>上传完成</span>
                 </div>
-                <div v-else class="notOk">
+                <div v-else-if="file.isFinish == false && file.isError == false" class="notOk">
                   <span>正在传输</span>
+                </div>
+                <div v-else-if="file.isError == true" class="error">
+                  <span class="error-icon">
+                    <i class="bi bi-x"></i>
+                  </span>
+                  <span>{{ file.errorMessage }}</span>
                 </div>
               </div>
             </div>
@@ -161,6 +167,26 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.error-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: white;
+  background-color: red;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: red;
+}
+
 .cancel-icon {
   width: 16px;
   height: 16px;
@@ -209,10 +235,13 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   .upload-files-item {
     width: 100%;
-    height: 60px;
-    padding: 0 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    margin-top: 3px;
+    height: 70px;
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     .progress {
       width: 100%;
       height: 16px;

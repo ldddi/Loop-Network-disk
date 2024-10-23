@@ -15,7 +15,7 @@ const folderType = {
 };
 
 const upload = {
-  time: 1500,
+  time: 0,
 };
 
 export default {

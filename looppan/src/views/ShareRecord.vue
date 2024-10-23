@@ -253,19 +253,15 @@ const getSharedFilesList = async () => {
 };
 
 const getImageUrl = async (fileId) => {
-  try {
-    const resp = await axios.post(
-      apiStore.file.returnFileByte,
-      {
-        fileId: fileId,
-      },
-      "blob"
-    );
-    const url = URL.createObjectURL(resp);
-    return url;
-  } catch (error) {
-    console.log(error);
-  }
+  const resp = await axios.post(
+    apiStore.file.returnFileByte,
+    {
+      fileId: fileId,
+    },
+    "blob"
+  );
+  const url = URL.createObjectURL(resp);
+  return url;
 };
 
 const getSharedFileUrl = (file) => {

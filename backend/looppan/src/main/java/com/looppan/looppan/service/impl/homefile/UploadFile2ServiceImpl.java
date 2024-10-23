@@ -4,6 +4,7 @@ import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.UserDetailsImpl;
 import com.looppan.looppan.controller.homefile.utils.FileStaticKey;
 import com.looppan.looppan.mapper.FileInfoMapper;
+import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.homefile.UploadFile2Service;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,6 +38,9 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
 
     @Autowired
     private FileInfoMapper fileInfoMapper;
+
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public ResponseEntity<Map> upload(String filePId, MultipartFile fileChunk, String fileName, String fileSize, Integer index, Integer totalChunks) throws IOException {
@@ -70,9 +75,14 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
 
         // 合并
         if (Objects.equals(index, totalChunks - 1)) {
-            mergeChunks(basePath ,fileName, totalChunks);
+            long size = mergeChunks(basePath ,fileName, totalChunks, user);
+
+            if (size == 0) {
+                throw new MyException("文件超出所剩容量");
+            }
+
             String filePath = basePath.resolve(fileName).toString();
-            FileInfo dataFileInfo = insertToFileInfo(fileName, fileSize, filePId,filePath, userId ,fileChunk.getContentType());
+            FileInfo dataFileInfo = insertToFileInfo(fileName, String.valueOf(size), filePId,filePath, userId ,fileChunk.getContentType());
 
             if (Objects.equals(dataFileInfo.getFileCategory(), FileStaticKey.FILE_CATEGORY_IMAGE.toIntegerValue())) {
                 createImageCover(userId, fileName, dataFileInfo);
@@ -88,12 +98,13 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
         return ResponseEntity.ok().body(mp);
     }
 
-    private void mergeChunks(Path basePath ,String fileName, Integer totalChunks) throws IOException {
+    private long mergeChunks(Path basePath ,String fileName, Integer totalChunks, User user) throws IOException {
         Path mergedPath = basePath.resolve(fileName);
-
+        long fileSize = 0;
         try (FileOutputStream fos = new FileOutputStream(mergedPath.toFile())) {
             for (int i = 0; i < totalChunks; i ++) {
                 Path partPath = basePath.resolve(fileName + ".part" + i);
+                fileSize += Files.size(partPath);
                 if (Files.exists(partPath)) {
                     Files.copy(partPath, fos);
                     Files.delete(partPath);
@@ -102,6 +113,18 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException("上传失败");
+        }
+
+        BigInteger useSpace = user.getUseSpace();
+        BigInteger totalSpace = user.getTotalSpace();
+        if (useSpace.add(BigInteger.valueOf(fileSize)).compareTo(totalSpace) > 0) {
+            Files.delete(mergedPath);
+            return 0;
+        } else {
+            useSpace = useSpace.add(BigInteger.valueOf(fileSize));
+            user.setUseSpace(useSpace);
+            userMapper.updateById(user);
+            return fileSize;
         }
     }
 

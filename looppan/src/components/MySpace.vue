@@ -2,17 +2,38 @@
   <div class="home-nav-bottom">
     <span>空间使用</span>
     <div class="progress-bar">
-      <div class="bar"></div>
+      <div class="bar" :style="{ width: getWidth }"></div>
     </div>
     <div class="space-info">
-      <span>0</span>
+      <span>{{ getFileSize(userStore.user.useSpace) }}</span>
       <span>/</span>
-      <span>5GB</span>
+      <span>{{ getFileSize(userStore.user.totalSpace) }}</span>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useUserStore } from "@/store/useUserStore";
+import { computed } from "vue";
+
+const userStore = useUserStore();
+
+const getWidth = computed(() => {
+  return `${(userStore.user.useSpace / userStore.user.totalSpace).toFixed(2) * 100}%`;
+});
+
+const getFileSize = (size) => {
+  if (size / (1024 * 1024 * 1024) >= 1) {
+    return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  } else if (size / (1024 * 1024) >= 1) {
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  } else if (size / 1024 >= 1) {
+    return `${(size / 1024).toFixed(2)} KB`;
+  } else {
+    return `${size} B`;
+  }
+};
+</script>
 
 <style lang="scss" scoped>
 .home-nav-bottom {
@@ -29,7 +50,6 @@
     background-color: #eceef5;
     margin: 3px 0;
     .bar {
-      width: 50%;
       background-color: #04a1f5;
       height: 100%;
     }

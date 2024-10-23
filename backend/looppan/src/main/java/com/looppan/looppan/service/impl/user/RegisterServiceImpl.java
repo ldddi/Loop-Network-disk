@@ -37,6 +37,9 @@ public class RegisterServiceImpl implements RegisterService {
     @Value("${file.upload-dir}")
     String uploadDir;
 
+    @Value("${file.avatar-path}")
+    String avatarPath;
+
     @Override
     public ResponseEntity<Map> register(
             String email, String password, String confirmPassword,
@@ -56,12 +59,13 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         String emailCode = redisTemplate.opsForValue().get(email);
-        if (emailCode != null) {
-            redisTemplate.delete(email);
-        }
 
         if (emailCode == null || !emailCode.equals(emailCheckCode)) {
             throw new MyException("邮箱验证码错误");
+        }
+
+        if (emailCode != null) {
+            redisTemplate.delete(email);
         }
 
         if (userMapper.selectByEmail(email) != null) {
@@ -76,7 +80,7 @@ public class RegisterServiceImpl implements RegisterService {
         user.setLastLoginTime(LocalDateTime.now());
         user.setTotalSpace(BigInteger.valueOf(StaticKey.ALL_SPACE.toIntegerValue()));
         user.setUseSpace(BigInteger.valueOf(0));
-        user.setAvatar(StaticKey.AVATAR_URL.toStringValue());
+        user.setAvatar(avatarPath);
         user.setNickName(email);
 
 
@@ -86,7 +90,7 @@ public class RegisterServiceImpl implements RegisterService {
             throw new MyException("用户插入失败");
         }
 
-        Path path = Paths.get(uploadDir + user.getUserId());
+        Path path = Paths.get(uploadDir, user.getUserId());
 
         try {
             Files.createDirectories(path);

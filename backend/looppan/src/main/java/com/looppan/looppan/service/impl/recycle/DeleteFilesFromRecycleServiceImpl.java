@@ -5,6 +5,7 @@ import com.looppan.looppan.config.security.UserDetailsImpl;
 import com.looppan.looppan.controller.homefile.utils.FileStaticKey;
 import com.looppan.looppan.mapper.FileInfoMapper;
 import com.looppan.looppan.mapper.FileShareMapper;
+import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.recycle.DeleteFilesFromRecycleService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +34,8 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
     FileInfoMapper fileInfoMapper;
     @Autowired
     private FileShareMapper fileShareMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public ResponseEntity<Map> deleteFilesFromRecycleService(List<String> filesId) {
@@ -40,19 +44,22 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
+        BigInteger size = BigInteger.valueOf(0);
         for (int i = 0; i < filesId.size(); i++) {
             FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
             try {
                 if (Objects.equals(FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue(), fileInfo.getFolderType())) {
                     Path filePath = Paths.get(fileInfo.getFilePath());
+                    size = size.add(BigInteger.valueOf(Files.size(filePath)));
                     Files.delete(filePath);
                 } else {
                     File directory = new File(fileInfo.getFilePath());
                     File[] files = directory.listFiles();
                     for (File file : files) {
                         if (file.isDirectory()) {
-                            deleteDirectory(file);
+                            size = size.add(deleteDirectory(file));
                         } else {
+                            size = size.add(BigInteger.valueOf(file.length()));
                             Files.delete(file.toPath());
                         }
                     }
@@ -63,6 +70,11 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
                 throw new MyException("删除系统文件失败");
             }
         }
+
+        BigInteger useSpace = user.getUseSpace();
+        useSpace = useSpace.subtract(size);
+        user.setUseSpace(useSpace);
+        userMapper.updateById(user);
 
         try {
             for (String fileId : filesId) {
@@ -124,17 +136,20 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
     }
 
     // 递归删除目录的方法
-    private void deleteDirectory(File dir) {
+    private BigInteger deleteDirectory(File dir) {
+        BigInteger size = BigInteger.valueOf(0);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     deleteDirectory(file); // 递归删除
                 } else {
+                    size = size.add(BigInteger.valueOf(file.length()));
                     file.delete(); // 删除文件
                 }
             }
         }
         dir.delete(); // 删除空目录
+        return size;
     }
 }

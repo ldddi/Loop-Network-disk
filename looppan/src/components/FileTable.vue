@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
-          <input class="form-check-input" @change="selectAllFiles($event.target.checked)" type="checkbox" value="" id="defaultCheck1" />
+          <input v-model="isSelected" class="form-check-input" @change="selectAllFiles($event.target.checked)" type="checkbox" value="" id="defaultCheck1" />
         </div>
         <div class="col-3 container-title">文件名</div>
         <div class="col-4 container-title"></div>
@@ -193,6 +193,8 @@ import ErrorAlertBox from "./ErrorAlertBox.vue";
 import SuccessAlertBox from "./SuccessAlertBox.vue";
 import statickey from "@/utils/statickey";
 import { useAlertStore } from "@/store/useAlertStore";
+
+const isSelected = ref(false);
 
 const alertStore = useAlertStore();
 
@@ -460,7 +462,7 @@ const createFileCancel = () => {
   fileIsVisible.value = false;
 };
 
-defineExpose({ createFile, selectedFiles });
+defineExpose({ createFile, selectedFiles, isSelected });
 </script>
 
 <style lang="scss" scoped>

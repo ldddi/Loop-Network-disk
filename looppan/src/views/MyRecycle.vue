@@ -64,8 +64,10 @@ import { useApiStore } from "@/store/useApiStore";
 import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
 import statickey from "@/utils/statickey";
+import { useUserStore } from "@/store/useUserStore";
 const apiStore = useApiStore();
 const alertStore = useAlertStore();
+const userStore = useUserStore();
 const files = ref([]);
 const selectedFiles = ref([]);
 onMounted(() => {
@@ -104,6 +106,7 @@ const deleteRecycleFiles = () => {
       files.value = files.value.filter((file) => !selectedFiles.value.includes(file.fileId));
       selectedFiles.value = [];
       isSelected.value = false;
+      getUseSpace();
     });
 };
 
@@ -115,7 +118,14 @@ const deleteRecycleFiles2 = (file) => {
     .then((resp) => {
       files.value = files.value.filter((f) => f.fileId != file.fileId);
       selectedFiles.value = [];
+      getUseSpace();
     });
+};
+
+const getUseSpace = async () => {
+  const resp = await axios.get(apiStore.user.getUseSpace, {});
+  console.log(resp);
+  userStore.user.useSpace = resp.data;
 };
 
 const getRecycleFiles = async () => {
@@ -138,19 +148,15 @@ const getRecycleFiles = async () => {
 };
 
 const getImageUrl = async (fileId) => {
-  try {
-    const resp = await axios.post(
-      apiStore.file.returnFileByte,
-      {
-        fileId: fileId,
-      },
-      "blob"
-    );
-    const url = URL.createObjectURL(resp);
-    return url;
-  } catch (error) {
-    console.log(error);
-  }
+  const resp = await axios.post(
+    apiStore.file.returnFileByte,
+    {
+      fileId: fileId,
+    },
+    "blob"
+  );
+  const url = URL.createObjectURL(resp);
+  return url;
 };
 
 const getTime = (time) => {

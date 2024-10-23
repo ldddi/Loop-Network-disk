@@ -11,6 +11,7 @@ export const useApiStore = defineStore("api", () => {
     emailCheckCode: "/api/sendEmailCode",
     register: "/api/register",
     getAvatarByte: "/api/user/getAvatarByte",
+    getUseSpace: "/api/user/getUseSpace",
   };
 
   const file = {

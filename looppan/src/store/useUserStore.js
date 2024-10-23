@@ -42,14 +42,11 @@ export const useUserStore = defineStore("User", () => {
   const getUserInfoByLocalJwt = async (jwtToken) => {
     try {
       const resp = await axios.post(apiStore.user.getUserInfo, {});
-      console.log(resp);
       updateUser({
         ...resp,
         token: jwtToken,
         is_login: true,
       });
-
-      // router.push({ name: "HomeAll" });
       return true;
     } catch (error) {
       return false;
