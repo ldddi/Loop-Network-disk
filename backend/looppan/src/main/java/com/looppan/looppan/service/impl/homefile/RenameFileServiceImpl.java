@@ -35,23 +35,23 @@ public class RenameFileServiceImpl implements RenameFileService {
 
 
         FileInfo fileInfo = null;
-        try {
-            fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
-            String fileName = fileInfo.getFileName();
-            if (Objects.equals(fileInfo.getFolderType(), FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue())) {
-                newName = newName + fileName.substring(fileName.lastIndexOf("."));
-            }
-            String filePath = fileInfo.getFilePath();
-            String newPath = filePath.replace(fileName, newName);
-            fileInfoMapper.updateFileNameAndPathByFileIdAndUserId(fileId, userId, newName, newPath);
-        } catch (Exception e) {
-            throw new MyException("修改文件名失败");
-        }
-        String path = fileInfo.getFilePath();
-        String fileName = fileInfo.getFileName();
-        String newPath = path.replace(fileName, newName);
 
-        Path sourcePath = Paths.get(path);
+        fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+        String fileName = fileInfo.getFileName();
+        if (Objects.equals(fileInfo.getFolderType(), FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue())) {
+            newName = newName + fileName.substring(fileName.lastIndexOf("."));
+        }
+        String filePath = fileInfo.getFilePath();
+        int index = filePath.lastIndexOf(fileName);
+        String newPath = "";
+        if (index >= 0) {
+            newPath = filePath.substring(0, index) + newName;
+        } else {
+            throw new MyException("重命名失败");
+        }
+        fileInfoMapper.updateFileNameAndPathByFileIdAndUserId(fileId, userId, newName, newPath);
+
+        Path sourcePath = Paths.get(filePath);
         Path targetPath = Paths.get(newPath);
 
         try {

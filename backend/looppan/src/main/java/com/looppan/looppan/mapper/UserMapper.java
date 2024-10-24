@@ -13,4 +13,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from user_info where nick_name = #{nick_name}")
     User selectByNickName(String nick_name);
+
+    @Select("SELECT * FROM user_info WHERE user_id = #{userId} FOR UPDATE")
+    User selectByIdForUpdate(String userId);
 }

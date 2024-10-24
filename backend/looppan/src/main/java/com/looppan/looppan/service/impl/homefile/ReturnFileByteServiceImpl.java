@@ -75,14 +75,30 @@ public class ReturnFileByteServiceImpl implements ReturnFileByteService {
         } catch (Exception e) {
             contentType = "application/octet-stream"; // 默认的二进制流类型
         }
-        FileSystemResource resource;
+
+        FileSystemResource resource = null;
         String fileCover = fileInfo.getFileCover();
+        if (!Files.exists(Path.of(fileCover))) {
+            Path path = Paths.get(fileInfo.getFilePath());
+            if (!Files.exists(path)) {
+                return ResponseEntity.ok()
+                        .body(resource);
+            }
+
+            resource = new FileSystemResource(path.toFile());
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+        }
+
         if (contentType.substring(0, contentType.lastIndexOf("/")).equals("image") && fileCover != null) {
             Path coverPath = Paths.get(fileCover);
             resource = new FileSystemResource(coverPath.toFile());
         } else {
             resource = new FileSystemResource(filePath.toFile());
         }
+
 
         return ResponseEntity.ok()
                 .headers(headers)

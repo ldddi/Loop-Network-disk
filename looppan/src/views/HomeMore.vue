@@ -66,6 +66,7 @@ const myModal = ref(null);
 const openModal = () => {
   if (myModal.value) {
     const modalInstance = new Modal(myModal.value);
+    modalFileTable.value.getFileList();
     modalInstance.show();
   } else {
     console.error("Modal 元素未找到");
@@ -151,13 +152,11 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
 };
 
 const uploadFile2 = async (files) => {
-  // 确保 files 是一个 FileList 对象，并转换为数组
   if (!(files instanceof FileList) || files.length === 0) {
     return;
   }
 
-  const fileArray = Array.from(files); // 或者使用 const fileArray = [...files];
-
+  const fileArray = Array.from(files);
   let filePid = route.query.path || "0";
   let isOk = false;
   let fileNameList = fileArray.map((file) => file.name);
@@ -174,9 +173,13 @@ const uploadFile2 = async (files) => {
   if (!isOk) {
     return;
   }
+
   uploadFileStore.isDropdownVisible = true;
-  const uploadPromises = fileArray.map(async (file) => {
-    const fileId = uploadFileStore.fileId;
+  const maxConcurrentUploads = 5;
+  let currentUploads = 0; // 记录当前正在上传的文件数量
+  const curFileIds = [];
+  const fileId = uploadFileStore.fileId;
+  for (const file of fileArray) {
     uploadFileStore.files.unshift({
       fileId: uploadFileStore.fileId,
       fileName: file.name,
@@ -189,10 +192,19 @@ const uploadFile2 = async (files) => {
       isError: false,
       errorMessage: "",
     });
+    curFileIds.push(uploadFileStore.fileId);
     uploadFileStore.fileId += 1;
+  }
+  uploadFileStore.fileId = fileId;
+  let index = 0;
+  const uploadFile = async (file) => {
+    const fileId = curFileIds[index++];
+    console.log(fileId);
     const f = uploadFileStore.files.find((item) => item.fileId === fileId);
+    console.log(f);
     const totalChunks = Math.ceil(file.size / chunkSize.value);
     f.totalChunks = totalChunks;
+
     let resp;
     for (let j = 0; j < totalChunks; j++) {
       if (f.isCancel) {
@@ -200,7 +212,6 @@ const uploadFile2 = async (files) => {
       }
 
       while (f.isPause) {
-        // 检测 isCancel
         if (f.isCancel) {
           break;
         }
@@ -225,15 +236,36 @@ const uploadFile2 = async (files) => {
 
     if (!f.isCancel && !f.isError) {
       f.isFinish = true;
+      console.log(resp.data);
       updateFiles(resp.data); // 更新状态
       await getUseSpace();
     } else if (!f.isError) {
       uploadFileCancel(filePid, f.fileName);
       uploadFileStore.files = uploadFileStore.files.filter((file) => file.fileId != f.fileId);
     }
-  });
+  };
 
-  await Promise.all(uploadPromises);
+  for (const file of fileArray) {
+    while (currentUploads >= maxConcurrentUploads) {
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 等待直到有可用的上传位置
+    }
+
+    currentUploads++; // 增加正在上传的数量
+    uploadFile(file).finally(() => {
+      uploadFileStore.fileId++;
+      currentUploads--; // 上传完成后减少数量
+    });
+  }
+
+  // 等待所有剩余的上传完成
+  await new Promise((resolve) => {
+    const checkUploads = setInterval(() => {
+      if (currentUploads === 0) {
+        clearInterval(checkUploads);
+        resolve();
+      }
+    }, 100);
+  });
 };
 
 const getUseSpace = async () => {

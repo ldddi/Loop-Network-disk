@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycleService {
@@ -43,27 +44,30 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
-
+        System.out.println("deleteFilesFromRecycleService");
         BigInteger size = BigInteger.valueOf(0);
         for (int i = 0; i < filesId.size(); i++) {
             FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
             try {
                 if (Objects.equals(FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue(), fileInfo.getFolderType())) {
                     Path filePath = Paths.get(fileInfo.getFilePath());
-                    size = size.add(BigInteger.valueOf(Files.size(filePath)));
-                    Files.delete(filePath);
+                    if(Files.exists(filePath)) {
+                        size = size.add(BigInteger.valueOf(Files.size(filePath)));
+                        Files.deleteIfExists(filePath);
+                    }
+
                 } else {
-                    File directory = new File(fileInfo.getFilePath());
-                    File[] files = directory.listFiles();
-                    for (File file : files) {
-                        if (file.isDirectory()) {
-                            size = size.add(deleteDirectory(file));
+                    Path dir = Paths.get(fileInfo.getFilePath());
+                    List<Path> list = Files.list(dir).toList();
+                    for (Path path : list) {
+                        if (Files.isDirectory(path)) {
+                            size = size.add(deleteDirectory(path));
                         } else {
-                            size = size.add(BigInteger.valueOf(file.length()));
-                            Files.delete(file.toPath());
+                            size = size.add(BigInteger.valueOf(Files.size(path)));
+                            Files.deleteIfExists(path);
                         }
                     }
-                    directory.delete();
+                    Files.deleteIfExists(dir);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -100,7 +104,10 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
                 }
                 if (fileInfo.getFileCover() != null) {
                     Path coverPath = Paths.get(fileInfo.getFileCover());
-                    Files.delete(coverPath);
+                    if (Files.exists(coverPath)) {
+                        Files.delete(coverPath);
+                    }
+
                 }
                 fileInfoMapper.DeleteByFileIdAndUserId(fileId, Integer.valueOf(userId));
             }
@@ -129,27 +136,28 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         }
         if (folder.getFileCover() != null) {
             Path coverPath = Paths.get(folder.getFileCover());
-            Files.delete(coverPath);
+            if (Files.exists(coverPath)) {
+                Files.delete(coverPath);
+            }
         }
 
         fileInfoMapper.DeleteByFileIdAndUserId(folder.getFileId(), Integer.valueOf(userId));
     }
 
     // 递归删除目录的方法
-    private BigInteger deleteDirectory(File dir) {
+    private BigInteger deleteDirectory(Path dir) throws IOException {
+
         BigInteger size = BigInteger.valueOf(0);
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectory(file); // 递归删除
-                } else {
-                    size = size.add(BigInteger.valueOf(file.length()));
-                    file.delete(); // 删除文件
-                }
+        List<Path> list = Files.list(dir).toList();
+        for (Path path : list) {
+            if (Files.isDirectory(path)) {
+                size = size.add(deleteDirectory(path));
+            } else {
+                size = size.add(BigInteger.valueOf(Files.size(path)));
+                Files.deleteIfExists(path);
             }
         }
-        dir.delete(); // 删除空目录
+        Files.deleteIfExists(dir);
         return size;
     }
 }

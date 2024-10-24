@@ -78,7 +78,7 @@ const getFileList = () => {
     });
 };
 
-defineExpose({ filesCache });
+defineExpose({ filesCache, getFileList });
 </script>
 
 <style lang="scss" scoped>
