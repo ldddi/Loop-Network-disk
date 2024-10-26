@@ -24,6 +24,7 @@ import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
 
 const apiStore = useApiStore();
+const props = defineProps(["selectedFiles"]);
 
 onMounted(() => {
   filePId.value = "0";
@@ -75,6 +76,7 @@ const getFileList = () => {
     })
     .then((resp) => {
       files.value = resp.data;
+      files.value = files.value.filter((file) => !props.selectedFiles.includes(file.fileId));
     });
 };
 

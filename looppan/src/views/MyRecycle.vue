@@ -97,8 +97,9 @@ const cancelDelete2 = (file) => {
     });
 };
 
-const deleteRecycleFiles = () => {
-  axios
+const deleteRecycleFiles = async () => {
+  alertStore.load.isLoading = true;
+  await axios
     .post(apiStore.file.deleteRecycleFiles, {
       filesId: selectedFiles.value,
     })
@@ -108,10 +109,12 @@ const deleteRecycleFiles = () => {
       isSelected.value = false;
       getUseSpace();
     });
+  alertStore.load.isLoading = false;
 };
 
-const deleteRecycleFiles2 = (file) => {
-  axios
+const deleteRecycleFiles2 = async (file) => {
+  alertStore.load.isLoading = true;
+  await axios
     .post(apiStore.file.deleteRecycleFiles, {
       filesId: [file.fileId],
     })
@@ -120,11 +123,11 @@ const deleteRecycleFiles2 = (file) => {
       selectedFiles.value = [];
       getUseSpace();
     });
+  alertStore.load.isLoading = false;
 };
 
 const getUseSpace = async () => {
   const resp = await axios.get(apiStore.user.getUseSpace, {});
-  console.log(resp);
   userStore.user.useSpace = resp.data;
 };
 

@@ -4,6 +4,12 @@
       <i class="bi bi-ban"></i>
       取消分享
     </button>
+    <div v-if="filesCache == null || filesCache.length == 0" class="path1">分享文件</div>
+    <div v-else class="path2">
+      <span @click="returnLastFolder" class="return-last">返回上一级</span>
+      <span class="path2-share-file">分享文件</span>
+      <div class="path2-filename" v-for="file in filesCache" :key="file.shareId">{{ file.fileName }} ></div>
+    </div>
   </div>
   <div class="content">
     <div class="container">
@@ -30,7 +36,7 @@
 
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
-          <RouterLink v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <RouterLink @click="pushFilesCache(file)" v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
           <span v-else class="file-name" @click="clickFileName(file)">{{ file.fileName }}</span>
         </div>
         <div class="col-2 my-icon">
@@ -93,30 +99,92 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import axios from "@/utils/axiosInstance";
 import { useApiStore } from "@/store/useApiStore";
 import statickey from "@/utils/statickey";
 import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
+import { useRoute } from "vue-router";
+import router from "@/router";
 
 const apiStore = useApiStore();
 const alertStore = useAlertStore();
 
 const files = ref([]);
 let selectedCheck = ref([]);
+const route = useRoute();
+
+const pushFilesCache = (file) => {
+  filesCache.value.push(file);
+  console.log(file, filesCache.value);
+};
 
 const getLink = (file) => {
   const prepath = route.query.path;
-  if (file.folderType == statickey.folderType.folder) {
+  if (file.fileCategory == statickey.category.folder) {
     if (prepath == null) {
-      return { name: "HomeAll", query: { path: file.fileId } };
+      return { name: "ShareRecord", query: { path: file.shareId } };
     } else {
-      return { name: "HomeAll", query: { path: prepath + "/" + file.fileId } };
+      return { name: "ShareRecord", query: { path: prepath + "/" + file.shareId } };
     }
   }
 
-  return { name: "HomeAll" };
+  return { name: "ShareRecord" };
+};
+const filesCache = ref([]);
+watch(
+  () => route.query,
+  async (newPath, oldPath) => {
+    await nextTick();
+    getSharedFilesList();
+    if (newPath.path == null || (oldPath.path != null && newPath.path.length < oldPath.path.length)) {
+      filesCache.value.pop();
+    }
+  }
+);
+
+const returnLastFolder = () => {
+  let path = route.query.path;
+  path = path.substring(0, path.lastIndexOf("/"));
+  if (path != "" && path != null) {
+    router.push({ name: route.name, query: { path: path } });
+  } else {
+    router.push({ name: route.name });
+  }
+};
+
+onMounted(() => {
+  getSharedFilesList();
+});
+
+const getSharedFilesList = async () => {
+  alertStore.load.isLoading = true;
+  try {
+    let resp;
+    if (route.query.path == null) {
+      resp = await axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
+        files.value = resp.data;
+      });
+    } else {
+      resp = await axios
+        .post(apiStore.file.getSharedFilesList, {
+          shareId: route.query.path,
+        })
+        .then((resp) => {
+          files.value = resp.data;
+        });
+    }
+    const promises = files.value.map(async (file) => {
+      if (file.fileCategory == statickey.category.image) {
+        file.fileCover = await getImageUrl(file.fileId);
+      }
+      return file;
+    });
+    files.value = await Promise.all(promises);
+  } finally {
+    alertStore.load.isLoading = false;
+  }
 };
 
 const isPreviewVisibleVideo = ref(false);
@@ -149,7 +217,7 @@ const clickFileName = (file) => {
     .get(
       apiStore.file.returnSharedFileByte,
       {
-        fileId: file.fileId,
+        shareId: file.shareId,
       },
       "blob"
     )
@@ -229,29 +297,6 @@ const isFileSelected = (shareId) => {
   return selectedCheck.value.includes(shareId);
 };
 
-onMounted(() => {
-  getSharedFilesList();
-});
-
-const getSharedFilesList = async () => {
-  alertStore.load.isLoading = true;
-  try {
-    const resp = await axios.post(apiStore.file.getSharedFilesList, {}).then((resp) => {
-      files.value = resp.data;
-    });
-
-    const promises = files.value.map(async (file) => {
-      if (file.fileCategory == statickey.category.image) {
-        file.fileCover = await getImageUrl(file.fileId);
-      }
-      return file;
-    });
-    files.value = await Promise.all(promises);
-  } finally {
-    alertStore.load.isLoading = false;
-  }
-};
-
 const getImageUrl = async (fileId) => {
   const resp = await axios.post(
     apiStore.file.returnFileByte,
@@ -294,9 +339,19 @@ const deleteFileByShareId = (shareId) => {
 </script>
 
 <style lang="scss" scoped>
+.file-name:hover {
+  cursor: pointer;
+  color: #5faeff;
+}
+.file-name {
+  color: #636d7d;
+  text-decoration: none;
+}
+
 .my-image {
   width: 24px;
   height: 24px;
+  border-radius: 8px;
 }
 
 .isImageScaled {
@@ -444,6 +499,35 @@ span {
 .title {
   margin-top: 20px;
   width: 100%;
+  height: 85px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  button {
+    width: 120px;
+  }
+  .path1 {
+    font-weight: 700;
+  }
+  .path2 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .return-last {
+      color: #5faeff;
+      padding-right: 8px;
+      border-right: 1px solid rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+    }
+    .path2-share-file {
+      color: #5faeff;
+      padding: 0 8px;
+    }
+    .path2-filename {
+      font-weight: 800;
+      color: #5faeff;
+    }
+  }
 }
 
 .content {

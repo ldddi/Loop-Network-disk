@@ -52,14 +52,15 @@ public class CreateFileServiceImpl implements CreateFileService {
         Path path;
         FileInfo fileInfo = new FileInfo();
         if (filePId == null || filePId.equals("0") ) {
-            path = Paths.get(uploadDir + "/" + userId + "/" + fileName);
-            fileInfo.setFilePath(uploadDir + "/" + userId + "/" + fileName);
+            path = Paths.get(uploadDir,userId,fileName);
+            fileInfo.setFilePath(path.toString());
         } else {
             try {
-                filePId = filePId.substring(filePId.lastIndexOf("/") + 1);
+                int lastIndex = Math.max(filePId.lastIndexOf("/"), filePId.lastIndexOf("\\"));
+                filePId = filePId.substring(lastIndex + 1);
                 String updir = fileInfoMapper.selectByFileIdAndUserId(filePId, Integer.valueOf(user.getUserId())).getFilePath();
-                path = Paths.get(updir + "/" + fileName);
-                fileInfo.setFilePath(updir + "/" + fileName);
+                path = Paths.get(updir, fileName);
+                fileInfo.setFilePath(path.toString());
             } catch (Exception e) {
                 throw new MyException("文件夹创建失败, 请稍后尝试");
             }

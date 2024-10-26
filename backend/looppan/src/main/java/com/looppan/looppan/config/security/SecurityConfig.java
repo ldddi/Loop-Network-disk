@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/getSharedUserInfo",
                                 "/shareCheckCode/**",
                                 "/saveMyPan",
-                                "/downloadSharedFile"
+                                "/downloadSharedFile",
+                                "/getAvatarByte"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

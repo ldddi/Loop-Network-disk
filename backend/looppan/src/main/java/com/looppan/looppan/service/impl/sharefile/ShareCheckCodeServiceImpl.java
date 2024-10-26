@@ -32,7 +32,7 @@ public class ShareCheckCodeServiceImpl implements ShareCheckCodeService {
 
         String fileCode = fileShared.getExtractionCode();
         if (!Objects.equals(fileCode, code)) {
-            ResponseEntity.notFound();
+            throw new MyException("提取码不匹配");
         }
         Integer views = fileShared.getViews() + 1;
         fileShared.setViews(views);

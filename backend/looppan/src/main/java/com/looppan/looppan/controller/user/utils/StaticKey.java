@@ -12,7 +12,7 @@ public enum StaticKey {
     EMAIL_CHECK_CODE_VALID_TIME(5),
 
     // space
-    ALL_SPACE(500),
+    ALL_SPACE(524288000),
 
     // Avatar
     AVATAR_UUID_LENGTH(10);

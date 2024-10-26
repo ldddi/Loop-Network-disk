@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -16,7 +17,7 @@ public class SaveMyPanController {
     SaveMyPanService saveMyPanService;
 
     @RequestMapping(value = "/saveMyPan", method = RequestMethod.GET)
-    public ResponseEntity<Map> saveMyPan(String shareId, String userId) {
+    public ResponseEntity<Map> saveMyPan(String shareId, String userId) throws IOException {
 
         return saveMyPanService.saveMyPan(shareId, userId);
     }

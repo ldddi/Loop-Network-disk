@@ -30,13 +30,12 @@ public class GetSharedFileByteServiceImpl implements GetSharedFileByteService {
     FileShareMapper fileShareMapper;
 
     @Override
-    public ResponseEntity<FileSystemResource> getSharedFile(String fileId) {
+    public ResponseEntity<FileSystemResource> getSharedFile(String shareId) {
         // 获取当前认证的用户信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
-        String userId = user.getUserId();
-        String shareId = fileId + userId;
+
         // 查询文件信息
         FileShared fileShared;
         try {

@@ -8,12 +8,12 @@
       <div class="box">
         <div class="box-header">
           <div class="my-img">
-            <img :src="userAvatar" alt="" />
+            <img :src="userAvatarUrl" alt="" />
           </div>
           <div class="header-right">
             <div class="user-info">
               <span class="user-info-username">{{ nickName }}</span>
-              <span class="user-info-file-sharedtime">分享于:&nbsp; {{ shareTime }}</span>
+              <span class="user-info-file-sharedtime">分享于:&nbsp; {{ getCreateTime(shareTime) }}</span>
             </div>
             <div class="file-info">
               <span class="file-info-filename">分享文件:</span>
@@ -33,6 +33,8 @@
       </div>
     </div>
   </div>
+  <ErrorAlertBox />
+  <SuccessAlertBox />
 </template>
 
 <script setup>
@@ -42,11 +44,14 @@ import { useApiStore } from "@/store/useApiStore";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import { useUserStore } from "@/store/useUserStore";
+import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
+import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 
 let fileName = ref("");
 let nickName = ref("");
 let shareTime = ref("");
 let userAvatar = ref("");
+let userAvatarUrl = ref("");
 
 const apiStore = useApiStore();
 const userStore = useUserStore();
@@ -76,11 +81,44 @@ const getSharedUserInfo = () => {
       userId: route.params.userId,
     })
     .then((resp) => {
+      userAvatar.value = resp.data.userAvatar;
       fileName.value = resp.data.fileName;
       nickName.value = resp.data.nickName;
       shareTime.value = resp.data.shareTime;
-      userAvatar.value = resp.data.userAvatar;
+      getAvatarUrl();
     });
+};
+
+const getAvatarUrl = () => {
+  axios
+    .get(
+      apiStore.file.getAvatarByte,
+      {
+        filePath: userAvatar.value,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const url = URL.createObjectURL(resp);
+      userAvatarUrl.value = url;
+    });
+};
+
+const getCreateTime = (time) => {
+  const date = new Date(time);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
 };
 </script>
 

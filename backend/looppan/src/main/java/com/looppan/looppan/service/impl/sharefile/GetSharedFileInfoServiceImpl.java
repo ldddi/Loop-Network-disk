@@ -40,6 +40,7 @@ public class GetSharedFileInfoServiceImpl implements GetSharedFileInfoService {
         jsonObject.put("shareTime", fileShared.getShareTime());
         jsonObject.put("fileSize", fileShared.getFileSize());
         jsonObject.put("fileCategory", fileShared.getFileCategory());
+        jsonObject.put("filePath", fileShared.getFilePath());
         mp.put("data", jsonObject);
         return ResponseEntity.ok().body(mp);
     }

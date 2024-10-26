@@ -18,9 +18,15 @@ const upload = {
   time: 1500,
 };
 
+const shared = {
+  yes: 1,
+  no: 0,
+};
+
 export default {
   jwtToken,
   category,
   folderType,
   upload,
+  shared,
 };

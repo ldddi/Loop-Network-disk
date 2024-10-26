@@ -1,5 +1,6 @@
 <template>
   <div class="my-container">
+    <LoadingBox />
     <div class="header">
       <div class="header-left">
         <i class="bi bi-cloud-check my-title-icon"></i>
@@ -8,7 +9,7 @@
       <div v-if="userStore.user.is_login" class="header-right">
         <span @click="goToHomeAll" class="go-login">前往首页</span>
         <div class="user-avatar">
-          <img :src="userStore.user.avatar" alt="" />
+          <img :src="userStore.user.avatarUrl" alt="" />
           <div class="dropdown">
             <ul>
               <li @click="userStore.logOut">退出</li>
@@ -49,16 +50,16 @@
             <i v-if="file.fileCategory == statickey.category.folder" class="bi bi-folder2 my-floder my-floder-folder"></i>
             <i v-else-if="file.fileCategory == statickey.category.video" class="bi bi-file-earmark-play my-floder"></i>
             <i v-else-if="file.fileCategory == statickey.category.audio" class="bi bi-file-music my-floder"></i>
-            <i v-else-if="file.fileCategory == statickey.category.image" class="bi bi-images my-floder"></i>
+            <img class="my-img" v-else-if="file.fileCategory == statickey.category.image" :src="file.imageUrl" alt="" />
             <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
             <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
             <span>{{ file.fileName }}</span>
           </div>
           <div class="col-3 mycol">
-            <span>{{ file.shareTime }}</span>
+            <span>{{ getTime(file.shareTime) }}</span>
           </div>
           <div class="col-3 mycol">
-            <span>{{ getFileSize(file.fileSize) }}</span>
+            <span v-if="file.fileCategory != statickey.category.folder">{{ getFileSize(file.fileSize) }}</span>
           </div>
         </div>
       </div>
@@ -79,6 +80,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 import router from "@/router";
+import LoadingBox from "@/components/LoadingBox.vue";
 
 const apiStore = useApiStore();
 const userStore = useUserStore();
@@ -87,19 +89,75 @@ const route = useRoute();
 
 let selectedFiles = ref([]);
 
-onMounted(() => {
+onMounted(async () => {
   getSharedFileInfo();
+
   const jwtToken = localStorage.getItem("jwtToken");
   if (jwtToken != null) {
-    userStore.getUserInfoByLocalJwt(jwtToken);
+    await userStore.getUserInfoByLocalJwt(jwtToken);
+  }
+
+  if (userStore.user.avatarUrl.length == "") {
+    getAvatarUrl();
   }
 });
+
+const getTime = (time) => {
+  const date = new Date(time);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 使用24小时制
+  };
+  const formattedTime = date.toLocaleString("zh-CN", options); // 根据需要选择语言
+
+  return formattedTime;
+};
+
+const getAvatarUrl = () => {
+  axios
+    .get(
+      apiStore.file.getAvatarByte,
+      {
+        filePath: userStore.user.avatar,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const url = URL.createObjectURL(resp);
+      userStore.user.avatarUrl = url;
+    });
+};
+
+const getImageUrl = async (file) => {
+  if (file.filePath == null) {
+    file.filePath = "";
+    return;
+  }
+  try {
+    const resp = await axios.get(
+      apiStore.file.getAvatarByte,
+      {
+        filePath: file.filePath,
+      },
+      "blob"
+    );
+    const url = URL.createObjectURL(resp);
+    return url;
+  } catch (error) {}
+};
 
 const goToHomeAll = () => {
   router.push({ name: "HomeAll" });
 };
 
-const saveMyPan = () => {
+const saveMyPan = async () => {
+  alertStore.load.isLoading = true;
   if (userStore.user.token == null) {
     alertStore.error.message = "请先登陆";
     alertStore.error.isVisible = true;
@@ -109,14 +167,15 @@ const saveMyPan = () => {
     }, 5000);
     return;
   }
-  axios
-    .get(apiStore.file.saveMyPan, {
+  try {
+    const resp = await axios.get(apiStore.file.saveMyPan, {
       shareId: selectedFiles.value[0],
       userId: userStore.user.userId,
-    })
-    .then((resp) => {
-      selectedFiles.value = [];
     });
+  } finally {
+    selectedFiles.value = [];
+    alertStore.load.isLoading = false;
+  }
 };
 
 const downloadFile = () => {
@@ -140,8 +199,14 @@ const getSharedFileInfo = () => {
       userId: route.params.userId,
       code: userStore.user.extraction_code,
     })
-    .then((resp) => {
-      files.value.unshift(resp.data);
+    .then(async (resp) => {
+      if (resp.data.fileCategory == statickey.category.image) {
+        const imageUrl = await getImageUrl(resp.data);
+        files.value.unshift({ ...resp.data, imageUrl });
+      } else {
+        files.value.unshift(resp.data);
+      }
+      console.log(files.value);
     });
 };
 
@@ -187,6 +252,26 @@ let files = ref([]);
 </script>
 
 <style lang="scss" scoped>
+.my-floder-folder {
+  color: #ffcf40;
+}
+
+.my-floder {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.my-img {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 8px;
+}
+
+.user-nickname {
+  color: white;
+}
+
 .no-login {
   color: white;
 }
@@ -319,11 +404,13 @@ let files = ref([]);
       .user-avatar {
         width: 45px;
         height: 45px;
+
         margin-right: 10px;
         position: relative;
         & img {
           width: 100%;
           height: 100%;
+          border-radius: 50%;
         }
       }
     }

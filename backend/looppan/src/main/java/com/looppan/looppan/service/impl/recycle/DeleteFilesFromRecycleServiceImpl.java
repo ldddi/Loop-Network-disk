@@ -7,6 +7,7 @@ import com.looppan.looppan.mapper.FileInfoMapper;
 import com.looppan.looppan.mapper.FileShareMapper;
 import com.looppan.looppan.mapper.UserMapper;
 import com.looppan.looppan.pojo.FileInfo;
+import com.looppan.looppan.pojo.FileShared;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.recycle.DeleteFilesFromRecycleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
-        System.out.println("deleteFilesFromRecycleService");
+
         BigInteger size = BigInteger.valueOf(0);
         for (int i = 0; i < filesId.size(); i++) {
             FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(filesId.get(i), Integer.valueOf(userId));
@@ -100,6 +101,12 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
                 FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
                 if (fileInfo.getShared()) {
                     String shareId = fileInfo.getFileId() + userId;
+                    if (Objects.equals(fileInfo.getFileCategory(), FileStaticKey.FILE_CATEGORY_FOLDER.toIntegerValue())) {
+                        List<FileShared> fs = fileShareMapper.selectShareListBySharePIdAndUserId(shareId, Integer.valueOf(userId));
+                        for (FileShared f : fs) {
+                            fileShareMapper.deleteById(f);
+                        }
+                    }
                     fileShareMapper.deleteById(shareId);
                 }
                 if (fileInfo.getFileCover() != null) {

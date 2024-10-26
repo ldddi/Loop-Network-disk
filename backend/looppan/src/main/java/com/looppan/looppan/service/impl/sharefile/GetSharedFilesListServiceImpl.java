@@ -25,17 +25,27 @@ public class GetSharedFilesListServiceImpl implements GetSharedFilesListService 
     FileShareMapper fileShareMapper;
 
     @Override
-    public ResponseEntity<Map> getSharedFilesList() {
+    public ResponseEntity<Map> getSharedFilesList(String shareId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
 
         List<FileShared> fileShareds = null;
-        try {
-            fileShareds = fileShareMapper.selectByUserId(Integer.valueOf(userId));
-        } catch (Exception e) {
-            throw new MyException("获取分享文件记录失败");
+        if (shareId == null) {
+            try {
+                fileShareds = fileShareMapper.selectByUserId(Integer.valueOf(userId));
+            } catch (Exception e) {
+                throw new MyException("获取分享文件记录失败");
+            }
+        } else {
+            Integer idx = Math.max(shareId.lastIndexOf("/"), shareId.lastIndexOf("\\"));
+            shareId = shareId.substring(idx + 1);
+            try {
+                fileShareds = fileShareMapper.selectShareListBySharePIdAndUserId(shareId, Integer.valueOf(userId));
+            } catch (Exception e) {
+                throw new MyException("获取分享文件记录失败");
+            }
         }
 
         Map<String, Object> mp = new HashMap<>();

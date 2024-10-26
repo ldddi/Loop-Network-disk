@@ -51,9 +51,12 @@
           <!--  -->
         </div>
         <div class="col-4 my-button">
-          <div class="share-button item-button" data-bs-toggle="modal" data-bs-target="#shareModal">
+          <div v-if="(file.shared == statickey.shared.no || file.shared == null) && route.query.path == null" @click="clickShareIcon(file)" class="share-button item-button" data-bs-toggle="modal" data-bs-target="#shareModal">
             <i class="bi bi-share item-icon"></i>
-            <span @click="clickShareIcon(file)">分享</span>
+            <span>分享</span>
+          </div>
+          <div v-else-if="file.shared == statickey.shared.yes && route.query.path == null" class="item-button is-shared">
+            <span>已分享</span>
           </div>
           <div v-if="file.folderType != statickey.folderType.folder" class="download-button item-button">
             <i class="bi bi-download item-icon"></i>
@@ -154,7 +157,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button @click="CancelSelected" type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
             <button type="button" @click="clickShare" class="btn btn-primary">分享</button>
           </div>
         </div>
@@ -221,9 +224,14 @@ const closePreviewAudio = () => {
   audioUrl.value = null;
 };
 
+const CancelSelected = () => {
+  selectedFiles.value = [];
+};
+
 const clickShareIcon = (file) => {
-  isShowShareUrl.value = false;
+  selectedFiles.value.push(file.fileId);
   shareFile.value = file;
+  isShowShareUrl.value = false;
 };
 
 const clickCloseIcon = () => {
@@ -236,6 +244,7 @@ let isShowShareUrl = ref(false);
 let shareUrl = ref("");
 let shareCode = ref("");
 const clickShare = () => {
+  console.log(shareFile.value);
   axios
     .post(apiStore.file.shareFile, {
       fileId: shareFile.value.fileId,
@@ -466,9 +475,15 @@ defineExpose({ createFile, selectedFiles, isSelected });
 </script>
 
 <style lang="scss" scoped>
+.is-shared {
+  color: #96d475 !important;
+  cursor: default !important;
+}
+
 .img-cover {
   width: 24px;
   height: 24px;
+  border-radius: 8px;
 }
 
 .share {

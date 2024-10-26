@@ -24,7 +24,7 @@ const alertStore = useAlertStore();
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.3); /* 半透明的灰色 */
-  z-index: 1111;
+  z-index: 1500;
   display: flex;
   align-items: center;
   justify-content: center;

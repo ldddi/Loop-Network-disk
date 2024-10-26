@@ -3,7 +3,8 @@ package com.looppan.looppan.service.sharefile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
 
-public interface GetSharedFileByteService {
+import java.io.IOException;
 
-    ResponseEntity<FileSystemResource> getSharedFile(String shareId);
+public interface GetAvatarByteService {
+    ResponseEntity<FileSystemResource> getAvatar(String filePath) throws IOException;
 }

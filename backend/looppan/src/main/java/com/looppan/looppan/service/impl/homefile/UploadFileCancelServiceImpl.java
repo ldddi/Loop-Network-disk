@@ -58,7 +58,9 @@ public class UploadFileCancelServiceImpl implements UploadFileCancelService {
             }
         }
         Map<String, String> mp = new HashMap<>();
-        mp.put("message", "取消上传成功");
+        if (filePId != null && fileName != null) {
+            mp.put("message", "取消上传成功");
+        }
         return ResponseEntity.ok().body(mp);
     }
 

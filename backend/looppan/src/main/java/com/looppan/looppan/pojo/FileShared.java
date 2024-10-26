@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class FileShared {
     @TableId(value = "share_id")
     String shareId;
+    String sharePId;
     String fileId;
     Integer userId;
     String userNickName;

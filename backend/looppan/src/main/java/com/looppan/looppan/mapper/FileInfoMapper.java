@@ -118,5 +118,17 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
                                     @Param("newName") String newName,
                                                    @Param("newPath") String newPath);
 
+    @Update("UPDATE file_info SET shared = #{shared} WHERE file_id = #{fileId} AND user_id = #{userId}")
+    Integer updateSharedByFileIdAndUserId(@Param("fileId") String fileId,
+                                                   @Param("userId") String userId,
+                                                   @Param("shared") boolean shared);
 
+//    insert
+    @Insert("INSERT INTO file_info (file_id, user_id, file_md5, file_pid, file_size, file_name, " +
+            "file_cover, file_path, create_time, last_update_time, folder_type, file_category, " +
+            "recovery_time, del_flag, shared) " +
+            "VALUES (#{fileId}, #{userId}, #{fileMd5}, #{filePid}, #{fileSize}, #{fileName}, " +
+            "#{fileCover}, #{filePath}, #{createTime}, #{lastUpdateTime}, #{folderType}, " +
+            "#{fileCategory}, #{recoveryTime}, #{delFlag}, #{shared})")
+    int insertFileInfo(FileInfo fileInfo);
 }

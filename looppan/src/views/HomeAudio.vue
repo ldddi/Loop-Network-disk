@@ -198,9 +198,7 @@ const uploadFile2 = async (files) => {
   let index = 0;
   const uploadFile = async (file) => {
     const fileId = curFileIds[index++];
-    console.log(fileId);
     const f = uploadFileStore.files.find((item) => item.fileId === fileId);
-    console.log(f);
     const totalChunks = Math.ceil(file.size / chunkSize.value);
     f.totalChunks = totalChunks;
 
@@ -225,7 +223,6 @@ const uploadFile2 = async (files) => {
       const chunk = file.slice(start, end);
       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
       if (resp.timestamp != null) {
-        console.log(resp);
         f.isError = true;
         f.errorMessage = resp.message;
         break;
@@ -235,7 +232,6 @@ const uploadFile2 = async (files) => {
 
     if (!f.isCancel && !f.isError) {
       f.isFinish = true;
-      console.log(resp.data);
       updateFiles(resp.data); // 更新状态
       await getUseSpace();
     } else if (!f.isError) {
@@ -269,7 +265,6 @@ const uploadFile2 = async (files) => {
 
 const getUseSpace = async () => {
   const resp = await axios.get(apiStore.user.getUseSpace, {});
-  console.log(resp);
   userStore.user.useSpace = resp.data;
 };
 

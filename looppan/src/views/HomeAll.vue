@@ -23,7 +23,7 @@
           </div>
           <div class="modal-body my-modal-body">
             <!--  -->
-            <ModalFileTable ref="modalFileTable"></ModalFileTable>
+            <ModalFileTable :selectedFiles="fileTable ? fileTable.selectedFiles : []" ref="modalFileTable"></ModalFileTable>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -93,7 +93,7 @@ onMounted(() => {
 });
 
 const returnLastFolder = () => {
-  filesCache.value.pop();
+  // filesCache.value.pop();
   let path = route.query.path;
   path = path.substring(0, path.lastIndexOf("/"));
   if (path != "" && path != null) {
@@ -106,6 +106,7 @@ const returnLastFolder = () => {
 const resetAndUpload = () => {
   myInput.value.value = null; // 重置文件输入
   document.getElementById("fileInput").click(); // 触发文件选择
+  uploadFilePId.value = route.query.path;
 };
 
 const comfirmMoveFiles = () => {
@@ -186,7 +187,6 @@ const getImageUrl = async (fileId) => {
       },
       "blob"
     );
-    console.log(resp);
     const url = URL.createObjectURL(resp);
     return url;
   } catch (error) {
@@ -194,7 +194,7 @@ const getImageUrl = async (fileId) => {
   }
 };
 const chunkSize = ref(1024 * 1024);
-
+const uploadFilePId = ref("0");
 const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, totalChunks) => {
   const formData = new FormData();
   formData.append("filePId", filePid);
@@ -310,7 +310,7 @@ const uploadFile2 = async (files) => {
   }
 
   const fileArray = Array.from(files);
-  let filePid = route.query.path || "0";
+  let filePid = uploadFilePId.value || "0";
   let isOk = false;
   let fileNameList = fileArray.map((file) => file.name);
 
@@ -352,9 +352,7 @@ const uploadFile2 = async (files) => {
   let index = 0;
   const uploadFile = async (file) => {
     const fileId = curFileIds[index++];
-    console.log(fileId);
     const f = uploadFileStore.files.find((item) => item.fileId === fileId);
-    console.log(f);
     const totalChunks = Math.ceil(file.size / chunkSize.value);
     f.totalChunks = totalChunks;
 
@@ -379,7 +377,6 @@ const uploadFile2 = async (files) => {
       const chunk = file.slice(start, end);
       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
       if (resp.timestamp != null) {
-        console.log(resp);
         f.isError = true;
         f.errorMessage = resp.message;
         break;
@@ -389,8 +386,7 @@ const uploadFile2 = async (files) => {
 
     if (!f.isCancel && !f.isError) {
       f.isFinish = true;
-      console.log(resp.data);
-      updateFiles(resp.data); // 更新状态
+      updateFiles2(resp.data); // 更新状态
       await getUseSpace();
     } else if (!f.isError) {
       uploadFileCancel(filePid, f.fileName);
@@ -423,7 +419,6 @@ const uploadFile2 = async (files) => {
 
 const getUseSpace = async () => {
   const resp = await axios.get(apiStore.user.getUseSpace, {});
-  console.log(resp);
   userStore.user.useSpace = resp.data;
 };
 
@@ -460,6 +455,15 @@ const renameFile = ({ file, newName }) => {
 
 const updateFiles = async (newFile) => {
   files.value.unshift(newFile);
+  if (newFile.fileCategory == statickey.category.image) {
+    files.value[0].fileCover = await getImageUrl(files.value[0].fileId);
+  }
+};
+const updateFiles2 = async (newFile) => {
+  if (uploadFilePId.value == route.query.path) {
+    console.log(newFile);
+    files.value.unshift(newFile);
+  }
   if (newFile.fileCategory == statickey.category.image) {
     files.value[0].fileCover = await getImageUrl(files.value[0].fileId);
   }
