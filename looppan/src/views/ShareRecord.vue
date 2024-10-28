@@ -117,7 +117,6 @@ const route = useRoute();
 
 const pushFilesCache = (file) => {
   filesCache.value.push(file);
-  console.log(file, filesCache.value);
 };
 
 const getLink = (file) => {

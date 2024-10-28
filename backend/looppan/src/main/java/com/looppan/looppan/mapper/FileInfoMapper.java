@@ -81,15 +81,21 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
 //    update
 
     /**
-     * 根据用户id和文件id 将当前文件放入回收站
+     * 根据用户id和文件id 将当前文件放入回收站, 设置delfalg 和 recoverytime 和 filepath
      * @param fileId
      * @param userId
      * @param delFlag
      * @param now
      * @return
      */
-    @Update("update file_info set del_flag = #{delFlag}, recovery_time = #{now} where file_id = #{fileId} and user_id = #{userId}")
-    Integer updateDelFlagByFileIdAndUserId(@Param("fileId") String fileId, @Param("userId") Integer userId, @Param("delFlag") Integer delFlag, @Param("now")LocalDateTime now);
+    @Update("update file_info set del_flag = #{delFlag}, recovery_time = #{now}, file_path = #{filePath}, file_last_path = #{fileLastPath} where file_id = #{fileId} and user_id = #{userId}")
+    Integer updateDelFlagByFileIdAndUserId(@Param("fileId") String fileId,
+                                           @Param("userId") Integer userId,
+                                           @Param("delFlag") Integer delFlag,
+                                           @Param("now") LocalDateTime now,
+                                           @Param("filePath") String filePath,
+                                           @Param("fileLastPath") String fileLastPath
+    );
 
     /**
      * 根据 fileId和userId 更新 filePid和filePath

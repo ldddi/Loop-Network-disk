@@ -8,6 +8,7 @@ import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.homefile.DeleteSelectedFilesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +31,9 @@ public class DeleteSelectedFileServiceImpl implements DeleteSelectedFilesService
     @Autowired
     FileInfoMapper fileInfoMapper;
 
+    @Value("${file.recycle-path}")
+    private String myRecyclePath;
+
     @Override
     @Transactional
     public ResponseEntity<Map> deleteFiles(List<String> filesId) {
@@ -40,10 +45,32 @@ public class DeleteSelectedFileServiceImpl implements DeleteSelectedFilesService
         try {
             for (String fileId : filesId) {
                 LocalDateTime now = LocalDateTime.now();
-                fileInfoMapper.updateDelFlagByFileIdAndUserId(fileId, Integer.valueOf(userId), FileStaticKey.DEL_FLAG_RECOVERY.toIntegerValue(),now);
+
+                FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+                Path recyclePath = Paths.get(myRecyclePath, userId);
+
+                if (!Files.exists(recyclePath)) {
+                    Files.createDirectories(recyclePath);
+                }
+
+                recyclePath = recyclePath.resolve(fileInfo.getFileName());
+                if (Files.exists(recyclePath)) {
+                    throw new MyException("回收站已存在相同文件");
+                }
+
+                Files.move(Path.of(fileInfo.getFilePath()), recyclePath);
+                fileInfoMapper.updateDelFlagByFileIdAndUserId(
+                        fileId,
+                        Integer.valueOf(userId),
+                        FileStaticKey.DEL_FLAG_RECOVERY.toIntegerValue(),
+                        now,
+                        recyclePath.toString(),
+                        fileInfo.getFilePath()
+                );
             }
-        } catch (RuntimeException e) {
-            throw new MyException("删除失败");
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace();
+            throw new MyException("删除失败, 回收站中存在相同的文件名");
         }
 
         Map<String, String> mp = new HashMap<String, String>();

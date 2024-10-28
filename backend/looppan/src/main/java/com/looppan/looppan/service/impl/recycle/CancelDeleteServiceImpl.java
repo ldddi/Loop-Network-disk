@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +36,18 @@ public class CancelDeleteServiceImpl implements CancelDeleteService {
         try {
             for (String fileId : filesId) {
                 FileInfo fileInfo = fileInfoMapper.selectByFileIdAndUserId(fileId, Integer.valueOf(userId));
+
+                Files.move(Path.of(fileInfo.getFilePath()), Path.of(fileInfo.getFileLastPath()));
+
                 LocalDateTime now = LocalDateTime.now();
-                fileInfoMapper.updateDelFlagByFileIdAndUserId(fileId, Integer.valueOf(userId), FileStaticKey.DEL_FLAG_NORMAL.toIntegerValue(), now);
+                fileInfoMapper.updateDelFlagByFileIdAndUserId(
+                        fileId,
+                        Integer.valueOf(userId),
+                        FileStaticKey.DEL_FLAG_NORMAL.toIntegerValue(),
+                        now,
+                        fileInfo.getFileLastPath(),
+                        fileInfo.getFilePath()
+                        );
             }
         } catch (Exception e) {
             e.printStackTrace();

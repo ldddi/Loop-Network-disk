@@ -2,8 +2,9 @@
   <div class="header">
     <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
     <input ref="myInput" type="file" id="fileInput" style="display: none" multiple @change="uploadFile2($event.target.files)" />
-    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传</button>
-
+    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传文件</button>
+    <input ref="myInput2" type="file" id="fileInput2" style="display: none" webkitdirectory multiple @change="uploadFile3($event.target.files)" />
+    <button type="button" class="btn btn-info" @click="resetAndUpload2">上传文件夹</button>
     <button @click="fileTable.createFile" type="button" class="btn btn-new">新建文件夹</button>
 
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
@@ -59,6 +60,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import router from "@/router";
 import { useUploadFileStore } from "@/store/useUploadFileStore";
 import { useUserStore } from "@/store/useUserStore";
+import originalAxios from "axios";
 
 const fileTable = ref(null);
 const files = ref([]);
@@ -72,6 +74,7 @@ const uploadFileStore = useUploadFileStore();
 const route = useRoute();
 
 const myInput = ref(null);
+const myInput2 = ref(null);
 const myModal = ref(null);
 
 const openModal = () => {
@@ -106,6 +109,12 @@ const returnLastFolder = () => {
 const resetAndUpload = () => {
   myInput.value.value = null; // 重置文件输入
   document.getElementById("fileInput").click(); // 触发文件选择
+  uploadFilePId.value = route.query.path;
+};
+
+const resetAndUpload2 = () => {
+  myInput2.value.value = null; // 重置文件输入
+  document.getElementById("fileInput2").click(); // 触发文件选择
   uploadFilePId.value = route.query.path;
 };
 
@@ -217,6 +226,135 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
   }
 };
 
+const uploadFile3 = async (files) => {
+  if (!(files instanceof FileList) || files.length === 0) {
+    return;
+  }
+
+  const fileArray = Array.from(files);
+
+  let filePid = uploadFilePId.value || "0";
+  uploadFileStore.isDropdownVisible = true;
+  const maxConcurrentUploads = 5;
+  let currentUploads = 0; // 记录当前正在上传的文件数量
+  const curFileIds = [];
+  const curFilePIds = [];
+  let curFolderFileId = "";
+  const finishFolerName = [];
+  const fileId = uploadFileStore.fileId;
+
+  for (const file of fileArray) {
+    const pathParts = file.webkitRelativePath.split("/");
+
+    if (!finishFolerName.includes(pathParts[pathParts.length - 2])) {
+      const resp = await originalAxios({
+        method: "POST",
+        url: apiStore.file.createFile,
+        headers: {
+          Authorization: "Bearer " + userStore.user.token,
+        },
+        data: {
+          filePId: filePid,
+          fileName: pathParts[pathParts.length - 2],
+        },
+      });
+      // const resp = await axios.post(apiStore.file.createFile, {
+      //   filePId: filePid,
+      //   fileName: pathParts[pathParts.length - 2],
+      // });
+      finishFolerName.push(pathParts[pathParts.length - 2]);
+      filePid = resp.data.data.fileId;
+      curFolderFileId = resp.data.data.fileId;
+    }
+    uploadFileStore.files.unshift({
+      fileId: uploadFileStore.fileId,
+      fileName: file.name,
+      fileSize: file.size,
+      isFinish: false,
+      finishChunks: 0,
+      totalChunks: 0,
+      isCancel: false,
+      isPause: false,
+      isError: false,
+      errorMessage: "",
+    });
+    curFileIds.push(uploadFileStore.fileId);
+    uploadFileStore.fileId += 1;
+    curFilePIds.push(curFolderFileId);
+  }
+
+  uploadFileStore.fileId = fileId;
+  let index = 0;
+
+  const uploadFile = async (file) => {
+    const fileId = curFileIds[index];
+    const fPId = curFilePIds[index++];
+    const f = uploadFileStore.files.find((item) => item.fileId === fileId);
+
+    const totalChunks = Math.ceil(file.size / chunkSize.value);
+    f.totalChunks = totalChunks;
+
+    let resp;
+    for (let j = 0; j < totalChunks; j++) {
+      if (f.isCancel) {
+        break;
+      }
+
+      while (f.isPause) {
+        if (f.isCancel) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      if (f.isCancel) {
+        break;
+      }
+
+      const start = j * chunkSize.value;
+      const end = Math.min(start + chunkSize.value, file.size);
+      const chunk = file.slice(start, end);
+      resp = await uploadChunk(chunk, fPId, file.name, file.size, j, totalChunks);
+      if (resp.timestamp != null) {
+        f.isError = true;
+        f.errorMessage = resp.message;
+        break;
+      }
+      f.finishChunks += 1;
+    }
+
+    if (!f.isCancel && !f.isError) {
+      f.isFinish = true;
+      await getUseSpace();
+    } else if (!f.isError) {
+      uploadFileCancel(filePid, f.fileName);
+      uploadFileStore.files = uploadFileStore.files.filter((file) => file.fileId != f.fileId);
+    }
+  };
+
+  for (const file of fileArray) {
+    while (currentUploads >= maxConcurrentUploads) {
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 等待直到有可用的上传位置
+    }
+
+    currentUploads++; // 增加正在上传的数量
+    uploadFile(file).finally(() => {
+      uploadFileStore.fileId++;
+      currentUploads--; // 上传完成后减少数量
+    });
+  }
+
+  // 等待所有剩余的上传完成
+  await new Promise((resolve) => {
+    const checkUploads = setInterval(() => {
+      if (currentUploads === 0) {
+        clearInterval(checkUploads);
+        resolve();
+      }
+    }, 100);
+  });
+  getFileList();
+};
+
 // const uploadFile2 = async (files) => {
 //   // 确保 files 是一个 FileList 对象，并转换为数组
 //   if (!(files instanceof FileList) || files.length === 0) {
@@ -282,7 +420,6 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
 //       const chunk = file.slice(start, end);
 //       resp = await uploadChunk(chunk, filePid, file.name, file.size, j, totalChunks);
 //       if (resp.timestamp != null) {
-//         console.log(resp);
 //         f.isError = true;
 //         f.errorMessage = resp.message;
 //         break;
@@ -292,7 +429,6 @@ const uploadChunk = async (chunk, filePid, fileName, fileSize, chunkIndex, total
 
 //     if (!f.isCancel && !f.isError) {
 //       f.isFinish = true;
-//       console.log(resp.data);
 //       updateFiles(resp.data); // 更新状态
 //       await getUseSpace();
 //     } else if (!f.isError) {
@@ -461,7 +597,6 @@ const updateFiles = async (newFile) => {
 };
 const updateFiles2 = async (newFile) => {
   if (uploadFilePId.value == route.query.path) {
-    console.log(newFile);
     files.value.unshift(newFile);
   }
   if (newFile.fileCategory == statickey.category.image) {

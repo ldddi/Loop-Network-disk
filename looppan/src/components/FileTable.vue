@@ -62,6 +62,10 @@
             <i class="bi bi-download item-icon"></i>
             <span @click="clickDownload(file)">下载</span>
           </div>
+          <div v-else class="download-button item-button">
+            <i class="bi bi-download item-icon"></i>
+            <span @click="clickDownloadFolder(file)">下载</span>
+          </div>
           <div @click="deleteItem(file)" class="del-button item-button">
             <i class="bi bi-trash item-icon"></i>
             <span>删除</span>
@@ -244,7 +248,6 @@ let isShowShareUrl = ref(false);
 let shareUrl = ref("");
 let shareCode = ref("");
 const clickShare = () => {
-  console.log(shareFile.value);
   axios
     .post(apiStore.file.shareFile, {
       fileId: shareFile.value.fileId,
@@ -254,6 +257,30 @@ const clickShare = () => {
       shareUrl.value = resp.data.url;
       shareCode.value = resp.data.code;
       isShowShareUrl.value = true;
+    });
+};
+
+const clickDownloadFolder = (file) => {
+  axios
+    .post(
+      apiStore.file.downloadFile,
+      {
+        fileId: file.fileId,
+      },
+      "blob"
+    )
+    .then((resp) => {
+      const url = URL.createObjectURL(resp);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", file.fileName || "downloadedFile");
+
+      // 将链接添加到 DOM，并模拟点击下载
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     });
 };
 

@@ -44,7 +44,7 @@ public class MoveFileServiceImpl implements MoveFileService {
             FileInfo pFileInfo = fileInfoMapper.selectByFileIdAndUserId(pId, Integer.valueOf(userId));
             pPath = pFileInfo.getFilePath();
         } else {
-            pPath = uploadDir + "/" + user.getUserId();
+            pPath = Paths.get(uploadDir, user.getUserId()).toString();
         }
 
         List<String> fileNameList = fileInfoMapper.selectFilenameByFilePidAndUserId(pId, Integer.valueOf(userId));
@@ -68,7 +68,8 @@ public class MoveFileServiceImpl implements MoveFileService {
 
         for (int i = 0; i < fileInfoList.size(); i++) {
             FileInfo fileInfo = fileInfoList.get(i);
-            fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, pPath + "/" + fileInfo.getFileName());
+            String filePath = Paths.get(pPath, fileInfo.getFileName()).toString();
+            fileInfoMapper.updateByFileIdAndUserId(fileInfo.getFileId(), userId, pId, filePath);
 
             // 源文件路径
             String sourceFilePath = fileInfo.getFilePath();

@@ -25,7 +25,7 @@
           </RouterLink>
           <RouterLink :to="{ name: 'HomeMore' }" :class="['home-nav-top-item', route.name === 'HomeMore' ? 'active' : '']">
             <i class="bi bi-three-dots home-icon"></i>
-            <span>更多</span>
+            <span>其它</span>
           </RouterLink>
         </div>
         <div class="home-nav-bottom">

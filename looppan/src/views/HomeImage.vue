@@ -2,7 +2,7 @@
   <div class="header">
     <!-- <div style="width: 500px; height: 1px; min-width: 100px">div</div> -->
     <input ref="myInput" type="file" id="fileInput" style="display: none" multiple accept="image/*" @change="uploadFile2($event.target.files)" />
-    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传</button>
+    <button type="button" class="btn btn-pull" @click="resetAndUpload">上传图片</button>
 
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
     <button type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']" data-bs-toggle="modal" data-bs-target="#staticBackdrop">批量移动</button>

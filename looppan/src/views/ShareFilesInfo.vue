@@ -206,7 +206,6 @@ const getSharedFileInfo = () => {
       } else {
         files.value.unshift(resp.data);
       }
-      console.log(files.value);
     });
 };
 

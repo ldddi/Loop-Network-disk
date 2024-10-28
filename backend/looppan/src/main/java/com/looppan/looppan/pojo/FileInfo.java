@@ -23,7 +23,7 @@ public class FileInfo {
 //    @TableField(value = "user_id") // 使用 @TableField 来标记第二个主键字段
     Integer userId;
 
-    String fileMd5;
+    String fileLastPath;
     String filePid;
     String fileSize;
     String fileName;
@@ -40,7 +40,7 @@ public class FileInfo {
     public FileInfo(FileInfo tmp) {
         this.fileId = tmp.getFileId();
         this.userId = tmp.getUserId();
-        this.fileMd5 = tmp.getFileMd5();
+        this.fileLastPath = tmp.getFileLastPath();
         this.filePid = tmp.getFilePid();
         this.fileSize = tmp.getFileSize();
         this.fileName = tmp.getFileName();
