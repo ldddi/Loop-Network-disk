@@ -45,6 +45,9 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("${file.cover}")
+    private String cover;
+
     @Override
     @Transactional
     public ResponseEntity<Map> saveMyPan(String shareId, String userId) throws IOException {
@@ -62,6 +65,12 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
         }
 
         if (fileShared == null) {
+            throw new MyException("文件已经失效");
+        }
+
+        LocalDateTime shareTime = fileShared.getShareTime();
+        LocalDateTime failTime = fileShared.getFailTime();
+        if (shareTime.isAfter(failTime)) {
             throw new MyException("文件已经失效");
         }
 
@@ -206,7 +215,7 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
 
     private boolean createImageCover (String userId, String fileName, FileInfo dataFileInfo) throws IOException {
         Path basePath = Paths.get(uploadDir);
-        Path coverPath = basePath.resolve(userId).resolve("cover");
+        Path coverPath = basePath.resolve(userId).resolve(cover);
 
         if (!Files.exists(coverPath)) {
             Files.createDirectories(coverPath);

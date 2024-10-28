@@ -36,7 +36,7 @@
 
           <i v-else-if="file.fileCategory == statickey.category.document" class="bi bi-file-word my-floder"></i>
           <i v-else-if="file.fileCategory == statickey.category.other" class="bi bi-file-earmark-medical my-floder"></i>
-          <RouterLink @click="pushFilesCache(file)" v-if="file.fileCategory == statickey.category.folder" :to="getLink(file)" class="file-name">{{ file.fileName }}</RouterLink>
+          <span v-if="file.fileCategory == statickey.category.folder || file.fileCategory == statickey.category.document" class="file-name folder-name">{{ file.fileName }}</span>
           <span v-else class="file-name" @click="clickFileName(file)">{{ file.fileName }}</span>
         </div>
         <div class="col-2 my-icon">
@@ -115,22 +115,6 @@ const files = ref([]);
 let selectedCheck = ref([]);
 const route = useRoute();
 
-const pushFilesCache = (file) => {
-  filesCache.value.push(file);
-};
-
-const getLink = (file) => {
-  const prepath = route.query.path;
-  if (file.fileCategory == statickey.category.folder) {
-    if (prepath == null) {
-      return { name: "ShareRecord", query: { path: file.shareId } };
-    } else {
-      return { name: "ShareRecord", query: { path: prepath + "/" + file.shareId } };
-    }
-  }
-
-  return { name: "ShareRecord" };
-};
 const filesCache = ref([]);
 watch(
   () => route.query,
@@ -323,6 +307,7 @@ const cancelSharedFiles = () => {
   axios.post(apiStore.file.cancelSharedFile, selectedCheck.value).then((resp) => {
     files.value = files.value.filter((file) => !selectedCheck.value.includes(file.shareId));
     selectedCheck.value = [];
+    isChecked.value = false;
   });
 };
 
@@ -338,6 +323,10 @@ const deleteFileByShareId = (shareId) => {
 </script>
 
 <style lang="scss" scoped>
+.folder-name {
+  cursor: default !important;
+}
+
 .file-name:hover {
   cursor: pointer;
   color: #5faeff;

@@ -124,8 +124,8 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="shareModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <div class="my-modal modal fade" id="shareModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog my-modal-2">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropLabel">分享</h1>
@@ -233,6 +233,7 @@ const CancelSelected = () => {
 };
 
 const clickShareIcon = (file) => {
+  selectedFiles.value = [];
   selectedFiles.value.push(file.fileId);
   shareFile.value = file;
   isShowShareUrl.value = false;
@@ -257,6 +258,7 @@ const clickShare = () => {
       shareUrl.value = resp.data.url;
       shareCode.value = resp.data.code;
       isShowShareUrl.value = true;
+      selectedFiles.value = [];
     });
 };
 

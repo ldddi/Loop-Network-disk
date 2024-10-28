@@ -36,6 +36,9 @@ public class UpdateUserInfoServiceImpl implements UpdateUserInfoService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("${file.avatar}")
+    private String myAvatar;
+
     @Override
     public ResponseEntity<Map> updateUserInfo(String nickName, MultipartFile avatar) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,7 +53,7 @@ public class UpdateUserInfoServiceImpl implements UpdateUserInfoService {
         }
 
         if (avatar != null && !avatar.isEmpty()) {
-            Path basePath = Paths.get(uploadDir, userId, "avatar135790");
+            Path basePath = Paths.get(uploadDir, userId, myAvatar);
             if (!Files.exists(basePath)) {
                 Files.createDirectory(basePath);
             }

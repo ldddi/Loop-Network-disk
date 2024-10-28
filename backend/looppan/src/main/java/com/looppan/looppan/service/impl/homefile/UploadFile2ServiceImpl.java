@@ -38,6 +38,9 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("${file.cover}")
+    private String cover;
+
     @Autowired
     private FileInfoMapper fileInfoMapper;
 
@@ -177,7 +180,7 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
 
     private boolean createImageCover (String userId, String fileName, FileInfo dataFileInfo) throws IOException {
         Path basePath = Paths.get(uploadDir);
-        Path coverPath = basePath.resolve(userId).resolve("cover");
+        Path coverPath = basePath.resolve(userId).resolve(cover);
 
         if (!Files.exists(coverPath)) {
             Files.createDirectories(coverPath);
