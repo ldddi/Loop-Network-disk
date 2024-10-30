@@ -43,7 +43,7 @@
 
   <LoadingBox />
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getFileList" @pop-files-cache="popFilesCache" />
+  <FileTable ref="fileTable" @handle-scroll="handleScroll" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @load-page="loadPage" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -83,12 +83,10 @@ const fileSeach = () => {
       type: type,
     })
     .then(async (resp) => {
-      console.log(resp);
       files.value = resp.data;
       for (let i = 0; i < files.value.length; i++) {
         if (files.value[i].fileCategory == statickey.category.image) {
           files.value[i].fileCover = await getImageUrl(files.value[i].fileId);
-          console.log(files.value[i].fileCover);
         }
       }
     });
@@ -121,18 +119,47 @@ const openModal = () => {
 
 const modalFileTable = ref(null);
 onMounted(() => {
-  getFileList();
+  loadPage(0);
   if (userStore.user.avatarUrl == "") {
     userStore.getAvatarUrl();
   }
 });
+const currentPage = ref(0);
+const count = ref(0);
+const handleScroll = () => {
+  const { scrollTop, clientHeight, scrollHeight } = fileTable.value.scrollContainer;
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    loadPage(currentPage.value + 1); // 滚动到底部时加载下一页
+    currentPage.value++;
+  }
+};
 
-const getFileList = async () => {
+const loadPage = async (page) => {
+  if (page * 15 > count.value) {
+    currentPage.value--;
+    return;
+  }
+
+  const data = await getFileList(page);
+  if (data == null) {
+    return;
+  }
+  if (page != 0) {
+    files.value.push(...data);
+  } else {
+    currentPage.value = 0;
+    files.value = data;
+  }
+};
+
+const getFileList = async (page) => {
   alertStore.load.isLoading = true;
+
   try {
     const resp = await axios.get(apiStore.file.getFileList, {
       category: statickey.category.folder,
       path: route.query.path,
+      page: page,
     });
 
     if (resp.clickedFile != null && !filesCache.value.some((file) => file.fileId === resp.clickedFile.fileId)) {
@@ -145,7 +172,8 @@ const getFileList = async () => {
       }
       return file;
     });
-    files.value = await Promise.all(promises);
+    count.value = resp.count;
+    return await Promise.all(promises);
   } finally {
     alertStore.load.isLoading = false;
   }
@@ -190,7 +218,7 @@ const comfirmMoveFiles = () => {
     .then((resp) => {
       fileTable.value.selectedFiles = [];
       fileTable.value.isSelected = false;
-      getFileList();
+      loadPage(0);
     });
 };
 
@@ -383,7 +411,8 @@ const uploadFile3 = async (files) => {
       }
     }, 100);
   });
-  getFileList();
+
+  loadPage(0);
 };
 
 // const uploadFile2 = async (files) => {

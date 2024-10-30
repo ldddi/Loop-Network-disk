@@ -20,9 +20,10 @@ public class GetFileListController {
     @RequestMapping(value = "/file/getFileList", method = RequestMethod.GET)
     public ResponseEntity<Map> getFileList(
             @RequestParam("category") String category,
-            @RequestParam(value = "path", required = false) String path)
+            @RequestParam(value = "path", required = false) String path,
+            @RequestParam("page") Integer page)
     {
 
-        return getFileListService.getFileList(Integer.valueOf(category), path);
+        return getFileListService.getFileList(Integer.valueOf(category), path, page);
     }
 }

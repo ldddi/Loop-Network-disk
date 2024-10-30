@@ -26,8 +26,21 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      * @param category
      * @return
      */
-    @Select("select * from file_info where user_id = #{userId} and file_category = #{category}  and del_flag = 2 order by create_time desc")
-    List<FileInfo> selectByUserIdAndCategory(@Param("userId") Integer userId, @Param("category") Integer category);
+    @Select("SELECT * FROM file_info WHERE user_id = #{userId} AND file_category = #{category} AND del_flag = 2 ORDER BY create_time DESC LIMIT #{size} OFFSET #{offset}")
+    List<FileInfo> selectByUserIdAndCategory(
+            @Param("userId") Integer userId,
+            @Param("category") Integer category,
+            @Param("size") Integer size,
+            @Param("offset") Integer offset
+    );
+
+    @Select("SELECT count(*) FROM file_info WHERE user_id = #{userId} AND file_category = #{category} AND del_flag = 2 ")
+    Integer countByUserIdAndCategory(@Param("userId") Integer userId,
+                                     @Param("category") Integer category);
+
+
+//    @Select("select * from file_info where user_id = #{userId} and file_category = #{category}  and del_flag = 2 order by create_time desc")
+//    List<FileInfo> selectByUserIdAndCategory(@Param("userId") Integer userId, @Param("category") Integer category);
 
     /**
      * 根据用户id和 pid，查找 所有文件和文件夹
@@ -36,7 +49,19 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      * @return
      */
     @Select("select * from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag = 2  ORDER BY create_time DESC")
-    List<FileInfo> selectByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
+    List<FileInfo> selectByFilePidAndUserId2(@Param("filePId") String filePId, @Param("userId") Integer userId);
+
+    @Select("SELECT * FROM file_info WHERE file_pid = #{filePId} AND user_id = #{userId} AND del_flag = 2 ORDER BY create_time DESC LIMIT #{size} OFFSET #{offset}")
+    List<FileInfo> selectByFilePidAndUserId(
+            @Param("filePId") String filePId,
+            @Param("userId") Integer userId,
+            @Param("size") Integer size,
+            @Param("offset") Integer offset
+    );
+
+    @Select("select count(*) from file_info where file_pid = #{filePId} and user_id = #{userId} and del_flag")
+    int selectCountByFilePidAndUserId(@Param("filePId") String filePId, @Param("userId") Integer userId);
+
 
     /**
      * 根据用户id和 pid，查找 所有文件和文件夹 的filename

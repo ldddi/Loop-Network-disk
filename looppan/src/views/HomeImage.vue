@@ -34,7 +34,7 @@
 
   <LoadingBox />
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getImageFileList" @pop-files-cache="popFilesCache" />
+  <FileTable ref="fileTable" @handle-scroll="handleScroll" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @load-page="loadPage" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -73,12 +73,10 @@ const fileSeach = () => {
       type: type,
     })
     .then(async (resp) => {
-      console.log(resp);
       files.value = resp.data;
       for (let i = 0; i < files.value.length; i++) {
         if (files.value[i].fileCategory == statickey.category.image) {
           files.value[i].fileCover = await getImageUrl(files.value[i].fileId);
-          console.log(files.value[i].fileCover);
         }
       }
     });
@@ -106,9 +104,37 @@ const openModal = () => {
   }
 };
 
+const currentPage = ref(0);
+const count = ref(0);
+const handleScroll = () => {
+  const { scrollTop, clientHeight, scrollHeight } = fileTable.value.scrollContainer;
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    loadPage(currentPage.value + 1); // 滚动到底部时加载下一页
+    currentPage.value++;
+  }
+};
+
+const loadPage = async (page) => {
+  if (page * 15 > count.value) {
+    currentPage.value--;
+    return;
+  }
+
+  const data = await getImageFileList(page);
+  if (data == null) {
+    return;
+  }
+  if (page != 0) {
+    files.value.push(...data);
+  } else {
+    currentPage.value = 0;
+    files.value = data;
+  }
+};
+
 const modalFileTable = ref(null);
 onMounted(() => {
-  getImageFileList();
+  loadPage(0);
 });
 
 const resetAndUpload = () => {
@@ -153,20 +179,22 @@ const deleteSelectedFiles = () => {
   }
 };
 
-const getImageFileList = async () => {
+const getImageFileList = async (page) => {
   alertStore.load.isLoading = true;
   try {
     const resp = await axios.post(apiStore.file.getAllCategoryFile, {
       category: statickey.category.image,
+      page: page,
     });
-    files.value = resp.data;
-    const promises = files.value.map(async (file) => {
+
+    const promises = resp.data.map(async (file) => {
       if (file.fileCategory == statickey.category.image) {
         file.fileCover = await getImageUrl(file.fileId);
       }
       return file;
     });
-    files.value = await Promise.all(promises);
+    count.value = resp.count;
+    return await Promise.all(promises);
   } finally {
     alertStore.load.isLoading = false;
   }

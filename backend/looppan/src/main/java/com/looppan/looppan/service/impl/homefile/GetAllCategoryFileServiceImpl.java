@@ -21,14 +21,21 @@ public class GetAllCategoryFileServiceImpl implements GetAllCategoryFileService 
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<Map> getAllAudioFiles(Integer category) {
+    public ResponseEntity<Map> getAllAudioFiles(Integer category, Integer page) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         String userId = user.getUserId();
-        List<FileInfo> fileInfos = fileInfoMapper.selectByUserIdAndCategory(Integer.valueOf(userId), category);
+
+        Integer size = 15;
+        Integer offset = size * page;
+
+        List<FileInfo> fileInfos = fileInfoMapper.selectByUserIdAndCategory(Integer.valueOf(userId), category, size, offset);
+        Integer count = fileInfoMapper.countByUserIdAndCategory(Integer.valueOf(userId), category);
+
         Map<String, Object> mp = new HashMap<>();
         mp.put("data", fileInfos);
+        mp.put("count", count);
 
         return ResponseEntity.ok().body(mp);
     }

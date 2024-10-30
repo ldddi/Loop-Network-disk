@@ -130,7 +130,6 @@ const clickRegisterButton = async () => {
 // 发送邮箱验证码
 let isSending = ref(false);
 const sendEmailCheckCode = async () => {
-  console.log("sendEmailCheckCode");
   isSending.value = true;
   if (email.value == null) {
     alterStore.error.message = "邮箱不能为空";

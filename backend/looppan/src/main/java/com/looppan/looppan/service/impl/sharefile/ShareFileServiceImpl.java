@@ -108,7 +108,7 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     private void insertFileSharedDir(FileInfo fileInfo, String sharePId, String userId) {
-        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId(fileInfo.getFileId(), Integer.valueOf(userId));
+        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId2(fileInfo.getFileId(), Integer.valueOf(userId));
         for (FileInfo f : fileInfos) {
             if (Objects.equals(f.getFolderType(), FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue())) {
                 insertFileShared(f, sharePId, userId);

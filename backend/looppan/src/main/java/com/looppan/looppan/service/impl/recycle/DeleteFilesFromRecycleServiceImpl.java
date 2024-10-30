@@ -84,7 +84,7 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         try {
             for (String fileId : filesId) {
                 // 如果删除的是目录, 删除它的子文件
-                List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId(fileId, Integer.valueOf(userId));
+                List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId2(fileId, Integer.valueOf(userId));
                 for (int i = 0; i < fileInfos.size(); i++) {
                     FileInfo fileInfo = fileInfos.get(i);
                     if (Objects.equals(fileInfo.getFolderType(), FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue())) {
@@ -129,7 +129,7 @@ public class DeleteFilesFromRecycleServiceImpl implements DeleteFilesFromRecycle
         return ResponseEntity.ok().body(mp);
     }
     private void deleteFileinfo(FileInfo folder, String userId) throws IOException {
-        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId(folder.getFileId(), Integer.valueOf(userId));
+        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId2(folder.getFileId(), Integer.valueOf(userId));
         for (FileInfo fileInfo : fileInfos) {
             if (fileInfo.getFolderType() == FileStaticKey.FOLDER_TYPE_FOLDER.toIntegerValue()) {
                 deleteFileinfo(fileInfo, userId);

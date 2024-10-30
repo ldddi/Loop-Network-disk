@@ -6,7 +6,7 @@
     </div>
     <div>
       <span class="mr-2">项目地址:</span>
-      <a class="text-blue-300" href="https://github.com/cheng-rainbow/Loop-Network-disk">https://github.com/cheng-rainbow/Loop-Network-disk</a>
+      <a target="_blank" class="text-blue-300" href="https://github.com/cheng-rainbow/Loop-Network-disk">https://github.com/cheng-rainbow/Loop-Network-disk</a>
     </div>
     <div>
       <span class="mr-2">账号:</span>

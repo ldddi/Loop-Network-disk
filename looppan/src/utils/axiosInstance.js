@@ -1,5 +1,3 @@
-import router from "@/router";
-import { useUserStore } from "@/store/useUserStore";
 import axios from "axios";
 import statickey from "./statickey";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -47,13 +45,6 @@ axiosInstance.interceptors.response.use(
         data = await error.response.data.text().then((text) => JSON.parse(text));
       }
 
-      // if (error.response.status == 401) {
-      //   localStorage.removeItem(statickey.jwtToken);
-      //   const userStore = useUserStore();
-      //   userStore.user.is_login = false;
-      //   userStore.user.token = "";
-      //   router.push({ name: "LoginView" });
-      // }
       const alertStore = useAlertStore();
       alertStore.error.message = data.message;
       alertStore.error.isVisible = true;

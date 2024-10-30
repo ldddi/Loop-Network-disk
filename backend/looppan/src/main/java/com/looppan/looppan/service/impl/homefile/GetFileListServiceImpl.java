@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class GetFileListServiceImpl implements GetFileListService {
@@ -22,23 +23,29 @@ public class GetFileListServiceImpl implements GetFileListService {
     FileInfoMapper fileInfoMapper;
 
     @Override
-    public ResponseEntity<Map> getFileList(Integer category, String path) {
+    public ResponseEntity<Map> getFileList(Integer category, String path, Integer page) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
         Integer userId = Integer.valueOf(user.getUserId());
-        List<FileInfo> fileInfos;
-        if (category == FileStaticKey.FILE_CATEGORY_FOLDER.toIntegerValue()) {
+        List<FileInfo> fileInfos = null;
+        Integer count = 0;
+        if (Objects.equals(category, FileStaticKey.FILE_CATEGORY_FOLDER.toIntegerValue())) {
+            Integer size = 15;
+            Integer offset = size * page;
             if (path == null) {
                 String FilePId = "0";
-                fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId);
+                fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId, size, offset);
+                count = fileInfoMapper.selectCountByFilePidAndUserId(FilePId, userId);
             } else {
                 String FilePId = path.substring(path.lastIndexOf("/") + 1);
-                fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId);
+                fileInfos = fileInfoMapper.selectByFilePidAndUserId(FilePId, userId, size, offset);
+                count = fileInfoMapper.selectCountByFilePidAndUserId(FilePId, userId);
             }
-        } else {
-            fileInfos = fileInfoMapper.selectByUserIdAndCategory(userId, category);
         }
+//        else {
+//            fileInfos = fileInfoMapper.selectByUserIdAndCategory(userId, category);
+//        }
 
         Map<String, Object> mp = new HashMap<>();
         mp.put("data", fileInfos);
@@ -52,6 +59,7 @@ public class GetFileListServiceImpl implements GetFileListService {
         
 
         mp.put("clickedFile", clickedFile);
+        mp.put("count", count);
         return ResponseEntity.ok().body(mp);
     }
 }

@@ -84,7 +84,7 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
             throw new MyException("文件已经失效");
         }
 
-        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId("0", Integer.valueOf(userId));
+        List<FileInfo> fileInfos = fileInfoMapper.selectByFilePidAndUserId2("0", Integer.valueOf(userId));
         for (FileInfo fileInfo : fileInfos) {
             if (Objects.equals(fileInfo.getFileId(), fileShared.getFileId())) {
                 throw new MyException("不可以再次保存");

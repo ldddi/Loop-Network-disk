@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div @scroll="handleScroll" class="content" ref="scrollContainer">
     <div class="container">
       <div class="row myrow my-title">
         <div class="col-auto">
@@ -201,8 +201,12 @@ import SuccessAlertBox from "./SuccessAlertBox.vue";
 import statickey from "@/utils/statickey";
 import { useAlertStore } from "@/store/useAlertStore";
 
-const isSelected = ref(false);
+const handleScroll = () => {
+  emit("handle-scroll");
+};
 
+const isSelected = ref(false);
+const scrollContainer = ref(null);
 const alertStore = useAlertStore();
 
 const isPreviewVisibleVideo = ref(false);
@@ -384,6 +388,7 @@ let newName = ref();
 let renameFileInput = ref();
 
 const clickOpenModal = (file) => {
+  selectedFiles.value = [];
   selectedFiles.value.push(file.fileId);
   emit("open-modal");
 };
@@ -444,7 +449,7 @@ watch(
   () => route.query,
   async (newPath, oldPath) => {
     await nextTick();
-    emit("get-file-list", newPath);
+    emit("load-page", 0);
 
     if (newPath.path == null || (oldPath.path != null && newPath.path.length < oldPath.path.length)) {
       emit("pop-files-cache");
@@ -500,7 +505,7 @@ const createFileCancel = () => {
   fileIsVisible.value = false;
 };
 
-defineExpose({ createFile, selectedFiles, isSelected });
+defineExpose({ createFile, selectedFiles, isSelected, scrollContainer });
 </script>
 
 <style lang="scss" scoped>

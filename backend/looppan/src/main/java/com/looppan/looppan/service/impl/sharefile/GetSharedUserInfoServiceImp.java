@@ -32,6 +32,10 @@ public class GetSharedUserInfoServiceImp implements GetSharedUserInfoService {
             throw new MyException("获取分享用户信息失败");
         }
 
+        if (fileShared == null) {
+            throw new MyException("文件已失效");
+        }
+
         Map<String, Object> mp = new HashMap<String, Object>();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("userAvatar", fileShared.getUserAvatar());

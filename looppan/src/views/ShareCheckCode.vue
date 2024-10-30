@@ -241,7 +241,7 @@ const getCreateTime = (time) => {
           align-items: center;
           justify-content: flex-start;
           .user-info-username {
-            font-size: 18px;
+            font-size: 13px;
             margin-right: 16px;
           }
           .user-info-file-sharedtime {

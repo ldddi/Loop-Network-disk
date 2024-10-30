@@ -33,7 +33,7 @@
   <div class="title">音频文件</div>
   <LoadingBox />
 
-  <FileTable ref="fileTable" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @get-file-list="getAudioFileList" @pop-files-cache="popFilesCache" />
+  <FileTable ref="fileTable" @handle-scroll="handleScroll" :myInput="myInput" :files="files" @open-modal="openModal" @rename-file="renameFile" @remove-file-from-files="removeFileFromFiles" @update-files="updateFiles" @load-page="loadPage" @pop-files-cache="popFilesCache" />
 </template>
 
 <script setup>
@@ -72,12 +72,10 @@ const fileSeach = () => {
       type: type,
     })
     .then(async (resp) => {
-      console.log(resp);
       files.value = resp.data;
       for (let i = 0; i < files.value.length; i++) {
         if (files.value[i].fileCategory == statickey.category.image) {
           files.value[i].fileCover = await getImageUrl(files.value[i].fileId);
-          console.log(files.value[i].fileCover);
         }
       }
     });
@@ -107,7 +105,7 @@ const openModal = () => {
 
 const modalFileTable = ref(null);
 onMounted(() => {
-  getAudioFileList();
+  loadPage(0);
 });
 
 const resetAndUpload = () => {
@@ -131,8 +129,35 @@ const comfirmMoveFiles = () => {
     .then((resp) => {
       fileTable.value.selectedFiles = [];
       fileTable.value.isSelected = false;
-      getFileList();
     });
+};
+
+const currentPage = ref(0);
+const count = ref(0);
+const handleScroll = () => {
+  const { scrollTop, clientHeight, scrollHeight } = fileTable.value.scrollContainer;
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    loadPage(currentPage.value + 1); // 滚动到底部时加载下一页
+    currentPage.value++;
+  }
+};
+
+const loadPage = async (page) => {
+  if (page * 15 > count.value) {
+    currentPage.value--;
+    return;
+  }
+
+  const data = await getAudioFileList(page);
+  if (data == null) {
+    return;
+  }
+  if (page != 0) {
+    files.value.push(...data);
+  } else {
+    currentPage.value = 0;
+    files.value = data;
+  }
 };
 
 const deleteSelectedFiles = () => {
@@ -150,13 +175,18 @@ const deleteSelectedFiles = () => {
   }
 };
 
-const getAudioFileList = async () => {
+const getAudioFileList = async (page) => {
   alertStore.load.isLoading = true;
-  const resp = await axios.post(apiStore.file.getAllCategoryFile, {
-    category: statickey.category.audio,
-  });
-  files.value = resp.data;
-  alertStore.load.isLoading = false;
+  try {
+    const resp = await axios.post(apiStore.file.getAllCategoryFile, {
+      category: statickey.category.audio,
+      page: page,
+    });
+    count.value = resp.count;
+    return resp.data;
+  } finally {
+    alertStore.load.isLoading = false;
+  }
 };
 
 const chunkSize = ref(1024 * 1024);

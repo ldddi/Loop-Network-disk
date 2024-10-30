@@ -105,7 +105,6 @@ const confirmButton = async () => {
 };
 
 const cancelButton = () => {
-  console.log("document.classList.add('class');");
   router.push({ name: "LoginView" });
 };
 </script>
