@@ -183,7 +183,7 @@ const getCreateTime = (time) => {
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  background-image: url(/src/assets/images/back.jpg);
+  background-image: url(/images/back.jpg);
   background-size: cover;
 
   background-repeat: no-repeat;

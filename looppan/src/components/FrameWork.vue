@@ -5,12 +5,14 @@
     <!-- nav 导航栏 -->
     <div class="header">
       <div class="left-logo" @click="toLogin">
-        <i class="bi bi-cloud-check my-title-icon"></i>
-        <span class="logo-text">Loop网盘</span>
+        <img class="my-title-icon" src="/svg/Logos.svg" alt="" />
+        <!-- <i class="bi bi-cloud-check "></i> -->
+        <span class="logo-text">Loop 网盘</span>
       </div>
       <div class="right-info">
         <div @click="onChangeDropdownVisible" ref="arrow" class="right-arrow">
-          <i class="bi bi-arrow-down-up arrow-icon"></i>
+          <img class="arrow-icon" src="/svg/arrow.svg" alt="" />
+
           <div v-if="uploadFileStore.isDropdownVisible" ref="dropdown" class="upload-box" @click.stop>
             <div class="triangle-1"></div>
             <div class="triangle-2"></div>
@@ -310,9 +312,9 @@ onBeforeUnmount(() => {
 }
 
 .my-title-icon {
-  color: #09a6ff;
-  font-size: 40px;
-  font-weight: 900;
+  width: 48px;
+  height: 48px;
+  display: inline;
   margin-right: 10px;
 }
 
@@ -379,7 +381,7 @@ onBeforeUnmount(() => {
   width: 100vw;
   height: 56px;
   box-sizing: border-box;
-  padding: 0 24px;
+  padding: 0 18px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
@@ -395,7 +397,12 @@ onBeforeUnmount(() => {
       color: #09a6ff;
       margin-left: 5px;
       font-weight: 700;
-      user-select: none;
+      // user-select: none;
+      // font-size: 25px; /* 可以根据需要调整 */
+      // font-weight: bold; /* 加粗字体 */
+      // background: linear-gradient(45deg, #fabd05, #fabd05, #33a853, #33a853, #4285f4, #4285f4, #ea4336, #ea4336);
+      // -webkit-background-clip: text;
+      // -webkit-text-fill-color: transparent; /* 确保字体填充透明 */
     }
   }
   .right-info {
@@ -412,8 +419,8 @@ onBeforeUnmount(() => {
       position: relative;
       cursor: pointer;
       .arrow-icon {
-        font-size: 18px;
-        font-weight: bold !important;
+        width: 30px;
+        height: 30px;
       }
     }
     .right-arrow:hover {

@@ -70,6 +70,10 @@ const closeModal = () => {
 };
 
 const handleSubmit = async () => {
+  if (!userStore.user.email.includes("@")) {
+    alert("admin账号 不支持修改密码");
+    return;
+  }
   const resp = await axios.post(apiStore.user.updatePassword, {
     email: userStore.user.email,
     password: password.value,
@@ -82,10 +86,18 @@ const handleSubmit = async () => {
 
 const sendEmailCheckCode2 = async () => {
   isSending.value = true;
-  const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
-    email: userStore.user.email,
-  });
-  isSending.value = false;
+  if (!userStore.user.email.includes("@")) {
+    alert("admin账号 不支持发送验证码");
+    isSending.value = false;
+    return;
+  }
+  try {
+    const resp = await axios.post(apiStore.user.sendEmailCheckCode, {
+      email: userStore.user.email,
+    });
+  } finally {
+    isSending.value = false;
+  }
 };
 
 defineExpose({

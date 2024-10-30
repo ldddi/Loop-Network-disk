@@ -216,6 +216,7 @@ const isFileSelected = (fileId) => {
 .my-image {
   width: 24px;
   height: 24px;
+  border-radius: 8px;
 }
 
 .my-floder-folder {
@@ -244,6 +245,12 @@ const isFileSelected = (fileId) => {
     border-radius: 8px;
     font-size: 14px;
   }
+}
+
+.my-fileName {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .my-fileName span {

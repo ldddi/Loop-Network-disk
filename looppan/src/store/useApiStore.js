@@ -12,6 +12,7 @@ export const useApiStore = defineStore("api", () => {
     register: "/api/register",
     getAvatarByte: "/api/user/getAvatarByte",
     getUseSpace: "/api/user/getUseSpace",
+    forgetPassword: "/api/forgetPassword",
   };
 
   const file = {
@@ -28,6 +29,7 @@ export const useApiStore = defineStore("api", () => {
     renameFile: "/api/file/renameFile",
     returnFileByte: "/api/file/returnFileByte",
     downloadFile: "/api/file/download",
+    fileSearch: "/api/file/search",
     //
     shareFile: "/api/file/shareFile",
     getSharedFilesList: "/api/file/getSharedFilesList",

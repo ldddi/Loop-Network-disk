@@ -15,6 +15,7 @@ import ShareNav from "@/components/ShareNav.vue";
 import RecycleNav from "@/components/RecycleNav.vue";
 import ShareCheckCode from "@/views/ShareCheckCode.vue";
 import ShareFilesInfo from "@/views/ShareFilesInfo.vue";
+import ForgetPassword from "@/views/ForgetPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +36,14 @@ const router = createRouter({
       path: "/register",
       name: "RegisterView",
       component: RegisterView,
+      meta: {
+        requestAuth: false,
+      },
+    },
+    {
+      path: "/forgetPassword",
+      name: "ForgetPassword",
+      component: ForgetPassword,
       meta: {
         requestAuth: false,
       },

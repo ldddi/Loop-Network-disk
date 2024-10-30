@@ -251,6 +251,12 @@ let files = ref([]);
 </script>
 
 <style lang="scss" scoped>
+.fileName-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .my-floder-folder {
   color: #ffcf40;
 }
@@ -370,7 +376,7 @@ let files = ref([]);
 .my-container {
   width: 100vw;
   height: 100vh;
-  background-image: url(/src/assets/images/back.jpg);
+  background-image: url(/images/back.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   .header {

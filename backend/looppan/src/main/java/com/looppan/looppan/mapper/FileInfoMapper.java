@@ -67,6 +67,21 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
      */
     @Select("select * from file_info where user_id = #{userId} and del_flag = 1")
     List<FileInfo> selectRecycleFilesByUserId(@Param("userId") Integer userId, @Param("delFlag") Integer delFlag);
+
+    @Select("select * from file_info where user_id = #{userId} and file_pid = #{filePid} and del_flag = #{delFlag} and file_name like #{fileName}")
+    List<FileInfo> selectByFileNameFolder(@Param("filePid") String filePid,
+                                    @Param("userId") String userId,
+                                    @Param("fileName") String fileName,
+                                    @Param("delFlag") Integer delFlag
+    );
+
+    @Select("select * from file_info where user_id = #{userId} and del_flag = #{delFlag} and file_name like #{fileName}")
+    List<FileInfo> selectByFileNameFile(
+                                    @Param("userId") String userId,
+                                    @Param("fileName") String fileName,
+                                    @Param("delFlag") Integer delFlag
+    );
+
 //    delete
 
     /**

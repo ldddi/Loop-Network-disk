@@ -15,12 +15,15 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -43,8 +46,7 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public ResponseEntity<Map> register(
             String email, String password, String confirmPassword,
-            String emailCheckCode, String picCheckCode, HttpSession session)
-    {
+            String emailCheckCode, String picCheckCode, HttpSession session) {
         if (!password.equals(confirmPassword)) {
             throw new MyException("两次密码不一致");
         }
@@ -98,10 +100,37 @@ public class RegisterServiceImpl implements RegisterService {
             throw new MyException("创建用户根目录失败");
         }
 
+        if (userMapper.selectCount() >= 10) {
+            List<User> us = userMapper.selectLast();
+            for (User u : us) {
+                if (Objects.equals(u.getEmail(), "admin")) {
+                    continue;
+                }
+                Path p = Paths.get(uploadDir, u.getUserId());
+                try {
+                    deleteDirectory(p);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                userMapper.deleteById(u);
+                break;
+            }
+        }
+
         Map<String, String> mp = new HashMap<String, String>();
         mp.put("message", "注册成功!~");
         return ResponseEntity
                 .ok()
                 .body(mp);
+    }
+    private void deleteDirectory(Path path) throws IOException {
+        if (Files.isDirectory(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+                for (Path entry : stream) {
+                    deleteDirectory(entry); // 递归删除子目录
+                }
+            }
+        }
+        Files.delete(path); // 删除文件或空目录
     }
 }

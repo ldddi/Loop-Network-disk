@@ -587,6 +587,9 @@ defineExpose({ createFile, selectedFiles, isSelected });
 //
 
 .my-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   position: relative;
 }
 

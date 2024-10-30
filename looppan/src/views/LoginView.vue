@@ -1,52 +1,48 @@
 <template>
-  <div class="body">
-    <div class="my-container">
+  <div class="w-screen h-screen flex items-center justify-center bg-gray-100 bg-[url('/images/bg2.avif')] bg-cover bg-center">
+    <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6">
       <form @submit.prevent>
+        <h2 class="text-xl font-semibold text-center mb-6">Loop网盘</h2>
+
+        <div class="mb-4">
+          <div class="flex items-center border-[1px] border-gray-300 rounded-md p-2 transition duration-300 focus-within:border-blue-400 focus-within:shadow-sm focus-within:border-2">
+            <span><i class="bi bi-envelope"></i></span>
+            <input v-model="email" type="text" id="email" placeholder="邮箱地址" class="flex-1 outline-none p-1" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex items-center border-[1px] border-gray-300 rounded-md p-2 transition duration-300 focus-within:border-blue-400 focus-within:shadow-sm focus-within:border-2">
+            <span><i class="bi bi-lock"></i></span>
+            <input :type="passwordVisible ? 'text' : 'password'" v-model="password" id="password" placeholder="密码" class="flex-1 outline-none p-1" />
+            <span @click="togglePasswordVisibility" class="cursor-pointer">
+              <i :class="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex items-center border-[1px] border-gray-300 rounded-md p-2 transition duration-300 focus-within:border-blue-400 focus-within:shadow-sm focus-within:border-2">
+            <input v-model="picCheckCode" type="text" id="captcha" placeholder="输入验证码" class="flex-1 outline-none p-1" />
+            <img :src="checkCodeUrl" alt="验证码" @click="changeCheckCode(0)" class="ml-2 cursor-pointer h-9" />
+          </div>
+        </div>
+
+        <div class="mb-4 flex justify-between items-center">
+          <RouterLink to="/forgetPassword" href="#" class="text-blue-500 hover:underline">忘记密码?</RouterLink>
+          <RouterLink to="/register" class="text-blue-500 hover:underline">没有账号?</RouterLink>
+        </div>
+
         <div>
-          <div>Loop网盘</div>
-          <div>
-            <!-- email -->
-            <div>
-              <span><i class="bi bi-envelope"></i></span>
-              <input v-model="email" type="email" id="email" aria-describedby="emailHelp" placeholder="邮箱地址" />
-            </div>
-          </div>
-          <!-- password -->
-          <div>
-            <div>
-              <span><i class="bi bi-lock"></i></span>
-              <input :type="passwordVisible ? 'text' : 'password'" v-model="password" class="form-control" id="password" placeholder="密码" />
-              <span @click="togglePasswordVisibility">
-                <i :class="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-              </span>
-            </div>
-          </div>
-
-          <!-- check code -->
-          <div>
-            <div>
-              <input v-model="picCheckCode" type="text" id="captcha" placeholder="输入验证码" />
-              <img :src="checkCodeUrl" alt="验证码" @click="changeCheckCode(0)" />
-            </div>
-          </div>
-
-          <!-- remember password -->
-          <div>
-            <a href="#" class="a-link">忘记密码?</a>
-            <RouterLink href="#" :to="{ name: 'RegisterView' }">没有账号</RouterLink>
-          </div>
-          <div>
-            <button @click="SubmitLoginForm" type="submit">登陆</button>
-          </div>
+          <button @click="SubmitLoginForm" type="submit" class="w-full bg-blue-500 text-white rounded-md py-2 hover:bg-blue-600 transition duration-300">登陆</button>
         </div>
       </form>
     </div>
   </div>
-
+  <InfoAlterBox />
   <ErrorAlertBox></ErrorAlertBox>
   <SuccessAlertBox></SuccessAlertBox>
 </template>
-
 <script setup>
 import { onMounted, ref } from "vue";
 import router from "@/router";
@@ -56,9 +52,12 @@ import { useApiStore } from "@/store/useApiStore";
 import statickey from "@/utils/statickey";
 import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
+import InfoAlterBox from "@/components/InfoAlterBox.vue";
+import { useRoute } from "vue-router";
 
 const userStore = useUserStore();
 const apiStore = useApiStore();
+const route = useRoute();
 
 let email = ref("");
 let password = ref("");
@@ -99,16 +98,4 @@ const SubmitLoginForm = async () => {
 };
 </script>
 
-<style lang="scss" scoped>
-.body {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .my-container {
-    width: 350px;
-    height: 500px;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

@@ -6,8 +6,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-import "@/assets/css/base.scss";
+import "@/assets/css/base.css";
 import "@/assets/css/HomeButton.css";
+import "@/assets/css/tailwind.css";
 
 import { createPinia } from "pinia";
 

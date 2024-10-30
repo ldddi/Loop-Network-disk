@@ -431,6 +431,12 @@ span {
   margin-right: 8px;
 }
 
+.my-fileName {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .my-fileName i {
   font-size: 24px;
   margin-right: 8px;

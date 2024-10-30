@@ -107,6 +107,7 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
         } else {
             useSpace = useSpace.add(size);
             saveUser.setUseSpace(useSpace);
+
             userMapper.updateById(saveUser);
 
         }

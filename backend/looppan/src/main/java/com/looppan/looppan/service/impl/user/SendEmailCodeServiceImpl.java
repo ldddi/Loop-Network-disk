@@ -40,6 +40,8 @@ public class SendEmailCodeServiceImpl implements SendEmailCodeService {
             message.setText("您的邮箱验证码是: " + code);
             mailSender.send(message);
         } catch (Exception e) {
+            e.printStackTrace();
+
             throw new MyException("邮箱发送失败！");
         }
 

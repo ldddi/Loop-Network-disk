@@ -12,6 +12,11 @@ export const useAlertStore = defineStore("alert", () => {
     message: "",
   });
 
+  const info = reactive({
+    isVisible: false,
+    message: "",
+  });
+
   const load = reactive({
     isLoading: false,
   });

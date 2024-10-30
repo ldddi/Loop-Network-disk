@@ -55,7 +55,7 @@ public class UpdateUserInfoServiceImpl implements UpdateUserInfoService {
         if (avatar != null && !avatar.isEmpty()) {
             Path basePath = Paths.get(uploadDir, userId, myAvatar);
             if (!Files.exists(basePath)) {
-                Files.createDirectory(basePath);
+                Files.createDirectories(basePath);
             }
 
             DirectoryStream<Path> directoryStream = Files.newDirectoryStream(basePath);

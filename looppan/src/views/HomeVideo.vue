@@ -7,8 +7,8 @@
     <button @click="deleteSelectedFiles" type="button" :class="['btn', 'btn-delete', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']">批量删除</button>
     <button type="button" :class="['btn', 'btn-move', fileTable == null || fileTable.selectedFiles.length == 0 ? 'disable' : '']" data-bs-toggle="modal" data-bs-target="#staticBackdrop">批量移动</button>
     <div class="search-container mysearch">
-      <input type="text" placeholder="输入文件名搜索..." class="search-input" />
-      <i class="bi bi-search-heart search-icon"></i>
+      <input v-model="searchFilename" type="text" placeholder="输入文件名搜索..." class="search-input" />
+      <img @click="fileSeach" class="svg-search" src="/svg/Search.svg" alt="" />
     </div>
     <!-- Modal -->
     <div ref="myModal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -51,6 +51,39 @@ import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useUploadFileStore } from "@/store/useUploadFileStore";
 import { useUserStore } from "@/store/useUserStore";
+
+let searchFilename = ref("");
+const fileSeach = () => {
+  let filePId = "0";
+  if (route.query.path != null) {
+    filePId = route.query.path;
+  }
+  if (searchFilename.value == "") {
+    getVideoFileList();
+    return;
+  }
+  let type = statickey.folderType.file;
+  if (route.path.includes("all")) {
+    type = statickey.folderType.folder;
+  }
+
+  axios
+    .get(apiStore.file.fileSearch, {
+      filePId: filePId,
+      fileName: searchFilename.value,
+      type: type,
+    })
+    .then(async (resp) => {
+      console.log(resp);
+      files.value = resp.data;
+      for (let i = 0; i < files.value.length; i++) {
+        if (files.value[i].fileCategory == statickey.category.image) {
+          files.value[i].fileCover = await getImageUrl(files.value[i].fileId);
+          console.log(files.value[i].fileCover);
+        }
+      }
+    });
+};
 
 const fileTable = ref(null);
 const files = ref([]);
@@ -327,6 +360,17 @@ const updateFiles = (newFile) => {
   }
   .mysearch {
     flex-shrink: 1; /* 允许按钮收缩 */
+    height: 40px;
+    position: relative;
+    .svg-search {
+      display: inline;
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      top: 11px;
+      right: 10px;
+      cursor: pointer;
+    }
   }
 }
 
