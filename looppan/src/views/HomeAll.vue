@@ -67,8 +67,8 @@ const fileSeach = () => {
   if (route.query.path != null) {
     filePId = route.query.path;
   }
-  if (searchFilename.value == "") {
-    getFileList();
+  if (searchFilename.value == null || searchFilename.value == "") {
+    loadPage(0);
     return;
   }
   let type = statickey.folderType.file;
@@ -144,6 +144,7 @@ const loadPage = async (page) => {
   if (data == null) {
     return;
   }
+
   if (page != 0) {
     files.value.push(...data);
   } else {
@@ -308,7 +309,8 @@ const uploadFile3 = async (files) => {
     if (!finishFolerName.includes(pathParts[pathParts.length - 2])) {
       const resp = await originalAxios({
         method: "POST",
-        url: apiStore.file.createFile,
+        url: "http://123.57.224.25:7090" + apiStore.file.createFile,
+        // url: "http://localhost:7090" + apiStore.file.createFile,
         headers: {
           Authorization: "Bearer " + userStore.user.token,
         },

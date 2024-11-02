@@ -54,7 +54,8 @@ public class SecurityConfig {
                                 "/saveMyPan",
                                 "/downloadSharedFile",
                                 "/getAvatarByte",
-                                "/forgetPassword"
+                                "/forgetPassword",
+                                "/test"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

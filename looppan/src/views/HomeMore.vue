@@ -57,8 +57,8 @@ const fileSeach = () => {
   if (route.query.path != null) {
     filePId = route.query.path;
   }
-  if (searchFilename.value == "") {
-    getOhterFileList();
+  if (searchFilename.value == null || searchFilename.value == "") {
+    loadPage(0);
     return;
   }
   let type = statickey.folderType.file;

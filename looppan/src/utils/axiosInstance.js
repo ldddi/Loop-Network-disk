@@ -5,6 +5,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 // 创建 Axios 实例
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:7090", // 替换为你的基础 URL
+  baseURL: "http://123.57.224.25:7090",
   timeout: 100000, // 超时时间
 });
 
@@ -60,13 +61,13 @@ axiosInstance.interceptors.response.use(
 );
 
 // 封装 GET 方法
-const get = (url, params, responseType = "json") => {
-  return axiosInstance.get(url, { params, responseType });
+const get = (url, params, responseType = "json", withCredentials = false) => {
+  return axiosInstance.get(url, { params, responseType, withCredentials });
 };
 
 // 封装 POST 方法
-const post = (url, data, responseType = "json", onUploadProgress) => {
-  return axiosInstance.post(url, data, { responseType, onUploadProgress });
+const post = (url, data, responseType = "json", onUploadProgress, withCredentials = false) => {
+  return axiosInstance.post(url, data, { responseType, onUploadProgress, withCredentials });
 };
 
 // 导出封装的 axios 实例

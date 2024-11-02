@@ -56,6 +56,7 @@ onMounted(() => {
 });
 
 const showModal = () => {
+  imageUrl.value = null;
   isVisible.value = true;
 };
 

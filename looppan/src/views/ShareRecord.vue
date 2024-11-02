@@ -107,6 +107,7 @@ import LoadingBox from "@/components/LoadingBox.vue";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useRoute } from "vue-router";
 import router from "@/router";
+import { Alert } from "bootstrap";
 
 const apiStore = useApiStore();
 const alertStore = useAlertStore();
@@ -292,14 +293,44 @@ const getImageUrl = async (fileId) => {
   return url;
 };
 
+// const getSharedFileUrl = (file) => {
+//   axios
+//     .post(apiStore.file.getSharedFileUrl, {
+//       shareId: file.shareId,
+//     })
+//     .then((resp) => {
+//       // 将 URL 复制到剪贴板
+//       navigator.clipboard.writeText(resp.data);
+//     });
+// };
+
 const getSharedFileUrl = (file) => {
   axios
     .post(apiStore.file.getSharedFileUrl, {
       shareId: file.shareId,
     })
     .then((resp) => {
-      // 将 URL 复制到剪贴板
-      navigator.clipboard.writeText(resp.data);
+      const url = resp.data;
+      if (navigator.clipboard) {
+        // 使用 Clipboard API
+        navigator.clipboard.writeText(url).catch((err) => {});
+      } else {
+        // 备选方案：使用 document.execCommand
+        const textarea = document.createElement("textarea");
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+        } catch (err) {
+          Alert("浏览器不支持, 请手动复制" + url);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Error getting shared file URL:", error);
     });
 };
 

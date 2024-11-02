@@ -1,5 +1,8 @@
 package com.looppan.looppan.config.globalException;
 
+import com.looppan.looppan.controller.TestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,8 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     // 自定义异常
     // -------------------------------------------
 
@@ -49,6 +54,7 @@ public class GlobalExceptionHandler {
     // 邮箱验证码发送失败
     @ExceptionHandler(MailException.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(MailException ex, WebRequest request) {
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "邮箱验证码发送失败, 请检查邮箱是否正确",
@@ -61,9 +67,10 @@ public class GlobalExceptionHandler {
     // redis插入失败 或 mybatis plus 插入失败
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(DataAccessException ex, WebRequest request) {
+        logger.error("An error occurred: {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "邮箱验证码发送失败, 请稍后尝试!~",
+                "redis插入失败 或 mybatis plus插入失败",
                 LocalDateTime.now().toString(),
                 request.getDescription(false)
         );

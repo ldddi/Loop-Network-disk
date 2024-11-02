@@ -39,6 +39,10 @@ public class DownSharedFileServiceImpl implements DownSharedFileService {
             throw new MyException("下载文件失败");
         }
 
+        if (fileShared == null) {
+            throw new MyException("文件已失效");
+        }
+
         LocalDateTime shareTime = fileShared.getShareTime();
         LocalDateTime failTime = fileShared.getFailTime();
         if (shareTime.isAfter(failTime)) {
@@ -79,12 +83,28 @@ public class DownSharedFileServiceImpl implements DownSharedFileService {
             }
 
             FileSystemResource resource = new FileSystemResource(zipFile);
+
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
-            return ResponseEntity.ok()
+
+            ResponseEntity<FileSystemResource> responseEntity = ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.parseMediaType("application/zip"))
                     .body(resource);
+
+            // 使用新线程异步删除文件
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10000); // 等待一段时间以确保文件下载
+                    if (zipFile.exists()) {
+                        zipFile.delete();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            return responseEntity;
         } else {
             FileSystemResource resource = new FileSystemResource(path.toFile());
             String encodedFilename;

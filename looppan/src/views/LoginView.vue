@@ -54,6 +54,7 @@ import ErrorAlertBox from "@/components/ErrorAlertBox.vue";
 import SuccessAlertBox from "@/components/SuccessAlertBox.vue";
 import InfoAlterBox from "@/components/InfoAlterBox.vue";
 import { useRoute } from "vue-router";
+import axios2 from "axios";
 
 const userStore = useUserStore();
 const apiStore = useApiStore();
@@ -65,6 +66,17 @@ let picCheckCode = ref("");
 let checkCodeUrl = ref();
 
 onMounted(() => {
+  // axios2({
+  //   url: "http://localhost:7090/api/getPicCheckCode",
+  //   method: "GET",
+  //   responseType: "blob",
+  // })
+  //   .then((resp) => {
+  //     console.log(resp);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
   changeCheckCode();
 });
 
@@ -74,16 +86,28 @@ const togglePasswordVisibility = () => {
 };
 
 const changeCheckCode = () => {
-  checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
+  axios
+    .get(apiStore.user.getPicCheckCode, {}, "blob", true)
+    .then((resp) => {
+      checkCodeUrl.value = URL.createObjectURL(resp);
+    })
+    .catch((error) => {});
+  // checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
 };
 
 const SubmitLoginForm = async () => {
   try {
-    const resp = await axios.post(apiStore.user.login, {
-      email: email.value,
-      password: password.value,
-      picCheckCode: picCheckCode.value,
-    });
+    const resp = await axios.post(
+      apiStore.user.login,
+      {
+        email: email.value,
+        password: password.value,
+        picCheckCode: picCheckCode.value,
+      },
+      "json",
+      "none",
+      true
+    );
 
     userStore.updateUser({
       ...resp,
@@ -92,6 +116,7 @@ const SubmitLoginForm = async () => {
     router.push({ name: "HomeAll" });
     localStorage.setItem(statickey.jwtToken, resp.token);
   } catch (error) {
+    console.log(error);
     picCheckCode.value = "";
     changeCheckCode();
   }

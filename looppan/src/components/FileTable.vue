@@ -51,12 +51,12 @@
           <!--  -->
         </div>
         <div class="col-4 my-button">
-          <div v-if="(file.shared == statickey.shared.no || file.shared == null) && route.query.path == null" @click="clickShareIcon(file)" class="share-button item-button" data-bs-toggle="modal" data-bs-target="#shareModal">
+          <div v-if="file.shared == statickey.shared.yes && route.query.path == null" class="item-button is-shared">
+            <span>已分享</span>
+          </div>
+          <div v-else-if="route.query.path == null" @click="clickShareIcon(file)" class="share-button item-button" data-bs-toggle="modal" data-bs-target="#shareModal">
             <i class="bi bi-share item-icon"></i>
             <span>分享</span>
-          </div>
-          <div v-else-if="file.shared == statickey.shared.yes && route.query.path == null" class="item-button is-shared">
-            <span>已分享</span>
           </div>
           <div v-if="file.folderType != statickey.folderType.folder" class="download-button item-button">
             <i class="bi bi-download item-icon"></i>
@@ -509,6 +509,10 @@ defineExpose({ createFile, selectedFiles, isSelected, scrollContainer });
 </script>
 
 <style lang="scss" scoped>
+.share-button {
+  cursor: pointer;
+}
+
 .is-shared {
   color: #96d475 !important;
   cursor: default !important;
@@ -690,6 +694,11 @@ defineExpose({ createFile, selectedFiles, isSelected, scrollContainer });
   margin: 0 !important;
 }
 
+// .file-name {
+//   position: relative;
+//   z-index: 10;
+// }
+
 .file-name:hover {
   cursor: pointer;
   color: #5faeff;
@@ -710,7 +719,7 @@ defineExpose({ createFile, selectedFiles, isSelected, scrollContainer });
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      min-width: 600px;
+      min-width: 1000px;
       border-bottom: solid 1px rgba(0, 0, 0, 0.08);
       user-select: none;
       .my-button {
@@ -727,6 +736,8 @@ defineExpose({ createFile, selectedFiles, isSelected, scrollContainer });
         // background-color: aqua;
         transition: all 0.3s ease; // 添加过渡效果
         .item-icon {
+          position: relative;
+          z-index: 10;
           font-size: 13px;
           margin-right: 3px;
         }

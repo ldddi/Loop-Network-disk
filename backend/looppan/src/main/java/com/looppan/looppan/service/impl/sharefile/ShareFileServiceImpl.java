@@ -82,7 +82,7 @@ public class ShareFileServiceImpl implements ShareFileService {
         fileShared.setShareTime(now);
         fileShared.setFailTime(now.plusDays(Long.parseLong(time)));
         fileShared.setExtractionCode(code);
-        String url = "http:localhost:1030/shareFilesInfo/" + fileId + "/" + userId;
+        String url = "http:123.57.224.25:80/shareFilesInfo/" + fileId + "/" + userId;
         fileShared.setFileUrl(url);
         fileShareMapper.insert(fileShared);
 

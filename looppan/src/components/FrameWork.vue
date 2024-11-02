@@ -515,7 +515,7 @@ onBeforeUnmount(() => {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   border-radius: 4px;
-  z-index: 11;
+  z-index: 500;
   cursor: auto;
 }
 

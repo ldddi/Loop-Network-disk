@@ -97,7 +97,7 @@ onMounted(async () => {
     await userStore.getUserInfoByLocalJwt(jwtToken);
   }
 
-  if (userStore.user.avatarUrl.length == "") {
+  if (userStore.user.token.length > 2 && userStore.user.avatarUrl.length == "") {
     getAvatarUrl();
   }
 });

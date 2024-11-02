@@ -60,12 +60,12 @@ public class SaveMyPanServiceImp implements SaveMyPanService {
             throw new MyException("获取分享文件失败");
         }
 
-        if (saveUser == null) {
-            throw new MyException("保存失败,请先登录账号");
-        }
-
         if (fileShared == null) {
             throw new MyException("文件已经失效");
+        }
+
+        if (saveUser == null) {
+            throw new MyException("保存失败,请先登录账号");
         }
 
         LocalDateTime shareTime = fileShared.getShareTime();

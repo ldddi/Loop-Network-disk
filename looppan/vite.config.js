@@ -12,16 +12,16 @@ export default defineConfig({
     },
   },
   server: {
-    port: 1030,
-    hmr: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:7090",
-        changeOrigin: true,
-        PathRewrite: {
-          "^api": "/api",
-        },
-      },
-    },
+    port: 80,
+    // hmr: true,
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:7090",
+    //     changeOrigin: true,
+    //     PathRewrite: {
+    //       "^api": "/api",
+    //     },
+    //   },
+    // },
   },
 });

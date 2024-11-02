@@ -1,5 +1,6 @@
 package com.looppan.looppan.service.impl.user;
 
+import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.controller.user.utils.Captcha;
 import com.looppan.looppan.controller.user.utils.StaticKey;
 import com.looppan.looppan.service.user.GetPicCheckCodeService;
@@ -33,8 +34,19 @@ public class GetPicCheckCodeServiceImpl implements GetPicCheckCodeService {
         ImageIO.write(image, "png", outputStream);
         byte[] bytes = outputStream.toByteArray();
 
-        String sessionId = session.getId();
-        redisTemplate.opsForValue().set(sessionId, captcha, Duration.ofMinutes(5));
+        String sessionId = null;
+        try {
+            sessionId = session.getId();
+        } catch (Exception e) {
+            throw new MyException("获取session ID 失败");
+        }
+
+        try {
+            redisTemplate.opsForValue().set(sessionId, captcha, Duration.ofMinutes(5));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException("保存验证码失败");
+        }
 
         return ResponseEntity
                 .ok()

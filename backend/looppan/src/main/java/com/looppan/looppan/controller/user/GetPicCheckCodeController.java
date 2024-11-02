@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
+//@CrossOrigin(origins = {"http://123.57.224.25:80", "null"})
+//@CrossOrigin(origins = {"http://localhost:80", "null"})
 public class GetPicCheckCodeController {
 
     @Autowired
@@ -17,6 +19,7 @@ public class GetPicCheckCodeController {
 
     @RequestMapping(value = "/getPicCheckCode")
     public ResponseEntity<byte[]> sendCheckCode(HttpSession session) throws IOException {
+
         return getPicCheckCodeService.getPicCheckCode(session);
     }
 }

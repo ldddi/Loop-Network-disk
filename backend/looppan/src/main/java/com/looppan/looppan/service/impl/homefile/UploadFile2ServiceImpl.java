@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +58,7 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
         String userId = user.getUserId();
         FileInfo fileInfo;
         List<FileInfo> fileInfoList = null;
+//        fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
         Path basePath = Paths.get(uploadDir + "/" + userId);
         if (!Objects.equals(filePId, "0")) {
@@ -146,6 +149,7 @@ public class UploadFile2ServiceImpl implements UploadFile2Service {
         fileInfo.setCreateTime(now);
         fileInfo.setLastUpdateTime(now);
         fileInfo.setFolderType(FileStaticKey.FOLDER_TYPE_FILE.toIntegerValue());
+        fileInfo.setShared(false);
 
         String extension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase() : "";
         if (contentType.startsWith("image/") || extension.matches("(?i)(jpg|jpeg|png|gif)")) {

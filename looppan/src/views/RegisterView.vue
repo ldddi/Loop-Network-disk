@@ -101,8 +101,18 @@ onMounted(() => {
 });
 
 const changeCheckCode = () => {
-  picCheckCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
+  axios
+    .get(apiStore.user.getPicCheckCode, {}, "blob", true)
+    .then((resp) => {
+      picCheckCodeUrl.value = URL.createObjectURL(resp);
+    })
+    .catch((error) => {});
+  // checkCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
 };
+
+// const changeCheckCode = () => {
+//   picCheckCodeUrl.value = apiStore.user.getPicCheckCode + "?time=" + new Date().getTime();
+// };
 
 // 密码可见性切换
 let passwordVisible = ref(false);
@@ -112,13 +122,19 @@ const togglePasswordVisibility = () => {
 
 const clickRegisterButton = async () => {
   try {
-    const resp = await axios.post(apiStore.user.register, {
-      email: email.value,
-      password: password.value,
-      confirmPassword: confirmPassword.value,
-      picCheckCode: picCheckCode.value,
-      emailCheckCode: emailCheckCode.value,
-    });
+    const resp = await axios.post(
+      apiStore.user.register,
+      {
+        email: email.value,
+        password: password.value,
+        confirmPassword: confirmPassword.value,
+        picCheckCode: picCheckCode.value,
+        emailCheckCode: emailCheckCode.value,
+      },
+      "json",
+      "none",
+      true
+    );
     router.push({ name: "LoginView" });
   } catch (error) {
     if (error.message == "图片验证码错误") {
