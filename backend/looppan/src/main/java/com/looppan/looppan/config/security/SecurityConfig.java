@@ -55,7 +55,9 @@ public class SecurityConfig {
                                 "/downloadSharedFile",
                                 "/getAvatarByte",
                                 "/forgetPassword",
-                                "/test"
+                                "/test",
+                                "/test/mysql",
+                                "/test/redis"
                                 )
                         .permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
@@ -68,11 +70,5 @@ public class SecurityConfig {
         });
 
         return http.build();
-    }
-
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return (web) -> web.ignoring().requestMatchers("/websocket/**");
     }
 }

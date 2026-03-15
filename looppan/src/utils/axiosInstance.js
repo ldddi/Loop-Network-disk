@@ -1,11 +1,14 @@
 import axios from "axios";
 import statickey from "./statickey";
 import { useAlertStore } from "@/store/useAlertStore";
-
+import { useRouter } from "vue-router";
+import router from "@/router";
 // 创建 Axios 实例
 const axiosInstance = axios.create({
-  // baseURL: "http://localhost:7090", // 替换为你的基础 URL
-  baseURL: "http://123.57.224.25:7090",
+  baseURL: "http://localhost:7090", // 替换为你的基础 URL
+  // baseURL: "http://192.168.227.128:7090", // 替换为你的基础 URL
+
+  // baseURL: "http://123.57.224.25:7090",
   timeout: 100000, // 超时时间
 });
 
@@ -55,6 +58,11 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(data);
     } else {
       console.error(error);
+      if (localStorage.getItem(statickey.jwtToken)) {
+        localStorage.removeItem(statickey.jwtToken);
+
+        router.push("/login");
+      }
       return Promise.reject(error.message);
     }
   }

@@ -8,7 +8,9 @@ import com.looppan.looppan.pojo.FileInfo;
 import com.looppan.looppan.pojo.User;
 import com.looppan.looppan.service.homefile.CreateFileService;
 import com.looppan.looppan.utils.RandomUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,6 +35,9 @@ public class CreateFileServiceImpl implements CreateFileService {
 
     @Autowired
     private FileInfoMapper fileInfoMapper;
+    @Qualifier("logger")
+    @Autowired
+    private Logger logger;
 
     @Override
     public ResponseEntity<Map> createFile(String filePId, String fileName) {
@@ -68,6 +73,7 @@ public class CreateFileServiceImpl implements CreateFileService {
 
         try {
             Files.createDirectories(path);
+            logger.info("path {}", path);
         } catch (IOException e) {
             throw new MyException("文件夹创建失败，请稍后尝试");
         }

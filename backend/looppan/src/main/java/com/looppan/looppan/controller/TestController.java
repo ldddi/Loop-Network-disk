@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@CrossOrigin(origins = "http://123.57.224.25:80")
+//@CrossOrigin(origins = "http://123.57.224.25:80")
+//@CrossOrigin(origins = "http://localhost:80")
 public class TestController {
 
     private static final Logger logger = LoggerFactory.getLogger(TestController.class);

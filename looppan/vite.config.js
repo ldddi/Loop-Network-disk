@@ -13,15 +13,15 @@ export default defineConfig({
   },
   server: {
     port: 80,
-    // hmr: true,
-    // proxy: {
-    //   "/api": {
-    //     target: "http://localhost:7090",
-    //     changeOrigin: true,
-    //     PathRewrite: {
-    //       "^api": "/api",
-    //     },
-    //   },
-    // },
+    hmr: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:7090",
+        changeOrigin: true,
+        PathRewrite: {
+          "^api": "/api",
+        },
+      },
+    },
   },
 });

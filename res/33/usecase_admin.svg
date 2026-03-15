@@ -1,0 +1,58 @@
+<svg width="620" height="400" xmlns="http://www.w3.org/2000/svg" font-family="Microsoft YaHei, SimHei, Arial, sans-serif">
+  <!-- 背景 -->
+  <rect width="620" height="400" fill="#f8fafc" rx="12"/>
+  <!-- 标题 -->
+  <text x="310" y="38" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e293b">管理员端用例图</text>
+
+  <!-- 系统边界框 -->
+  <rect x="120" y="60" width="460" height="300" fill="white" stroke="#ef4444" stroke-width="2" rx="10" stroke-dasharray="6,3"/>
+  <text x="350" y="82" text-anchor="middle" font-size="13" fill="#ef4444" font-weight="bold">个人云存储网盘系统（管理员端）</text>
+
+  <!-- 管理员角色 -->
+  <circle cx="55" cy="185" r="18" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <line x1="55" y1="203" x2="55" y2="243" stroke="#1e293b" stroke-width="2"/>
+  <line x1="30" y1="220" x2="80" y2="220" stroke="#1e293b" stroke-width="2"/>
+  <line x1="55" y1="243" x2="35" y2="273" stroke="#1e293b" stroke-width="2"/>
+  <line x1="55" y1="243" x2="75" y2="273" stroke="#1e293b" stroke-width="2"/>
+  <text x="55" y="291" text-anchor="middle" font-size="13" fill="#1e293b" font-weight="bold">管理员</text>
+
+  <!-- 用例：查看用户列表 -->
+  <ellipse cx="290" cy="140" rx="105" ry="26" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="290" y="145" text-anchor="middle" font-size="12" fill="#1e293b">查看用户列表</text>
+
+  <!-- 用例：封禁用户账号 -->
+  <ellipse cx="500" cy="185" rx="78" ry="24" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="500" y="190" text-anchor="middle" font-size="12" fill="#1e293b">封禁用户账号</text>
+
+  <!-- 用例：解封用户账号 -->
+  <ellipse cx="500" cy="250" rx="78" ry="24" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="500" y="255" text-anchor="middle" font-size="12" fill="#1e293b">解封用户账号</text>
+
+  <!-- 用例：配置用户网盘容量 -->
+  <ellipse cx="290" cy="255" rx="105" ry="26" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="290" y="260" text-anchor="middle" font-size="12" fill="#1e293b">配置用户网盘容量</text>
+
+  <!-- 连接线：管理员 → 查看用户列表 -->
+  <line x1="73" y1="178" x2="185" y2="143" stroke="#64748b" stroke-width="1.2"/>
+  <!-- 管理员 → 配置网盘容量 -->
+  <line x1="73" y1="193" x2="185" y2="255" stroke="#64748b" stroke-width="1.2"/>
+
+  <!-- extend: 查看用户列表 → 封禁 -->
+  <line x1="395" y1="153" x2="422" y2="175" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="382" y="160" font-size="10" fill="#64748b">«extend»</text>
+
+  <!-- extend: 查看用户列表 → 解封 -->
+  <line x1="395" y1="160" x2="422" y2="238" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="382" y="215" font-size="10" fill="#64748b">«extend»</text>
+
+  <!-- include: 配置网盘容量 → 封禁（关联调整上限，复用右侧空间） -->
+  <!-- 配置容量旁额外说明省略，保持简洁 -->
+
+  <!-- 图例 -->
+  <rect x="150" y="338" width="14" height="14" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+  <text x="170" y="350" font-size="11" fill="#475569">用户管理</text>
+  <rect x="270" y="338" width="14" height="14" fill="#fecaca" stroke="#dc2626" stroke-width="1"/>
+  <text x="290" y="350" font-size="11" fill="#475569">账号管控</text>
+  <rect x="390" y="338" width="14" height="14" fill="#ffedd5" stroke="#f97316" stroke-width="1"/>
+  <text x="410" y="350" font-size="11" fill="#475569">容量管理</text>
+</svg>

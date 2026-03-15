@@ -309,8 +309,9 @@ const uploadFile3 = async (files) => {
     if (!finishFolerName.includes(pathParts[pathParts.length - 2])) {
       const resp = await originalAxios({
         method: "POST",
-        url: "http://123.57.224.25:7090" + apiStore.file.createFile,
-        // url: "http://localhost:7090" + apiStore.file.createFile,
+        // url: "http://123.57.224.25:7090" + apiStore.file.createFile,
+        // url: "http://192.168.227.128:7090" + apiStore.file.createFile,
+        url: "http://localhost:7090" + apiStore.file.createFile,
         headers: {
           Authorization: "Bearer " + userStore.user.token,
         },

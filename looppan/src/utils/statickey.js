@@ -15,7 +15,8 @@ const folderType = {
 };
 
 const upload = {
-  time: 1500,
+  // time: 1500,
+  time: 3000,
 };
 
 const shared = {

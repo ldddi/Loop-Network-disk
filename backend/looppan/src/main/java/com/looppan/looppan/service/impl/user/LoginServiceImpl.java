@@ -1,5 +1,6 @@
 package com.looppan.looppan.service.impl.user;
 
+import ch.qos.logback.core.ConsoleAppender;
 import com.alibaba.fastjson2.JSONObject;
 import com.looppan.looppan.config.globalException.MyException;
 import com.looppan.looppan.config.security.JwtUtil;
@@ -25,6 +26,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private ConsoleAppender consoleAppender;
 
     @Override
     public ResponseEntity<Map<String, String>> login(
@@ -32,10 +35,13 @@ public class LoginServiceImpl implements LoginService {
     {
         String value = redisTemplate.opsForValue().get(session.getId());
         if (value != null) {
+//            System.out.println("session id = " + session.getId());
+//            System.out.println("redis picCheck value = " + value);
             redisTemplate.delete(session.getId());
         }
 
         if (value == null || !value.equalsIgnoreCase(picCheckCode)) {
+//            System.out.println("user picCheck" + picCheckCode);
             throw new MyException("图片验证码错误");
         }
 

@@ -1,0 +1,20 @@
+2025-05-09 16:01:22 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 7090 (http) with context path '/api'
+2025-05-09 16:01:22 INFO  c.looppan.looppan.LooppanApplication - Started LooppanApplication in 2.903 seconds (process running for 3.692)
+2025-05-09 16:04:34 INFO  o.a.c.c.C.[.[localhost].[/api] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-09 16:04:34 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-05-09 16:04:34 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-05-09 16:10:06 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-05-09 16:10:06 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@186f78cb
+2025-05-09 16:10:06 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-05-09 16:24:34 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-05-09 16:24:34 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-05-09 17:25:06 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 7090 (http) with context path '/api'
+2025-05-09 17:25:06 INFO  c.looppan.looppan.LooppanApplication - Started LooppanApplication in 4.214 seconds (process running for 4.889)
+2025-05-09 17:25:30 INFO  o.a.c.c.C.[.[localhost].[/api] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-09 17:25:30 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-05-09 17:25:30 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2025-05-09 17:25:45 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-05-09 17:25:46 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@38f867d1
+2025-05-09 17:25:46 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-05-09 18:36:33 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-05-09 18:36:33 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

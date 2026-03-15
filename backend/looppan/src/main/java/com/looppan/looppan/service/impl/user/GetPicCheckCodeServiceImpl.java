@@ -37,6 +37,7 @@ public class GetPicCheckCodeServiceImpl implements GetPicCheckCodeService {
         String sessionId = null;
         try {
             sessionId = session.getId();
+//            System.out.println("---------sessionId = " +  sessionId);
         } catch (Exception e) {
             throw new MyException("获取session ID 失败");
         }
